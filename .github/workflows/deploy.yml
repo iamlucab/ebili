@@ -1,4 +1,4 @@
-name: 🚀 Auto Deploy to Production
+name: 🚀 Deploy to GoDaddy via FTP
 
 on:
   push:
@@ -6,13 +6,25 @@ on:
       - main
 
 jobs:
-  deploy:
+  ftp-deploy:
+    name: 📦 Upload via FTP
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Code
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: 🚀 Deploy via Webhook
-        run: |
-          curl -sS "https://ebili.online/public/deploy.php?key=Coders123"
+      - name: 📤 FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          server-dir: /public_html/ebili/
+          protocol: ftp
+          exclude: |
+            **/.git*
+            **/.github*
+            README.md
+            LICENSE
