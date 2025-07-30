@@ -37,8 +37,8 @@
         
         {{-- QR Code Action Buttons --}}
         <div class="qr-actions mt-2">
-            <button type="button" class="btn btn-sm btn-outline-primary me-2" id="shareQRCode" title="Share QR Code">
-                <i class="bi bi-share"></i> Share
+            <button type="button" class="btn btn-sm btn-outline-primary me-2" id="shareReferralLink" title="Share Referral Link">
+                <i class="bi bi-person-plus"></i> Share Referral
             </button>
             <button type="button" class="btn btn-sm btn-outline-success" id="downloadQRCode" title="Download QR Code">
                 <i class="bi bi-download"></i> Download
@@ -1509,121 +1509,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Share QR Code functionality
-    shareBtn.addEventListener('click', function() {
+    // Share Referral Link functionality
+    const shareReferralBtn = document.getElementById('shareReferralLink');
+    shareReferralBtn.addEventListener('click', function() {
         try {
-            // Get the current displayed QR code
-            const currentQRCanvas = qrDisplay.querySelector('canvas');
-            const currentQRImg = qrDisplay.querySelector('img');
+            // Create referral link
+            const memberId = {{ auth()->user()->member->id ?? 'null' }};
+            const referralUrl = `${window.location.origin}/join/${memberId}`;
             
-            if (!currentQRCanvas && !currentQRImg) {
-                showNotification('No QR code available to share', 'error');
-                return;
-            }
+            const shareText = `🎉 Join E-Bili Online through my referral link and we both get bonuses!\n\n` +
+                             `👤 Referred by: {{ auth()->user()->name }}\n` +
+                             `📱 Mobile: {{ auth()->user()->mobile_number }}\n\n` +
+                             `💰 Benefits:\n` +
+                             `• Shop and earn cashback\n` +
+                             `• Refer friends and earn bonuses\n` +
+                             `• Access to exclusive deals\n\n` +
+                             `🔗 Register here: ${referralUrl}\n\n` +
+                             `#EBiliOnline #ShopToSave #ShareToEarn`;
             
-            // Create a shareable canvas
-            const shareCanvas = document.createElement('canvas');
-            const shareCtx = shareCanvas.getContext('2d');
-            shareCanvas.width = 300;
-            shareCanvas.height = 400;
-            
-            // White background
-            shareCtx.fillStyle = '#ffffff';
-            shareCtx.fillRect(0, 0, 300, 400);
-            
-            // Draw title
-            shareCtx.fillStyle = '#4a1570';
-            shareCtx.font = 'bold 18px Poppins, Arial, sans-serif';
-            shareCtx.textAlign = 'center';
-            shareCtx.fillText('E-Bili Payment QR', 150, 30);
-            
-            // Draw member name
-            shareCtx.font = 'bold 16px Poppins, Arial, sans-serif';
-            shareCtx.fillStyle = '#2c3e50';
-            shareCtx.fillText("{{ auth()->user()->name }}", 150, 55);
-            
-            // Draw mobile number
-            shareCtx.font = '14px Poppins, Arial, sans-serif';
-            shareCtx.fillStyle = '#6c757d';
-            shareCtx.fillText("{{ auth()->user()->mobile_number }}", 150, 75);
-            
-            // Use the SAME QR code that's currently displayed
-            if (currentQRCanvas) {
-                // Draw the current QR canvas
-                shareCtx.drawImage(currentQRCanvas, 60, 90, 180, 180);
-                finishShare();
-            } else if (currentQRImg && currentQRImg.complete) {
-                // Draw the current QR image
-                shareCtx.drawImage(currentQRImg, 60, 90, 180, 180);
-                finishShare();
-            } else if (currentQRImg) {
-                // Wait for image to load
-                currentQRImg.onload = function() {
-                    shareCtx.drawImage(currentQRImg, 60, 90, 180, 180);
-                    finishShare();
-                };
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Join E-Bili Online - Referral Invitation',
+                    text: shareText,
+                    url: referralUrl
+                }).then(() => {
+                    showNotification('Referral link shared successfully!', 'success');
+                }).catch((error) => {
+                    console.error('Share failed:', error);
+                    fallbackShareReferral(shareText, referralUrl);
+                });
             } else {
-                // Draw fallback
-                shareCtx.fillStyle = '#6f42c1';
-                shareCtx.fillRect(60, 90, 180, 180);
-                shareCtx.fillStyle = '#ffffff';
-                shareCtx.font = 'bold 24px Arial, sans-serif';
-                shareCtx.fillText("{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}", 150, 190);
-                finishShare();
-            }
-            
-            function finishShare() {
-                // Draw instructions
-                shareCtx.font = '12px Poppins, Arial, sans-serif';
-                shareCtx.fillStyle = '#495057';
-                shareCtx.textAlign = 'center';
-                shareCtx.fillText('Scan to send money to this account', 150, 290);
-                
-                // Draw footer
-                shareCtx.font = 'bold 10px Poppins, Arial, sans-serif';
-                shareCtx.fillStyle = '#4a1570';
-                shareCtx.fillText('E-Bili Online', 150, 320);
-                
-                // Convert to blob and share
-                shareCanvas.toBlob(function(blob) {
-                    const shareText = `Send money to {{ auth()->user()->name }} ({{ auth()->user()->mobile_number }}) via E-Bili.\n\nScan the QR code to transfer money instantly!`;
-                    
-                    if (navigator.share && navigator.canShare) {
-                        const filesArray = [new File([blob], 'ebili-qr-{{ auth()->user()->mobile_number }}.png', { type: 'image/png' })];
-                        
-                        if (navigator.canShare({ files: filesArray })) {
-                            navigator.share({
-                                title: 'My E-Bili Payment QR Code',
-                                text: shareText,
-                                files: filesArray
-                            }).then(() => {
-                                showNotification('QR Code shared successfully!', 'success');
-                            }).catch((error) => {
-                                console.error('Share with image failed:', error);
-                                fallbackShare(shareText);
-                            });
-                        } else {
-                            // Share without image
-                            navigator.share({
-                                title: 'My E-Bili Payment QR Code',
-                                text: shareText + '\n\nQR Data: ' + qrData
-                            }).then(() => {
-                                showNotification('QR Code link shared successfully!', 'success');
-                            }).catch((error) => {
-                                console.error('Share failed:', error);
-                                fallbackShare(shareText);
-                            });
-                        }
-                    } else {
-                        fallbackShare(shareText);
-                    }
-                }, 'image/png', 1.0);
+                fallbackShareReferral(shareText, referralUrl);
             }
             
         } catch (error) {
-            console.error('Share failed:', error);
-            const fallbackText = `Send money to {{ auth()->user()->name }} ({{ auth()->user()->mobile_number }}) via E-Bili.\n\nQR Data: ${qrData}`;
-            fallbackShare(fallbackText);
+            console.error('Referral share failed:', error);
+            showNotification('Failed to share referral link', 'error');
         }
     });
     
@@ -1645,6 +1566,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 showNotification('QR code data copied to clipboard!', 'info');
             } catch (err) {
                 showNotification('Failed to copy QR code data', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+    }
+    
+    function fallbackShareReferral(text, url) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Referral link copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy referral link', 'error');
+            });
+        } else {
+            // Very old browser fallback
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showNotification('Referral link copied to clipboard!', 'success');
+            } catch (err) {
+                showNotification('Failed to copy referral link', 'error');
             }
             document.body.removeChild(textArea);
         }
