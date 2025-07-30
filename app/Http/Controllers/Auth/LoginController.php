@@ -14,12 +14,16 @@ class LoginController extends Controller
 public function login(Request $request)
 {
     $credentials = $request->validate([
-        'mobile_number' => 'required',
+        'login' => 'required|string',
         'password' => 'required',
     ]);
 
+    // Determine if login is email or mobile number
+    $loginField = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'mobile_number';
+    
+    // Attempt authentication
     if (Auth::attempt([
-        'mobile_number' => $credentials['mobile_number'],
+        $loginField => $credentials['login'],
         'password' => $credentials['password']
     ])) {
         $request->session()->regenerate();
@@ -46,7 +50,7 @@ public function login(Request $request)
         }
     }
 
-    return back()->with('error', 'Invalid mobile number or password.');
+    return back()->with('error', 'Invalid credentials. Please check your email/mobile number and password.');
 }
 
 public function logout(Request $request)

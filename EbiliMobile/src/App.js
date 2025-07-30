@@ -10,14 +10,24 @@ const App = () => {
   // Initialize notification service
   useEffect(() => {
     const initNotifications = async () => {
-      await NotificationService.init();
+      try {
+        const initialized = await NotificationService.initialize();
+        if (initialized) {
+          console.log('Push notifications initialized successfully');
+        } else {
+          console.log('Push notifications initialization failed');
+        }
+      } catch (error) {
+        console.error('Error initializing push notifications:', error);
+      }
     };
     
     initNotifications();
     
     // Cleanup notification listeners when component unmounts
     return () => {
-      NotificationService.cleanup();
+      // Clear notification data on app unmount if needed
+      // NotificationService.clearNotificationData();
     };
   }, []);
 

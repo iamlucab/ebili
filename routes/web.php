@@ -53,6 +53,24 @@ use App\Http\Controllers\Admin\AdminWalletController;
         Route::post('/login', [LoginController::class, 'login']);
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+        // ✅ Social Login Routes
+        Route::get('/auth/{provider}', [\App\Http\Controllers\Auth\SocialLoginController::class, 'redirectToProvider'])->name('social.redirect');
+        Route::get('/auth/{provider}/callback', [\App\Http\Controllers\Auth\SocialLoginController::class, 'handleProviderCallback'])->name('social.callback');
+
+        // ✅ OTP Login Routes
+        Route::post('/auth/otp/send', [\App\Http\Controllers\Auth\OtpLoginController::class, 'sendOtp'])->name('otp.send');
+        Route::post('/auth/otp/verify', [\App\Http\Controllers\Auth\OtpLoginController::class, 'verifyOtp'])->name('otp.verify');
+        Route::post('/auth/otp/resend', [\App\Http\Controllers\Auth\OtpLoginController::class, 'resendOtp'])->name('otp.resend');
+
+        // ✅ Push Notification Routes (Public - for device registration)
+        Route::middleware('auth')->prefix('api/notifications')->name('notifications.')->group(function () {
+            Route::post('/register-token', [\App\Http\Controllers\PushNotificationController::class, 'registerToken'])->name('register');
+            Route::post('/unregister-token', [\App\Http\Controllers\PushNotificationController::class, 'unregisterToken'])->name('unregister');
+            Route::post('/test', [\App\Http\Controllers\PushNotificationController::class, 'sendTestNotification'])->name('test');
+            Route::get('/tokens', [\App\Http\Controllers\PushNotificationController::class, 'getUserTokens'])->name('tokens');
+            Route::delete('/tokens/{tokenId}', [\App\Http\Controllers\PushNotificationController::class, 'removeToken'])->name('tokens.remove');
+        });
+
        
 
     // 🛒 Cart & Order Routes (Member Only)
@@ -395,6 +413,36 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
     Route::get('members/pending', [MemberApprovalController::class, 'index'])->name('members.pending');
     Route::post('members/approve/{id}', [MemberApprovalController::class, 'approve'])->name('members.approve');
     Route::post('members/reject/{id}', [MemberApprovalController::class, 'reject'])->name('members.reject');
+    
+    // Push Notification Admin Routes (Legacy - keeping for API compatibility)
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::post('/send-to-user', [\App\Http\Controllers\PushNotificationController::class, 'sendToUser'])->name('send.user');
+        Route::post('/broadcast', [\App\Http\Controllers\PushNotificationController::class, 'sendBroadcast'])->name('broadcast');
+        Route::post('/cleanup-expired', [\App\Http\Controllers\PushNotificationController::class, 'cleanupExpiredTokens'])->name('cleanup');
+    });
+
+    // Admin Notification Management UI Routes
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('index');
+        Route::get('/push', [\App\Http\Controllers\Admin\NotificationController::class, 'pushNotifications'])->name('push');
+        Route::get('/sms', [\App\Http\Controllers\Admin\NotificationController::class, 'smsBlasting'])->name('sms');
+        Route::get('/sms-history', [\App\Http\Controllers\Admin\NotificationController::class, 'smsHistory'])->name('sms.history');
+        Route::get('/device-tokens', [\App\Http\Controllers\Admin\NotificationController::class, 'deviceTokens'])->name('devices');
+        
+        // POST routes for sending notifications
+        Route::post('/send-push', [\App\Http\Controllers\Admin\NotificationController::class, 'sendPushNotification'])->name('send.push');
+        Route::post('/send-sms', [\App\Http\Controllers\Admin\NotificationController::class, 'sendSmsBlast'])->name('send.sms');
+        
+        // AJAX routes
+        Route::post('/test-push', [\App\Http\Controllers\Admin\NotificationController::class, 'testPushNotification'])->name('test.push');
+        Route::post('/test-sms', [\App\Http\Controllers\Admin\NotificationController::class, 'testSms'])->name('test.sms');
+        Route::get('/sms-balance', [\App\Http\Controllers\Admin\NotificationController::class, 'getSmsBalance'])->name('sms.balance');
+        Route::post('/cleanup-tokens', [\App\Http\Controllers\Admin\NotificationController::class, 'cleanupTokens'])->name('cleanup.tokens');
+        
+        // SMS Log Management
+        Route::post('/sms/{id}/retry', [\App\Http\Controllers\Admin\NotificationController::class, 'retrySms'])->name('sms.retry');
+        Route::delete('/sms/{id}', [\App\Http\Controllers\Admin\NotificationController::class, 'deleteSmsLog'])->name('sms.delete');
+    });
 });
 
 });

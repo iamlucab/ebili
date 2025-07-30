@@ -48,9 +48,31 @@ protected $fillable = [
 
 
     public function getAuthIdentifierName()
-{
-    return 'mobile_number';
-}
+    {
+        return 'mobile_number';
+    }
+    
+    /**
+     * Get the name of the unique identifier for the user for email auth
+     */
+    public function getEmailAuthIdentifierName()
+    {
+        return 'email';
+    }
+    
+    /**
+     * Find user by email or mobile number
+     */
+    public static function findForAuth($login)
+    {
+        // Check if login is email format
+        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            return static::where('email', $login)->first();
+        }
+        
+        // Otherwise treat as mobile number
+        return static::where('mobile_number', $login)->first();
+    }
 
 public function member()
 {
@@ -84,6 +106,18 @@ public function isMember()
 public function createdProducts()
 {
     return $this->hasMany(\App\Models\Product::class, 'created_by');
+}
+
+// Device tokens for push notifications
+public function deviceTokens()
+{
+    return $this->hasMany(\App\Models\DeviceToken::class);
+}
+
+// Get active device tokens
+public function activeDeviceTokens()
+{
+    return $this->hasMany(\App\Models\DeviceToken::class)->active();
 }
 
 }

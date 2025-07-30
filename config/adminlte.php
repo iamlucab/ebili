@@ -186,6 +186,16 @@ return [
             ],
         ],
 
+        [
+            'text' => 'Broadcast Settings',
+            'icon' => 'bi bi-broadcast',
+            'can'  => 'admin-only',
+            'submenu' => [
+                ['text' => 'SMS', 'route' => 'admin.notifications.sms', 'icon' => 'bi bi-chat-text'],
+                ['text' => 'Push Notification', 'route' => 'admin.notifications.push', 'icon' => 'bi bi-bell'],
+            ],
+        ],
+
 
         // ['text' => 'Staff Dashboard', 'url' => '/staff/dashboard', 'icon' => 'bi bi-people-fill', 'can' => 'staff-only'],
 
