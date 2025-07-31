@@ -15,7 +15,7 @@ class MembersController extends Controller
 {
     public function index()
     {
-        $members = Member::with('sponsor')->get(); // eager load sponsor
+        $members = Member::with(['sponsor', 'membershipCode'])->get(); // eager load sponsor and membership code
         return view('members.index', compact('members'));
     }
 
@@ -38,6 +38,17 @@ class MembersController extends Controller
             'role'          => 'required|in:Admin,Staff,Member',
             'sponsor_id'    => 'nullable|exists:members,id',
             'status'        => 'required|in:Pending,Approved',
+            'membership_code' => [
+                'required',
+                'string',
+                'exists:membership_codes,code',
+                function ($attribute, $value, $fail) {
+                    $code = \App\Models\MembershipCode::where('code', $value)->first();
+                    if (!$code || $code->used) {
+                        $fail('The membership code is invalid or already used.');
+                    }
+                },
+            ],
         ]);
 
         // Save photo to storage/photos
@@ -49,9 +60,27 @@ class MembersController extends Controller
 
         $validated['loan_eligible'] = $request->has('loan_eligible');
 
-        Member::create($validated);
+        // Create member
+        $member = Member::create($validated);
 
-        return redirect()->route('members.index')->with('success', 'Member created.');
+        // Create user account
+        $user = \App\Models\User::create([
+            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            'email' => $validated['mobile_number'] . '@ebili.online',
+            'mobile_number' => $validated['mobile_number'],
+            'password' => \Hash::make('password123'), // Default password
+            'role' => $validated['role'],
+            'member_id' => $member->id,
+            'status' => $validated['status'],
+        ]);
+
+        // Mark membership code as used
+        $code = \App\Models\MembershipCode::where('code', $request->membership_code)->first();
+        if ($code) {
+            $code->markAsUsed($user->id);
+        }
+
+        return redirect()->route('members.index')->with('success', 'Member created successfully.');
     }
 
     public function edit(Member $member)

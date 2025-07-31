@@ -45,7 +45,7 @@
                             <th><i class="bi bi-person me-1"></i>Name</th>
                             <th><i class="bi bi-cake me-1"></i>Birthday</th>
                             <th><i class="bi bi-phone me-1"></i>Mobile</th>
-                            <th><i class="bi bi-briefcase me-1"></i>Occupation</th>
+                            <th><i class="bi bi-key me-1"></i>Codes Used</th>
                             <th><i class="bi bi-person-tag me-1"></i>Role</th>
                             <th><i class="bi bi-handshake me-1"></i>Sponsor</th>
                             <th><i class="bi bi-toggle-on me-1"></i>Status</th>
@@ -67,7 +67,13 @@
                                 <td>
                                     <span class="badge bg-info rounded-pill">{{ $member->mobile_number }}</span>
                                 </td>
-                                <td>{{ $member->occupation ?: 'N/A' }}</td>
+                                <td>
+                                    @if($member->membershipCode)
+                                        <span class="badge bg-primary rounded-pill">{{ $member->membershipCode->code }}</span>
+                                    @else
+                                        <small class="text-muted">No Code</small>
+                                    @endif
+                                </td>
                                 <td>
                                     @if($member->role === 'Admin')
                                         <span class="badge bg-danger rounded-pill">{{ $member->role }}</span>

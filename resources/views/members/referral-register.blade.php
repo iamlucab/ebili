@@ -212,11 +212,10 @@
         <div class="referral-info">
             <i class="bi bi-person-check-fill text-success" style="font-size: 2rem;"></i>
             <div class="mt-2">
-                <div class="text-muted small">You're being referred by</div>
-                <div class="sponsor-name">Active Member 091* -**** -**** </div>
-                {{-- <div class="sponsor-name">{{ $sponsor->full_name }}</div> --}}
+                <div class="text-muted small">You're being referred by:</div>
+                <div class="sponsor-name">{{ $sponsor->full_name }}</div>
                 <div class="text-muted small mt-1">
-                    <i class="bi bi-gift-fill"></i> and get referral bonuses!
+                    <i class="bi bi-gift-fill"></i> You'll both receive referral bonuses!
                 </div>
             </div>
         </div>
@@ -224,7 +223,11 @@
         
         <h3 class="mb-4">Join and be a Member</h3>
 
-        <form action="{{ route('guest.register.referral.store', $sponsor_id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{
+            request()->is('join/*')
+                ? route('join.referral.store', $sponsor_id)
+                : route('member.register.referral.store', $sponsor_id)
+        }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             {{-- Hidden sponsor ID field --}}
@@ -308,7 +311,7 @@
     </div>
 
     <footer>
-        &copy; {{ date('Y') }} E-Bili Online - Buy to Save, Share to Earn!
+        &copy; {{ date('Y') }} E-Bili Online - Shop to Save, Share to Earn!
     </footer>
 
     <!-- Mobile Footer -->
