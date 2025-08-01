@@ -3,142 +3,285 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Member;
-use App\Models\Wallet;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\WalletTransaction;
-use App\Models\CashbackLog;
-use App\Models\ReferralBonusLog;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use App\Models\Category;
+use App\Models\Product;
 
 class DeploymentSeeder extends Seeder
 {
     /**
-     * Run the database seeds to prepare for deployment.
-     * Clears most data and retains only the Super Admin account.
-     *
-     * @return void
+     * Run the database seeds for deployment.
      */
-    public function run()
+    public function run(): void
     {
-        // Begin transaction to ensure all operations succeed or fail together
-        DB::transaction(function () {
-            $now = Carbon::now();
-            
-            // Clear existing data
-            $this->clearExistingData();
-            
-            // Create Super Admin
-            $adminMember = Member::firstOrCreate(
-                ['mobile_number' => '09177260180'],
-                [
-                    'first_name'     => 'Super',
-                    'middle_name'    => '',
-                    'last_name'      => 'Admin',
-                    'birthday'       => '1990-01-01',
-                    'occupation'     => 'Administrator',
-                    'address'        => 'Admin HQ',
-                    'photo'          => 'default-profile.png',
-                    'role'           => 'Admin',
-                    'status'         => 'Approved',
-                    'loan_eligible'  => true,
-                    'created_at'     => $now,
-                    'updated_at'     => $now,
-                ]
-            );
-            
-            User::firstOrCreate(
-                ['mobile_number' => '09177260180'],
-                [
-                    'name'              => 'Super Admin',
-                    'email'             => 'admin@ebili.com',
-                    'role'              => 'Admin',
-                    'member_id'         => $adminMember->id,
-                    'email_verified_at' => $now,
-                    'password'          => Hash::make('password123'),
-                    'status'            => 'Approved',
-                    'created_at'        => $now,
-                    'updated_at'        => $now,
-                ]
-            );
-            
-            // Create wallets for admin
-            foreach (['main', 'cashback'] as $type) {
-                Wallet::firstOrCreate([
-                    'member_id' => $adminMember->id,
-                    'type'      => $type,
-                ], [
-                    'wallet_id'  => 'WALLET-' . strtoupper(uniqid()),
-                    'balance'    => 0,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
-            }
-            
-            $this->command->info('✅ Deployment preparation completed. Super Admin account retained, all other data cleared.');
-        });
+        // Clear all tables except preserved ones
+        $this->clearDatabase();
+        
+        // Create admin user
+        $this->createAdminUser();
+        
+        // Create temporary staff and member users
+        $this->createTemporaryUsers();
+        
+        // Sync users to members
+        $this->syncUsersToMembers();
+        
+        // Seed basic categories if empty
+        $this->seedBasicCategories();
+        
+        // Seed sample products if empty
+        $this->seedSampleProducts();
     }
-    
+
     /**
-     * Clear existing data while preserving system settings.
+     * Clear database except preserved tables
      */
-    private function clearExistingData()
+    private function clearDatabase(): void
     {
         // Disable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         
-        try {
-            // Delete all cashback logs
-            $this->command->info('Clearing cashback logs...');
-            CashbackLog::query()->delete();
+        // Get all tables
+        $tables = DB::select('SHOW TABLES');
+        $databaseName = DB::getDatabaseName();
+        
+        // Tables to preserve
+        $preservedTables = [
+            'categories',
+            'migrations', 
+            'products',
+            'units'
+        ];
+        
+        foreach ($tables as $table) {
+            $tableName = $table->{"Tables_in_{$databaseName}"};
             
-            // Delete all referral bonus logs
-            $this->command->info('Clearing referral bonus logs...');
-            ReferralBonusLog::query()->delete();
-            
-            // Delete all wallet transactions
-            $this->command->info('Clearing wallet transactions...');
-            WalletTransaction::query()->delete();
-            
-            // Delete all order items
-            $this->command->info('Clearing order items...');
-            OrderItem::query()->delete();
-            
-            // Delete all orders
-            $this->command->info('Clearing orders...');
-            Order::query()->delete();
-            
-            // Clear users and members except the Super Admin
-            $this->command->info('Clearing users except Super Admin...');
-            User::where('mobile_number', '!=', '09177260180')->delete();
-            
-            $this->command->info('Clearing members except Super Admin...');
-            Member::where('mobile_number', '!=', '09177260180')->delete();
-            
-            // Reset wallets for remaining members
-            $this->command->info('Resetting wallets...');
-            Wallet::whereNotIn('member_id', function($query) {
-                $query->select('id')->from('members');
-            })->delete();
-            
-            // Update all remaining members to have role 'Member' except the Super Admin
-            $this->command->info('Updating member roles...');
-            Member::where('mobile_number', '!=', '09177260180')
-                  ->update(['role' => 'Member']);
-            
-            // Update all remaining users to have role 'Member' except the Super Admin
-            $this->command->info('Updating user roles...');
-            User::where('mobile_number', '!=', '09177260180')
-                ->update(['role' => 'Member']);
+            // Skip preserved tables and system tables
+            if (!in_array($tableName, $preservedTables) && !str_starts_with($tableName, 'information_schema')) {
+                try {
+                    DB::table($tableName)->truncate();
+                    $this->command->info("Cleared table: {$tableName}");
+                } catch (\Exception $e) {
+                    $this->command->warn("Could not clear table {$tableName}: " . $e->getMessage());
+                }
+            }
+        }
+        
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        
+        $this->command->info('Database cleared successfully (preserved: ' . implode(', ', $preservedTables) . ')');
+    }
+
+    /**
+     * Create the system administrator
+     */
+    private function createAdminUser(): void
+    {
+        $admin = User::create([
+            'name' => 'System Administrator',
+            'username' => '09177260180',
+            'email' => 'mrcabandez@gmail.com',
+            'mobile_number' => '09177260180',
+            'password' => Hash::make('!@#123123'),
+            'role' => 'Admin',
+            'status' => 'Active',
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->command->info('Created admin user: ' . $admin->email);
+    }
+
+    /**
+     * Create temporary staff and member users
+     */
+    private function createTemporaryUsers(): void
+    {
+        // Create Staff users
+        $staffUsers = [
+            [
+                'name' => 'Staff User 1',
+                'username' => 'staff001',
+                'email' => 'staff1@ebili.com',
+                'mobile_number' => '09171234567',
+                'password' => Hash::make('password123'),
+                'role' => 'Staff',
+                'status' => 'Active',
+            ],
+            [
+                'name' => 'Staff User 2', 
+                'username' => 'staff002',
+                'email' => 'staff2@ebili.com',
+                'mobile_number' => '09171234568',
+                'password' => Hash::make('password123'),
+                'role' => 'Staff',
+                'status' => 'Active',
+            ]
+        ];
+
+        foreach ($staffUsers as $staffData) {
+            $staff = User::create(array_merge($staffData, [
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]));
+            $this->command->info('Created staff user: ' . $staff->email);
+        }
+
+        // Create Member users
+        $memberUsers = [
+            [
+                'name' => 'Member User 1',
+                'username' => 'member001',
+                'email' => 'member1@ebili.com',
+                'mobile_number' => '09181234567',
+                'password' => Hash::make('password123'),
+                'role' => 'Member',
+                'status' => 'Active',
+            ],
+            [
+                'name' => 'Member User 2',
+                'username' => 'member002', 
+                'email' => 'member2@ebili.com',
+                'mobile_number' => '09181234568',
+                'password' => Hash::make('password123'),
+                'role' => 'Member',
+                'status' => 'Active',
+            ],
+            [
+                'name' => 'Member User 3',
+                'username' => 'member003',
+                'email' => 'member3@ebili.com',
+                'mobile_number' => '09181234569',
+                'password' => Hash::make('password123'),
+                'role' => 'Member',
+                'status' => 'Active',
+            ]
+        ];
+
+        foreach ($memberUsers as $memberData) {
+            $member = User::create(array_merge($memberData, [
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]));
+            $this->command->info('Created member user: ' . $member->email);
+        }
+    }
+
+    /**
+     * Sync users to members table
+     */
+    private function syncUsersToMembers(): void
+    {
+        $users = User::all();
+        
+        foreach ($users as $user) {
+            // Check if user already has a member_id assigned
+            if (!$user->member_id) {
+                // Create member record first
+                $memberData = [
+                    'first_name' => explode(' ', $user->name)[0] ?? $user->name,
+                    'last_name' => explode(' ', $user->name, 2)[1] ?? '',
+                    'birthday' => '1990-01-01', // Default birthday
+                    'mobile_number' => $user->mobile_number,
+                    'status' => $user->status,
+                    'role' => strtolower($user->role),
+                    'address' => 'Default Address',
+                    'occupation' => 'Not Specified',
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ];
+
+                // Add role-specific data
+                if ($user->role === 'Admin') {
+                    $memberData['sponsor_id'] = null;
+                } else {
+                    // Find admin member to use as sponsor
+                    $adminMember = Member::where('role', 'admin')->first();
+                    $memberData['sponsor_id'] = $adminMember ? $adminMember->id : null;
+                }
+
+                $member = Member::create($memberData);
                 
-            $this->command->info('✅ Existing data cleared successfully.');
-        } finally {
-            // Re-enable foreign key checks
-            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+                // Update user with member_id
+                $user->update(['member_id' => $member->id]);
+                
+                $this->command->info('Synced user to member: ' . $user->email . ' (Member ID: ' . $member->id . ')');
+            } else {
+                $this->command->info('User already has member record: ' . $user->email);
+            }
+        }
+    }
+
+    /**
+     * Seed basic categories if table is empty
+     */
+    private function seedBasicCategories(): void
+    {
+        if (Category::count() == 0) {
+            $categories = [
+                ['name' => 'Electronics', 'description' => 'Electronic devices and gadgets'],
+                ['name' => 'Clothing', 'description' => 'Apparel and fashion items'],
+                ['name' => 'Home & Garden', 'description' => 'Home improvement and garden supplies'],
+                ['name' => 'Health & Beauty', 'description' => 'Health and beauty products'],
+                ['name' => 'Sports & Outdoors', 'description' => 'Sports equipment and outdoor gear'],
+            ];
+
+            foreach ($categories as $category) {
+                Category::create(array_merge($category, [
+                    'active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]));
+            }
+            
+            $this->command->info('Seeded basic categories');
+        }
+    }
+
+    /**
+     * Seed sample products if table is empty
+     */
+    private function seedSampleProducts(): void
+    {
+        if (Product::count() == 0) {
+            $categories = Category::all();
+            
+            if ($categories->count() > 0) {
+                $products = [
+                    [
+                        'name' => 'Sample Product 1',
+                        'description' => 'This is a sample product for testing',
+                        'price' => 99.99,
+                        'category_id' => $categories->first()->id,
+                        'active' => true,
+                        'stock_quantity' => 100,
+                    ],
+                    [
+                        'name' => 'Sample Product 2', 
+                        'description' => 'Another sample product for testing',
+                        'price' => 149.99,
+                        'category_id' => $categories->first()->id,
+                        'active' => true,
+                        'stock_quantity' => 50,
+                    ]
+                ];
+
+                foreach ($products as $product) {
+                    Product::create(array_merge($product, [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]));
+                }
+                
+                $this->command->info('Seeded sample products');
+            }
         }
     }
 }

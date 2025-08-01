@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Voter;
 use App\Models\Member;
 use App\Models\User;
+use App\Services\ReferralBonusService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\MembershipCode;
@@ -98,6 +99,9 @@ class MemberRegistrationController extends Controller
             'used_by'  => $createdUser->id,
             'used_at'  => now(),
         ]);
+
+        // Award referral bonuses since member is automatically approved
+        ReferralBonusService::awardReferralBonuses($member);
 
     } catch (QueryException $e) {
         if ($e->errorInfo[1] == 1062) {

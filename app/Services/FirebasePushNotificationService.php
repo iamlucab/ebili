@@ -320,11 +320,28 @@ class FirebasePushNotificationService
      */
     public function sendTestNotification($token)
     {
-        return $this->sendToToken(
+        if (!$this->messaging) {
+            Log::error('Firebase messaging service not initialized for test notification');
+            return false;
+        }
+
+        Log::info('Attempting to send test notification', [
+            'token_preview' => substr($token, 0, 20) . '...',
+            'firebase_initialized' => $this->messaging !== null
+        ]);
+
+        $result = $this->sendToToken(
             $token,
             'Test Notification',
-            'This is a test notification from E-Bili',
+            'This is a test notification from E-Bili Admin Panel',
             ['type' => 'test', 'timestamp' => now()->toISOString()]
         );
+
+        Log::info('Test notification result', [
+            'success' => $result !== false,
+            'result' => $result
+        ]);
+
+        return $result;
     }
 }

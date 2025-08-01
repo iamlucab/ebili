@@ -9,7 +9,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="card rounded-3 shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header  text-white">
             <h6 class="mb-0 text-white>Wallet Transaction History</h6>
         </div>
 
@@ -130,4 +130,4 @@
     @endif
 @endsection
 
-@include('partials.mobile-footer')
+{{-- @include('partials.mobile-footer') --}}
