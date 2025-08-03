@@ -189,4 +189,68 @@ class Member extends Model
             });
         });
     }
+
+    // ─── Referral Methods ─────────────────────────────────────────────
+
+    /**
+     * Get all direct referrals (1st level)
+     */
+    public function getDirectReferrals()
+    {
+        return $this->sponsoredMembers()->where('status', 'Approved');
+    }
+
+    /**
+     * Get referrals by specific level
+     */
+    public function getReferralsByLevel($level)
+    {
+        if ($level == 1) {
+            return $this->getDirectReferrals();
+        }
+
+        $currentLevel = collect([$this]);
+        
+        for ($i = 1; $i < $level; $i++) {
+            $nextLevel = collect();
+            foreach ($currentLevel as $member) {
+                $nextLevel = $nextLevel->merge($member->sponsoredMembers()->where('status', 'Approved')->get());
+            }
+            $currentLevel = $nextLevel;
+        }
+        
+        return $currentLevel;
+    }
+
+    /**
+     * Get count of referrals by level
+     */
+    public function getReferralCountByLevel($level)
+    {
+        return $this->getReferralsByLevel($level)->count();
+    }
+
+    /**
+     * Get all referrals up to specified level with counts
+     */
+    public function getAllReferralCounts($maxLevel = 11)
+    {
+        $counts = [];
+        for ($level = 1; $level <= $maxLevel; $level++) {
+            $counts[$level] = $this->getReferralCountByLevel($level);
+            // Stop if no referrals at this level
+            if ($counts[$level] == 0) {
+                break;
+            }
+        }
+        return $counts;
+    }
+
+    /**
+     * Get total referral count across all levels
+     */
+    public function getTotalReferralCount($maxLevel = 11)
+    {
+        return array_sum($this->getAllReferralCounts($maxLevel));
+    }
 }

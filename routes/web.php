@@ -486,6 +486,12 @@ Route::fallback(function () {
 
 // Referral Bonuses Management
 
+// ✅ Member Referral Summary
+Route::middleware(['auth'])->group(function () {
+    Route::get('/member/referral-summary', [\App\Http\Controllers\Member\ReferralController::class, 'summary'])->name('member.referral.summary');
+    Route::get('/member/referral-level/{level}', [\App\Http\Controllers\Member\ReferralController::class, 'levelDetails'])->name('member.referral.level');
+});
+
 // ✅ Member or public view (optional)
 Route::get('/referral-bonuses', [ReferralBonusController::class, 'index'])->name('referral.bonuses');
 

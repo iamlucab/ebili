@@ -61,6 +61,12 @@ class MembersController extends Controller
 
         $validated['loan_eligible'] = $request->has('loan_eligible');
 
+        // Capitalize first letter of specified fields
+        $validated['first_name'] = ucfirst(strtolower($validated['first_name']));
+        $validated['middle_name'] = $validated['middle_name'] ? ucfirst(strtolower($validated['middle_name'])) : null;
+        $validated['last_name'] = ucfirst(strtolower($validated['last_name']));
+        $validated['occupation'] = $validated['occupation'] ? ucfirst(strtolower($validated['occupation'])) : null;
+
         // Create member
         $member = Member::create($validated);
 
@@ -149,6 +155,13 @@ class MembersController extends Controller
     }
 
     $validated['loan_eligible'] = $request->has('loan_eligible');
+
+    // Capitalize first letter of specified fields
+    $validated['first_name'] = ucfirst(strtolower($validated['first_name']));
+    $validated['middle_name'] = $validated['middle_name'] ? ucfirst(strtolower($validated['middle_name'])) : null;
+    $validated['last_name'] = ucfirst(strtolower($validated['last_name']));
+    $validated['occupation'] = $validated['occupation'] ? ucfirst(strtolower($validated['occupation'])) : null;
+    $validated['address'] = $validated['address'] ? ucfirst(strtolower($validated['address'])) : null;
 
     $oldStatus = $member->status;
     $member->update($validated);

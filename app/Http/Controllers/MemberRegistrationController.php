@@ -69,12 +69,12 @@ class MemberRegistrationController extends Controller
 
     try {
         $member = Member::create([
-            'first_name'    => $request->first_name,
-            'middle_name'   => $request->middle_name,
-            'last_name'     => $request->last_name,
+            'first_name'    => ucfirst(strtolower($request->first_name)),
+            'middle_name'   => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
+            'last_name'     => ucfirst(strtolower($request->last_name)),
             'birthday'      => $request->birthday,
             'mobile_number' => $request->mobile_number,
-            'occupation'    => $request->occupation,
+            'occupation'    => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
             'photo'         => $photoPath,
             'role'          => $request->role,
             'sponsor_id'    => $sponsorId,
