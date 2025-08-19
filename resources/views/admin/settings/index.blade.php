@@ -42,6 +42,14 @@
             <small class="form-text text-muted">Fee percentage for transferring from Cashback Wallet to Main Wallet</small>
         </div>
 
+        {{-- Amount Per Membership Code --}}
+        <div class="mb-4">
+            <label for="amount_per_code" class="form-label fw-bold">🏷️ Amount Per Membership Code (₱)</label>
+            <input type="number" name="amount_per_code" id="amount_per_code" class="form-control rounded-pill shadow-sm"
+                   value="{{ old('amount_per_code', $settings['amount_per_code'] ?? 100) }}" step="0.01" min="0" required>
+            <small class="form-text text-muted">The price for each membership code requested by members</small>
+        </div>
+
         <button type="submit" class="btn btn-success rounded-pill px-4">
             💾 Save Settings
         </button>

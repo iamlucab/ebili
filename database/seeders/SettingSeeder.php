@@ -24,5 +24,9 @@ class SettingSeeder extends Seeder
         Setting::updateOrCreate(['key' => 'available_colors'], [
             'value' => json_encode(["Red", "Blue", "Green"])
         ]);
+
+        Setting::updateOrCreate(['key' => 'amount_per_code'], [
+            'value' => '100'
+        ]);
     }
 }

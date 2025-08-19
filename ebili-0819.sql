@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 18, 2025 at 04:49 AM
+-- Generation Time: Aug 19, 2025 at 01:02 AM
 -- Server version: 10.6.22-MariaDB-cll-lve
 -- PHP Version: 8.3.22
 
@@ -306,7 +306,13 @@ INSERT INTO `members` (`id`, `first_name`, `middle_name`, `last_name`, `birthday
 (66, 'William', NULL, 'Puno jr', '2025-08-17', '09306614438', 'Member', NULL, NULL, 'Member', 12, NULL, '2025-08-17 23:54:20', '2025-08-17 23:54:20', 0, 'Approved'),
 (67, 'Christopher', NULL, 'Combaliceo', '2025-08-18', '095131229861', 'Member', NULL, NULL, 'Member', 11, NULL, '2025-08-19 02:26:10', '2025-08-19 02:26:10', 0, 'Approved'),
 (68, 'Diana', NULL, 'Sanchez', '2025-08-18', '09454987860', 'Leader', NULL, NULL, 'Member', 11, NULL, '2025-08-19 02:27:21', '2025-08-19 02:27:21', 0, 'Approved'),
-(69, 'Roman', NULL, 'Franquia', '2025-08-18', '09308925735', 'Leader', NULL, NULL, 'Member', 11, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52', 0, 'Approved');
+(69, 'Roman', NULL, 'Franquia', '2025-08-18', '09308925735', 'Leader', NULL, NULL, 'Member', 11, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52', 0, 'Approved'),
+(70, 'Jesus', NULL, 'Tayag', '2025-08-18', '09352307116', 'Member', NULL, NULL, 'Member', 12, NULL, '2025-08-19 04:24:14', '2025-08-19 04:24:14', 0, 'Approved'),
+(71, 'Medilyn', NULL, 'Corbita', '2025-08-18', '09559816837', 'Leader', NULL, NULL, 'Member', 12, NULL, '2025-08-19 04:25:54', '2025-08-19 04:25:54', 0, 'Approved'),
+(72, 'Shiena', NULL, 'Bandilla', '2025-08-18', '09381424767', 'Leader', NULL, NULL, 'Member', 12, NULL, '2025-08-19 04:29:32', '2025-08-19 04:29:32', 0, 'Approved'),
+(73, 'Roberto', NULL, 'Jerusalim', '2025-08-18', '0926344358', 'Leader', NULL, NULL, 'Member', 12, NULL, '2025-08-19 04:32:21', '2025-08-19 04:32:21', 0, 'Approved'),
+(74, 'Edna', NULL, 'Horados', '2025-08-19', '09999909152', 'Leader', NULL, NULL, 'Member', 11, NULL, '2025-08-19 21:49:06', '2025-08-19 21:49:06', 0, 'Approved'),
+(75, 'Megan', NULL, 'Condino', '2025-08-19', '09635378232', 'Leader', NULL, NULL, 'Member', 48, NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04', 0, 'Approved');
 
 -- --------------------------------------------------------
 
@@ -320,6 +326,8 @@ CREATE TABLE `membership_codes` (
   `used` tinyint(1) NOT NULL DEFAULT 0,
   `used_by` bigint(20) UNSIGNED DEFAULT NULL,
   `used_at` timestamp NULL DEFAULT NULL,
+  `reserved` tinyint(1) NOT NULL DEFAULT 0,
+  `reserved_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -394,7 +402,7 @@ INSERT INTO `membership_codes` (`id`, `code`, `used`, `used_by`, `used_at`, `cre
 (63, 'BOEXHWMT', 1, 48, '2025-08-13 21:57:16', '2025-08-13 19:01:10', '2025-08-13 21:57:16'),
 (64, 'I7P4JITC', 1, 47, '2025-08-13 21:56:02', '2025-08-13 19:01:10', '2025-08-13 21:56:02'),
 (65, 'GFVUOW9Y', 1, 49, '2025-08-15 19:27:19', '2025-08-13 19:01:10', '2025-08-15 19:27:19'),
-(66, 'USCFQ0C5', 0, NULL, NULL, '2025-08-15 21:48:31', '2025-08-15 21:48:31'),
+(66, 'USCFQ0C5', 1, 75, '2025-08-19 21:51:04', '2025-08-15 21:48:31', '2025-08-19 21:51:04'),
 (67, 'SFE9YSKW', 1, 60, '2025-08-17 23:43:55', '2025-08-15 21:48:31', '2025-08-17 23:43:55'),
 (68, 'KMRAAW2O', 1, 62, '2025-08-17 23:48:49', '2025-08-15 21:48:31', '2025-08-17 23:48:49'),
 (69, 'HKCWBYAO', 1, 61, '2025-08-17 23:45:07', '2025-08-15 21:48:31', '2025-08-17 23:45:07'),
@@ -404,7 +412,7 @@ INSERT INTO `membership_codes` (`id`, `code`, `used`, `used_by`, `used_at`, `cre
 (73, 'A0XFKC5R', 1, 67, '2025-08-19 02:26:10', '2025-08-15 21:48:31', '2025-08-19 02:26:10'),
 (74, '3ABFSCQ2', 1, 66, '2025-08-17 23:54:20', '2025-08-15 21:48:31', '2025-08-17 23:54:20'),
 (75, '4ZHBYXY0', 1, 68, '2025-08-19 02:27:21', '2025-08-15 21:48:31', '2025-08-19 02:27:21'),
-(76, 'QYKCH7CJ', 0, NULL, NULL, '2025-08-15 21:48:31', '2025-08-15 21:48:31'),
+(76, 'QYKCH7CJ', 1, 70, '2025-08-19 04:24:14', '2025-08-15 21:48:31', '2025-08-19 04:24:14'),
 (77, 'YQFKENPM', 1, 59, '2025-08-15 21:57:42', '2025-08-15 21:48:31', '2025-08-15 21:57:42'),
 (78, 'RKNOO6XK', 1, 58, '2025-08-15 21:56:58', '2025-08-15 21:48:31', '2025-08-15 21:56:58'),
 (79, 'Y4SGRJKG', 1, 57, '2025-08-15 21:56:08', '2025-08-15 21:48:31', '2025-08-15 21:56:08'),
@@ -415,10 +423,10 @@ INSERT INTO `membership_codes` (`id`, `code`, `used`, `used_by`, `used_at`, `cre
 (84, 'WPWHRSWB', 1, 53, '2025-08-15 21:52:05', '2025-08-15 21:48:31', '2025-08-15 21:52:05'),
 (85, 'UUP5PEIR', 1, 51, '2025-08-15 21:49:51', '2025-08-15 21:48:31', '2025-08-15 21:49:51'),
 (86, '2ENG6OAO', 1, 69, '2025-08-19 02:28:52', '2025-08-17 23:41:46', '2025-08-19 02:28:52'),
-(87, 'GXV1B6KK', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
-(88, 'WQLJOO3Y', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
-(89, 'E5TRBZRT', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
-(90, 'OSNL2JYE', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
+(87, 'GXV1B6KK', 1, 72, '2025-08-19 04:29:32', '2025-08-17 23:41:46', '2025-08-19 04:29:32'),
+(88, 'WQLJOO3Y', 1, 73, '2025-08-19 04:32:21', '2025-08-17 23:41:46', '2025-08-19 04:32:21'),
+(89, 'E5TRBZRT', 1, 71, '2025-08-19 04:25:54', '2025-08-17 23:41:46', '2025-08-19 04:25:54'),
+(90, 'OSNL2JYE', 1, 74, '2025-08-19 21:49:06', '2025-08-17 23:41:46', '2025-08-19 21:49:06'),
 (91, 'XQFRFONH', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
 (92, 'LVOER9LN', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
 (93, '7YCGX8RU', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46'),
@@ -436,6 +444,40 @@ INSERT INTO `membership_codes` (`id`, `code`, `used`, `used_by`, `used_at`, `cre
 (105, 'IFEE9RKO', 0, NULL, NULL, '2025-08-17 23:41:46', '2025-08-17 23:41:46');
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `membership_code_requests`
+--
+
+CREATE TABLE `membership_code_requests` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `member_id` bigint(20) UNSIGNED NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `amount_per_code` decimal(10,2) NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(255) NOT NULL,
+  `proof_path` varchar(255) DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `membership_code_request_codes`
+--
+
+CREATE TABLE `membership_code_request_codes` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `membership_code_request_id` bigint(20) UNSIGNED NOT NULL,
+  `membership_code_id` bigint(20) UNSIGNED NOT NULL,
+  `reserved_at` timestamp NULL DEFAULT NULL,
+  `assigned_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `migrations`
@@ -690,7 +732,8 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `cashback_amount`,
 (56, 'ASCORBIC ACID- SODIUM ASCORBATE', 'SO-CEE ASCORBIC ACID X 30 CAPSULE\r\nEACH CAPSULE CONTAINS ASCORBIC ACID USP 500MG. EQUIVALENT TO SODIUM ASCORBATE 562.43MG\r\nASCORBIC ACID SO-CEE , CONTAINS SODIUM ASCORBATE OR MONOSODIUM L-ASCORBATE PROVIDING ASCORBIC ACID OR VITAMIN C.\r\nTHIS VITAMIN is used for the prevention and treatment of vitamin c deficiency symptoms like scurvy, characterized by capillary fragility bleeding of small blood vessels and gums, normocyticor macrocytic anaemia, lessions of cartilages and bones and slow healing of wounds. It is essential for the synthesis of collagen and intercellular materials.', 250.00, 30.00, 4, '[]', 55.00, 'flat', NULL, 1, 10, NULL, 1, '2025-08-18 06:53:09', '2025-08-18 06:54:32', 'products/thumbnails/bwBdNHjnflOGwfUhdJ1BVhSXrrBJ5aup4VrbU2dv.jpg', '\"[\\\"products\\\\\\/gallery\\\\\\/42vwsbKRQ4l35jZwki7TaYxFBJWuQBz6q8RCHClB.jpg\\\"]\"', 5, 4, NULL),
 (57, 'WHITENING NIACINAMIDE AND VITAMIN E BODY LOTION 200G', '200g Moist Whitening Body lotion with active ingredients of Niacinamide and Vitamin E in Milk and Papaya Extract. \r\n\r\nAvailable: milk and papaya', 130.00, 15.00, 4, '{\"1\":5}', 20.00, 'flat', NULL, 1, 20, NULL, 1, '2025-08-18 16:14:58', '2025-08-18 16:15:43', 'products/thumbnails/WviJXQzgNkeB25FWBMTIErxRbroxC1Xsufoh2VMi.jpg', '\"[\\\"products\\\\\\/gallery\\\\\\/AhX9OvQzYJnyvXhlCsA6ue27aVvvMTiVWlsl88gV.jpg\\\"]\"', 5, 1, NULL),
 (58, 'Bewell-C ASCORBIC ACID. NON-ACIDIC VITAMIN C', '500mg per caps. 30 capsules non-acidic Vitamin C Sodium Ascorbate. It is a gentle, well absorbed formula that supports immunity, reduces stomach irritation, lowers kidney stones risk, and provides added mineral benefits for long term use.\r\nBewell-C is a non-acidic Vitamin C that can be taken on an empty stomach without the risk of hyperacidity. It has a higher rate of absorption so fewr Vitamins are flushed out while most of it stays in the body to boost immune system.\r\n. Strengthens immune system \r\n. Acts as an antioxidant that can protect your body from free radicals which may cause heart disease and cancer.\r\n. Aids in producing collagen which keep your teeth, hair and bones strong and healthy.', 330.00, 30.00, 5, '{\"1\":10}', 35.00, 'flat', NULL, 1, 20, NULL, 1, '2025-08-18 16:51:14', '2025-08-18 16:55:55', 'products/thumbnails/6lomGF2XYEIDQ4gO94twoNvq65aayDX5ZsunfC3Y.jpg', '\"[\\\"products\\\\\\/gallery\\\\\\/EDkLr9R9NWo358LrwvFNwsmlAzpjzIdfI48QmBox.jpg\\\"]\"', 5, 5, NULL),
-(59, 'MEMORY MAXX GINGKO BILOBA', '50 capsules Brain Booster Gingko Biloba.\r\nBoost your memory and sharpens your focus with MEMORY MAXX GINGKO BILOBA, PANAX GINSENG.\r\n\r\nGingko Biloba is know for its ability to enchance blood circulation in the brain. It improves memory, concentration and cognitive function. It helps combat age-related  memory decline and keeps your mind sharp and alert.\r\nPanax GINSENG: This ancient herb is celebrated for its adoptogenic properties, helping your body manage stress while boosting energy levels. It also supports memory recall and cognitive performance.', 290.00, 30.00, 4, '{\"1\":10}', 40.00, 'flat', NULL, 1, 10, NULL, 1, '2025-08-18 19:31:31', '2025-08-18 19:32:15', 'products/thumbnails/TBpACu4Lb0AJWX94UkSu6Yu2kSc0M75mRyvn2FMj.jpg', '\"[\\\"products\\\\\\/gallery\\\\\\/ryPn08WnoKW2pSBxeZdG3j2AViCFjw9taWT5LS7r.jpg\\\"]\"', 5, 5, NULL);
+(59, 'MEMORY MAXX GINGKO BILOBA', '50 capsules Brain Booster Gingko Biloba.\r\nBoost your memory and sharpens your focus with MEMORY MAXX GINGKO BILOBA, PANAX GINSENG.\r\n\r\nGingko Biloba is know for its ability to enchance blood circulation in the brain. It improves memory, concentration and cognitive function. It helps combat age-related  memory decline and keeps your mind sharp and alert.\r\nPanax GINSENG: This ancient herb is celebrated for its adoptogenic properties, helping your body manage stress while boosting energy levels. It also supports memory recall and cognitive performance.', 290.00, 30.00, 4, '{\"1\":10}', 40.00, 'flat', NULL, 1, 10, NULL, 1, '2025-08-18 19:31:31', '2025-08-18 19:32:15', 'products/thumbnails/TBpACu4Lb0AJWX94UkSu6Yu2kSc0M75mRyvn2FMj.jpg', '\"[\\\"products\\\\\\/gallery\\\\\\/ryPn08WnoKW2pSBxeZdG3j2AViCFjw9taWT5LS7r.jpg\\\"]\"', 5, 5, NULL),
+(60, 'Diabeta 17-in-1 Plus Herbal Coffee Mix 10 sachets', 'Diabeta 17-in-1 Plus Herbal Coffee Mix 10 sachets', 400.00, 20.00, 3, '[]', NULL, NULL, NULL, 2, 10, NULL, 1, '2025-08-19 16:53:38', '2025-08-19 16:53:38', 'products/thumbnails/cwIQzi4kpzoXEBcwO2agioJEqQr3cl82c3odBRPm.jpg', '\"[\\\"products\\\\\\/gallery\\\\\\/5OGgYpb1aWhPtrM7FavL9btXc5gY6ycSsckXlnR5.jpg\\\",\\\"products\\\\\\/gallery\\\\\\/ODcx1z8ew7ajS281DlnOxiYJDwdB0IyUvHyhDc9a.jpg\\\",\\\"products\\\\\\/gallery\\\\\\/STpbe6Tt8LPYPSwEi7l49yk70ykRCtuDAlfOEQtH.jpg\\\",\\\"products\\\\\\/gallery\\\\\\/p1hNKqMZJ7XT9V48aJtpZ9ZcS70xu1TLJmAEoL8j.jpg\\\"]\"', 2, 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -924,7 +967,32 @@ INSERT INTO `referral_bonus_logs` (`id`, `member_id`, `referred_member_id`, `lev
 (208, 11, 69, 1, 25.00, 'Direct referral bonus from Roman Franquia', '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
 (209, 7, 69, 2, 10.00, '2nd level referral bonus from Roman Franquia', '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
 (210, 4, 69, 3, 5.00, '3nd level referral bonus from Roman Franquia', '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
-(211, 1, 69, 4, 5.00, '4nd level referral bonus from Roman Franquia', '2025-08-19 02:28:52', '2025-08-19 02:28:52');
+(211, 1, 69, 4, 5.00, '4nd level referral bonus from Roman Franquia', '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
+(212, 12, 70, 1, 25.00, 'Direct referral bonus from Jesus Tayag', '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(213, 7, 70, 2, 10.00, '2nd level referral bonus from Jesus Tayag', '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(214, 4, 70, 3, 5.00, '3nd level referral bonus from Jesus Tayag', '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(215, 1, 70, 4, 5.00, '4nd level referral bonus from Jesus Tayag', '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(216, 12, 71, 1, 25.00, 'Direct referral bonus from Medilyn Corbita', '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(217, 7, 71, 2, 10.00, '2nd level referral bonus from Medilyn Corbita', '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(218, 4, 71, 3, 5.00, '3nd level referral bonus from Medilyn Corbita', '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(219, 1, 71, 4, 5.00, '4nd level referral bonus from Medilyn Corbita', '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(220, 12, 72, 1, 25.00, 'Direct referral bonus from Shiena Bandilla', '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(221, 7, 72, 2, 10.00, '2nd level referral bonus from Shiena Bandilla', '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(222, 4, 72, 3, 5.00, '3nd level referral bonus from Shiena Bandilla', '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(223, 1, 72, 4, 5.00, '4nd level referral bonus from Shiena Bandilla', '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(224, 12, 73, 1, 25.00, 'Direct referral bonus from Roberto Jerusalim', '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(225, 7, 73, 2, 10.00, '2nd level referral bonus from Roberto Jerusalim', '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(226, 4, 73, 3, 5.00, '3nd level referral bonus from Roberto Jerusalim', '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(227, 1, 73, 4, 5.00, '4nd level referral bonus from Roberto Jerusalim', '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(228, 11, 74, 1, 25.00, 'Direct referral bonus from Edna Horados', '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(229, 7, 74, 2, 10.00, '2nd level referral bonus from Edna Horados', '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(230, 4, 74, 3, 5.00, '3nd level referral bonus from Edna Horados', '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(231, 1, 74, 4, 5.00, '4nd level referral bonus from Edna Horados', '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(232, 48, 75, 1, 25.00, 'Direct referral bonus from Megan Condino', '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(233, 11, 75, 2, 10.00, '2nd level referral bonus from Megan Condino', '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(234, 7, 75, 3, 5.00, '3nd level referral bonus from Megan Condino', '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(235, 4, 75, 4, 5.00, '4nd level referral bonus from Megan Condino', '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(236, 1, 75, 5, 3.00, '5nd level referral bonus from Megan Condino', '2025-08-19 21:51:04', '2025-08-19 21:51:04');
 
 -- --------------------------------------------------------
 
@@ -1011,7 +1079,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
-(1, 'shipping_fee', '60', '2025-08-01 15:24:32', '2025-08-15 07:40:33'),
+(1, 'shipping_fee', '45', '2025-08-01 15:24:32', '2025-08-19 05:37:15'),
 (2, 'promo_note', NULL, '2025-08-01 15:24:32', '2025-08-01 15:24:32'),
 (3, 'discount_rate', NULL, '2025-08-01 15:24:32', '2025-08-01 15:24:32'),
 (4, 'wallet_transfer_fee', '10', '2025-08-01 15:24:32', '2025-08-15 07:40:33');
@@ -1219,7 +1287,13 @@ INSERT INTO `users` (`id`, `name`, `mobile_number`, `email`, `role`, `member_id`
 (66, 'William Puno jr', '09306614438', '09306614438@ebili.online', 'Member', 66, NULL, '$2y$10$znW5BgoVxA6YXsp.QwfPK.yTSRZtNPKUblSrPaO0aere.IczrtbDK', NULL, '2025-08-17 23:54:20', '2025-08-17 23:54:20', 'Approved'),
 (67, 'Christopher Combaliceo', '095131229861', '095131229861@ebili.online', 'Member', 67, NULL, '$2y$10$mwZj//RshidnYie0QHn2SOjUyZEqnohEfh6HjcND.8VGwwVJdNDda', NULL, '2025-08-19 02:26:10', '2025-08-19 02:26:10', 'Approved'),
 (68, 'Diana Sanchez', '09454987860', '09454987860@ebili.online', 'Member', 68, NULL, '$2y$10$nE3VKf4QL4jfZVunWBKuL.KDCcjSGDYUzCGC/zWCug9OshPS8E45S', NULL, '2025-08-19 02:27:21', '2025-08-19 02:27:21', 'Approved'),
-(69, 'Roman Franquia', '09308925735', '09308925735@ebili.online', 'Member', 69, NULL, '$2y$10$4YyMTwf1Galnnif0qoYvtu3XpDSA7ciqFyr/tskXwo9uIeyPFw0RG', NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52', 'Approved');
+(69, 'Roman Franquia', '09308925735', '09308925735@ebili.online', 'Member', 69, NULL, '$2y$10$4YyMTwf1Galnnif0qoYvtu3XpDSA7ciqFyr/tskXwo9uIeyPFw0RG', NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52', 'Approved'),
+(70, 'Jesus Tayag', '09352307116', '09352307116@ebili.online', 'Member', 70, NULL, '$2y$10$S2hpAOn6LTr9OFXoY4bLMO1Po0JWMZPaFNFCWNo8jpCLzhGtVLB/m', NULL, '2025-08-19 04:24:14', '2025-08-19 04:24:14', 'Approved'),
+(71, 'Medilyn Corbita', '09559816837', '09559816837@ebili.online', 'Member', 71, NULL, '$2y$10$O8t4QzAe2fNu9Yy4SQ5Vl.hVESisOJj3vR68bmDOc0WPnwOotroFW', NULL, '2025-08-19 04:25:54', '2025-08-19 04:25:54', 'Approved'),
+(72, 'Shiena Bandilla', '09381424767', '09381424767@ebili.online', 'Member', 72, NULL, '$2y$10$Ea.1Z1dadjYJs0GZDBVQH.086V.QtHXerHDS/MTPVmFBxjTtRUNBK', NULL, '2025-08-19 04:29:32', '2025-08-19 04:29:32', 'Approved'),
+(73, 'Roberto Jerusalim', '0926344358', '0926344358@ebili.online', 'Member', 73, NULL, '$2y$10$rhUn6EMPJDZXkGpnhfiaPeX/012b33Z3cOUOs/O0/iHMcUn8oG.ei', NULL, '2025-08-19 04:32:21', '2025-08-19 04:32:21', 'Approved'),
+(74, 'Edna Horados', '09999909152', '09999909152@ebili.online', 'Member', 74, NULL, '$2y$10$iK1LvDOsleR.JDFnLVTreO3t/edvQ/fta.LQ01MAI3Zl372kjCW0C', NULL, '2025-08-19 21:49:06', '2025-08-19 21:49:06', 'Approved'),
+(75, 'Megan Condino', '09635378232', '09635378232@ebili.online', 'Member', 75, NULL, '$2y$10$82gwxkAogs.bmszZpqOk4OU9WYbrynODNDLMVQC5GEsPAxZUanlqu', NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04', 'Approved');
 
 -- --------------------------------------------------------
 
@@ -1265,19 +1339,19 @@ CREATE TABLE `wallets` (
 
 INSERT INTO `wallets` (`id`, `wallet_id`, `type`, `user_id`, `member_id`, `balance`, `created_at`, `updated_at`) VALUES
 (1, 'WALLET-688BF1F8577D7', 'main', NULL, 1, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
-(2, 'WALLET-688BF1F8577DA', 'cashback', NULL, 1, 290.00, '2025-07-31 22:45:12', '2025-08-19 02:28:52'),
+(2, 'WALLET-688BF1F8577DA', 'cashback', NULL, 1, 318.00, '2025-07-31 22:45:12', '2025-08-19 21:51:04'),
 (3, 'WALLET-688BF1F86B92E', 'main', NULL, 2, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (4, 'WALLET-688BF1F86B930', 'cashback', NULL, 2, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (5, 'WALLET-688BF1F86D315', 'main', NULL, 3, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (6, 'WALLET-688BF1F86D319', 'cashback', NULL, 3, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (7, 'WALLET-688BF1F86EF0C', 'main', NULL, 4, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
-(8, 'WALLET-688BF1F86EF15', 'cashback', NULL, 4, 390.00, '2025-07-31 22:45:12', '2025-08-19 02:28:52'),
+(8, 'WALLET-688BF1F86EF15', 'cashback', NULL, 4, 420.00, '2025-07-31 22:45:12', '2025-08-19 21:51:04'),
 (9, 'WALLET-688BF1F8707FB', 'main', NULL, 5, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (10, 'WALLET-688BF1F8707FF', 'cashback', NULL, 5, 25.00, '2025-07-31 22:45:12', '2025-08-12 01:14:55'),
 (11, 'WALLET-688BF1F871EBC', 'main', NULL, 6, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (12, 'WALLET-688BF1F871EBF', 'cashback', NULL, 6, 0.00, '2025-07-31 22:45:12', '2025-07-31 22:45:12'),
 (13, 'WALLET-688BFA99F37D8', 'main', NULL, 7, 9895.00, '2025-07-31 23:22:01', '2025-08-14 02:32:43'),
-(14, 'WALLET-688BFA99F37DC', 'cashback', NULL, 7, 356.00, '2025-07-31 23:22:02', '2025-08-19 02:28:52'),
+(14, 'WALLET-688BFA99F37DC', 'cashback', NULL, 7, 411.00, '2025-07-31 23:22:02', '2025-08-19 21:51:04'),
 (15, 'WALLET-688BFAE026C3E', 'main', NULL, 8, 0.00, '2025-07-31 23:23:12', '2025-07-31 23:23:12'),
 (16, 'WALLET-688BFAE026C43', 'cashback', NULL, 8, 170.00, '2025-07-31 23:23:12', '2025-08-04 04:13:08'),
 (17, 'WALLET-688BFBCA20D19', 'main', NULL, 9, 0.00, '2025-07-31 23:27:06', '2025-07-31 23:27:06'),
@@ -1285,9 +1359,9 @@ INSERT INTO `wallets` (`id`, `wallet_id`, `type`, `user_id`, `member_id`, `balan
 (19, 'WALLET-688C072BE8B9D', 'main', NULL, 10, 0.00, '2025-08-01 15:15:39', '2025-08-01 15:15:39'),
 (20, 'WALLET-688C072BE8BA1', 'cashback', NULL, 10, 115.00, '2025-08-01 15:15:39', '2025-08-15 19:27:19'),
 (21, 'WALLET-688C07C989544', 'main', NULL, 11, 25.00, '2025-08-01 15:18:17', '2025-08-11 17:37:25'),
-(22, 'WALLET-688C07C989547', 'cashback', NULL, 11, 530.00, '2025-08-01 15:18:17', '2025-08-19 02:28:52'),
+(22, 'WALLET-688C07C989547', 'cashback', NULL, 11, 565.00, '2025-08-01 15:18:17', '2025-08-19 21:51:04'),
 (23, 'WALLET-688C08C51657F', 'main', NULL, 12, 75.00, '2025-08-01 15:22:29', '2025-08-13 19:22:42'),
-(24, 'WALLET-688C08C516583', 'cashback', NULL, 12, 228.00, '2025-08-01 15:22:29', '2025-08-17 23:54:20'),
+(24, 'WALLET-688C08C516583', 'cashback', NULL, 12, 328.00, '2025-08-01 15:22:29', '2025-08-19 04:32:21'),
 (25, 'WALLET-688C09F5371D9', 'main', NULL, 13, 0.00, '2025-08-01 15:27:33', '2025-08-01 15:27:33'),
 (26, 'WALLET-688C09F5371EA', 'cashback', NULL, 13, 0.00, '2025-08-01 15:27:33', '2025-08-01 15:27:33'),
 (27, 'WALLET-688C0B92F1162', 'main', NULL, 14, 0.00, '2025-08-01 15:34:26', '2025-08-01 15:34:26'),
@@ -1359,7 +1433,7 @@ INSERT INTO `wallets` (`id`, `wallet_id`, `type`, `user_id`, `member_id`, `balan
 (93, 'WALLET-689C37027FE27', 'main', NULL, 47, 0.00, '2025-08-13 21:56:02', '2025-08-13 21:56:02'),
 (94, 'WALLET-689C37027FE2F', 'cashback', NULL, 47, 0.00, '2025-08-13 21:56:02', '2025-08-13 21:56:02'),
 (95, 'WALLET-689C374CD0B68', 'main', NULL, 48, 0.00, '2025-08-13 21:57:16', '2025-08-13 21:57:16'),
-(96, 'WALLET-689C374CD0B6D', 'cashback', NULL, 48, 0.00, '2025-08-13 21:57:16', '2025-08-13 21:57:16'),
+(96, 'WALLET-689C374CD0B6D', 'cashback', NULL, 48, 25.00, '2025-08-13 21:57:16', '2025-08-19 21:51:04'),
 (97, 'WALLET-689EB6921965D', 'main', NULL, 49, 0.00, '2025-08-15 19:24:50', '2025-08-15 19:24:50'),
 (98, 'WALLET-689EB6921965F', 'cashback', NULL, 49, 0.00, '2025-08-15 19:24:50', '2025-08-15 19:24:50'),
 (99, 'WALLET-689ED82DB4C76', 'main', NULL, 50, 0.00, '2025-08-15 21:48:13', '2025-08-15 21:48:13'),
@@ -1401,7 +1475,19 @@ INSERT INTO `wallets` (`id`, `wallet_id`, `type`, `user_id`, `member_id`, `balan
 (135, 'WALLET-68A30E1916294', 'main', NULL, 68, 0.00, '2025-08-19 02:27:21', '2025-08-19 02:27:21'),
 (136, 'WALLET-68A30E1916298', 'cashback', NULL, 68, 0.00, '2025-08-19 02:27:21', '2025-08-19 02:27:21'),
 (137, 'WALLET-68A30E747D492', 'main', NULL, 69, 0.00, '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
-(138, 'WALLET-68A30E747D498', 'cashback', NULL, 69, 0.00, '2025-08-19 02:28:52', '2025-08-19 02:28:52');
+(138, 'WALLET-68A30E747D498', 'cashback', NULL, 69, 0.00, '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
+(139, 'WALLET-68A3297E14D13', 'main', NULL, 70, 0.00, '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(140, 'WALLET-68A3297E14D15', 'cashback', NULL, 70, 0.00, '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(141, 'WALLET-68A329E2798FF', 'main', NULL, 71, 0.00, '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(142, 'WALLET-68A329E27993D', 'cashback', NULL, 71, 0.00, '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(143, 'WALLET-68A32ABC57D66', 'main', NULL, 72, 0.00, '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(144, 'WALLET-68A32ABC57D6B', 'cashback', NULL, 72, 0.00, '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(145, 'WALLET-68A32B656F6BF', 'main', NULL, 73, 0.00, '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(146, 'WALLET-68A32B656F6C3', 'cashback', NULL, 73, 0.00, '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(147, 'WALLET-68A41E627D1E1', 'main', NULL, 74, 0.00, '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(148, 'WALLET-68A41E627D1E5', 'cashback', NULL, 74, 0.00, '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(149, 'WALLET-68A41ED84BE33', 'main', NULL, 75, 0.00, '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(150, 'WALLET-68A41ED84BE39', 'cashback', NULL, 75, 0.00, '2025-08-19 21:51:04', '2025-08-19 21:51:04');
 
 -- --------------------------------------------------------
 
@@ -1660,7 +1746,32 @@ INSERT INTO `wallet_transactions` (`id`, `wallet_id`, `member_id`, `type`, `amou
 (230, 22, 11, 'credit', 25.00, NULL, 'Direct referral bonus from Roman Franquia', NULL, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
 (231, 14, 7, 'credit', 10.00, NULL, '2nd level referral bonus from Roman Franquia', NULL, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
 (232, 8, 4, 'credit', 5.00, NULL, '3nd level referral bonus from Roman Franquia', NULL, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
-(233, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Roman Franquia', NULL, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52');
+(233, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Roman Franquia', NULL, NULL, '2025-08-19 02:28:52', '2025-08-19 02:28:52'),
+(234, 24, 12, 'credit', 25.00, NULL, 'Direct referral bonus from Jesus Tayag', NULL, NULL, '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(235, 14, 7, 'credit', 10.00, NULL, '2nd level referral bonus from Jesus Tayag', NULL, NULL, '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(236, 8, 4, 'credit', 5.00, NULL, '3nd level referral bonus from Jesus Tayag', NULL, NULL, '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(237, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Jesus Tayag', NULL, NULL, '2025-08-19 04:24:14', '2025-08-19 04:24:14'),
+(238, 24, 12, 'credit', 25.00, NULL, 'Direct referral bonus from Medilyn Corbita', NULL, NULL, '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(239, 14, 7, 'credit', 10.00, NULL, '2nd level referral bonus from Medilyn Corbita', NULL, NULL, '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(240, 8, 4, 'credit', 5.00, NULL, '3nd level referral bonus from Medilyn Corbita', NULL, NULL, '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(241, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Medilyn Corbita', NULL, NULL, '2025-08-19 04:25:54', '2025-08-19 04:25:54'),
+(242, 24, 12, 'credit', 25.00, NULL, 'Direct referral bonus from Shiena Bandilla', NULL, NULL, '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(243, 14, 7, 'credit', 10.00, NULL, '2nd level referral bonus from Shiena Bandilla', NULL, NULL, '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(244, 8, 4, 'credit', 5.00, NULL, '3nd level referral bonus from Shiena Bandilla', NULL, NULL, '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(245, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Shiena Bandilla', NULL, NULL, '2025-08-19 04:29:32', '2025-08-19 04:29:32'),
+(246, 24, 12, 'credit', 25.00, NULL, 'Direct referral bonus from Roberto Jerusalim', NULL, NULL, '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(247, 14, 7, 'credit', 10.00, NULL, '2nd level referral bonus from Roberto Jerusalim', NULL, NULL, '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(248, 8, 4, 'credit', 5.00, NULL, '3nd level referral bonus from Roberto Jerusalim', NULL, NULL, '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(249, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Roberto Jerusalim', NULL, NULL, '2025-08-19 04:32:21', '2025-08-19 04:32:21'),
+(250, 22, 11, 'credit', 25.00, NULL, 'Direct referral bonus from Edna Horados', NULL, NULL, '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(251, 14, 7, 'credit', 10.00, NULL, '2nd level referral bonus from Edna Horados', NULL, NULL, '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(252, 8, 4, 'credit', 5.00, NULL, '3nd level referral bonus from Edna Horados', NULL, NULL, '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(253, 2, 1, 'credit', 5.00, NULL, '4nd level referral bonus from Edna Horados', NULL, NULL, '2025-08-19 21:49:06', '2025-08-19 21:49:06'),
+(254, 96, 48, 'credit', 25.00, NULL, 'Direct referral bonus from Megan Condino', NULL, NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(255, 22, 11, 'credit', 10.00, NULL, '2nd level referral bonus from Megan Condino', NULL, NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(256, 14, 7, 'credit', 5.00, NULL, '3nd level referral bonus from Megan Condino', NULL, NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(257, 8, 4, 'credit', 5.00, NULL, '4nd level referral bonus from Megan Condino', NULL, NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04'),
+(258, 2, 1, 'credit', 3.00, NULL, '5nd level referral bonus from Megan Condino', NULL, NULL, '2025-08-19 21:51:04', '2025-08-19 21:51:04');
 
 --
 -- Indexes for dumped tables
@@ -1963,7 +2074,7 @@ ALTER TABLE `loan_payments`
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `membership_codes`
@@ -1999,13 +2110,13 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `referral_bonus_logs`
 --
 ALTER TABLE `referral_bonus_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=212;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=237;
 
 --
 -- AUTO_INCREMENT for table `referral_configurations`
@@ -2059,7 +2170,7 @@ ALTER TABLE `units`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `voters`
@@ -2071,13 +2182,13 @@ ALTER TABLE `voters`
 -- AUTO_INCREMENT for table `wallets`
 --
 ALTER TABLE `wallets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
 
 --
 -- AUTO_INCREMENT for table `wallet_transactions`
 --
 ALTER TABLE `wallet_transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=234;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=259;
 
 --
 -- Constraints for dumped tables
@@ -2136,6 +2247,22 @@ ALTER TABLE `membership_codes`
   ADD CONSTRAINT `membership_codes_used_by_foreign` FOREIGN KEY (`used_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
+-- Constraints for table `membership_code_requests`
+--
+ALTER TABLE `membership_code_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `membership_code_requests_member_id_foreign` (`member_id`);
+
+--
+-- Constraints for table `membership_code_request_codes`
+--
+ALTER TABLE `membership_code_request_codes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mcr_codes_unique` (`membership_code_request_id`,`membership_code_id`),
+  ADD KEY `membership_code_request_codes_membership_code_request_id_foreign` (`membership_code_request_id`),
+  ADD KEY `membership_code_request_codes_membership_code_id_foreign` (`membership_code_id`);
+
+--
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
@@ -2147,6 +2274,51 @@ ALTER TABLE `orders`
 ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `membership_code_requests`
+--
+ALTER TABLE `membership_code_requests`
+  ADD CONSTRAINT `membership_code_requests_member_id_foreign` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `membership_code_request_codes`
+--
+ALTER TABLE `membership_code_request_codes`
+  ADD CONSTRAINT `membership_code_request_codes_membership_code_request_id_foreign` FOREIGN KEY (`membership_code_request_id`) REFERENCES `membership_code_requests` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `membership_code_request_codes_membership_code_id_foreign` FOREIGN KEY (`membership_code_id`) REFERENCES `membership_codes` (`id`) ON DELETE CASCADE;
+
+--
+-- Dumping data for table `membership_code_requests`
+--
+
+INSERT INTO `membership_code_requests` (`id`, `member_id`, `quantity`, `amount_per_code`, `total_amount`, `payment_method`, `proof_path`, `note`, `status`, `created_at`, `updated_at`) VALUES
+(1, 7, 3, 100.00, 300.00, 'gcash', 'membership_code_requests/proofs/member7_request1.jpg', 'Request for additional membership codes for my team', 'approved', '2025-08-15 10:30:00', '2025-08-15 11:45:00'),
+(2, 11, 2, 100.00, 200.00, 'bank_transfer', 'membership_code_requests/proofs/member11_request1.jpg', 'Need codes for new recruits', 'pending', '2025-08-16 14:20:00', '2025-08-16 14:20:00'),
+(3, 48, 5, 100.00, 500.00, 'cash', NULL, 'Bulk request for upcoming event', 'rejected', '2025-08-17 09:15:00', '2025-08-17 15:30:00');
+
+--
+-- Dumping data for table `membership_code_request_codes`
+--
+
+INSERT INTO `membership_code_request_codes` (`id`, `membership_code_request_id`, `membership_code_id`, `reserved_at`, `assigned_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 37, '2025-08-15 11:45:00', '2025-08-15 11:45:00', '2025-08-15 11:45:00', '2025-08-15 11:45:00'),
+(2, 1, 38, '2025-08-15 11:45:00', '2025-08-15 11:45:00', '2025-08-15 11:45:00', '2025-08-15 11:45:00'),
+(3, 1, 39, '2025-08-15 11:45:00', '2025-08-15 11:45:00', '2025-08-15 11:45:00', '2025-08-15 11:45:00'),
+(4, 3, 42, '2025-08-17 10:00:00', '2025-08-17 15:30:00', '2025-08-17 10:00:00', '2025-08-17 15:30:00'),
+(5, 3, 43, '2025-08-17 10:00:00', '2025-08-17 15:30:00', '2025-08-17 10:00:00', '2025-08-17 15:30:00');
+
+--
+-- AUTO_INCREMENT for table `membership_code_requests`
+--
+ALTER TABLE `membership_code_requests`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `membership_code_request_codes`
+--
+ALTER TABLE `membership_code_request_codes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

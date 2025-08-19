@@ -23,6 +23,7 @@ public function update(Request $request)
         'promo_note' => 'nullable|string|max:255',
         'discount_rate' => 'nullable|numeric|min:0|max:100',
         'wallet_transfer_fee' => 'required|numeric|min:0|max:100',
+        'amount_per_code' => 'required|numeric|min:0',
     ]);
 
     foreach ($validated as $key => $value) {

@@ -24,7 +24,7 @@ class MembershipCodeRequestController extends Controller
     {
         $member = auth()->user()->member;
         $wallet = $member->wallet;
-        $amountPerCode = 100; // Fixed price per code
+        $amountPerCode = \App\Models\Setting::get('amount_per_code', 100); // Get from settings or default to 100
 
         // Get member's code requests with reserved codes
         $membershipCodeRequests = MembershipCodeRequest::where('member_id', $member->id)
@@ -54,7 +54,7 @@ class MembershipCodeRequestController extends Controller
             'note' => 'nullable|string|max:500'
         ]);
 
-        $amountPerCode = 100; // Fixed price per code
+        $amountPerCode = \App\Models\Setting::get('amount_per_code', 100); // Get from settings or default to 100
         $totalAmount = $request->quantity * $amountPerCode;
 
         // Handle proof upload
