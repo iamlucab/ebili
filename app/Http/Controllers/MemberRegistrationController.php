@@ -136,4 +136,24 @@ public function checkMobile(Request $request)
 }
 
 
+/**
+ * Show the member registration form with referral information
+ *
+ * @param  int  $memberId
+ * @return \Illuminate\View\View
+ */
+public function referral($memberId)
+{
+    // Find the sponsor member
+    $sponsor = Member::find($memberId);
+
+    // If sponsor doesn't exist or is not approved, show 404
+    if (!$sponsor || $sponsor->status !== 'Approved') {
+        abort(404);
+    }
+
+    // Return the registration view with sponsor pre-filled
+    return view('members.register-referral', compact('sponsor'));
+}
+
 }

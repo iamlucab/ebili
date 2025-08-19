@@ -53,6 +53,9 @@ use App\Http\Controllers\Admin\AdminWalletController;
             return view('welcome', compact('featuredProducts'));
         });
 
+        // ✅ Referral Link Route
+        Route::get('/join/{memberId}', [MemberRegistrationController::class, 'referral'])->name('member.referral');
+
              // ✅ Authentication Routes
         Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [LoginController::class, 'login']);
