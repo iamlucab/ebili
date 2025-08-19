@@ -8,7 +8,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*.*.*' # semantic version tags like v1.0.0
+      - 'v*.*.*'
 
 jobs:
   ftp-deploy:
@@ -33,11 +33,10 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          local-dir: ./
-          server-dir: /
+          local-dir: ./                # root of your project
+          server-dir: /                # destination on server
           exclude: |
             **/node_modules/**
-            **/resources/**
             **/tests/**
             **/.git/**
             **/.github/**
@@ -50,7 +49,11 @@ jobs:
             deploy.php
             public/build
             public/hot
-            public/storage
             storage/*.key
             vendor/**
-          security: loose
+            public/storage/uploads/**   # 🔹 exclude user uploads
+            include: |
+            resources/views/**/*.blade.php
+            public/storage/uploads/**   # 🔹 include only new/changed uploads if needed
+            force: true
+            security: loose
