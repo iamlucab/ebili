@@ -84,8 +84,7 @@ class ReferralController extends Controller
                 ]);
             })
             ->latest()
-            ->take(10)
-            ->get();
+            ->paginate(10);
 
         return view('members.referral-summary', compact(
             'member',

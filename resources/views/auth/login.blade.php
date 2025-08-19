@@ -299,7 +299,7 @@
             margin: 10px;
             padding: 25px;
         }
-        
+
         .social-icon {
             width: 40px;
             height: 40px;
@@ -361,7 +361,7 @@
             <div class="social-login-title">
                 <span>or continue with</span>
             </div>
-            
+
             <div class="social-icons">
                 <a href="{{ route('social.redirect', 'google') }}" class="social-icon google" title="Login with Google">
                     <i class="fab fa-google"></i>
@@ -377,10 +377,10 @@
             <a href="{{ route('password.request') }}" class="alt-login-btn">
                 <i class="fas fa-key"></i> Forgot Password
             </a>
-            <a href="#" class="alt-login-btn" onclick="showOtpModal()">
+            {{-- <a href="#" class="alt-login-btn" onclick="showOtpModal()">
                 <i class="fas fa-sms"></i> Login with OTP
-            </a>
-            
+            </a> --}}
+
                <a href="{{ route('guest.register') }}" class="alt-login-btn">
                 <i class="fas fa-user"></i> Create Account
             </a>
@@ -395,11 +395,11 @@
 <!-- OTP Modal -->
 <div id="otpModal" class="otp-modal">
     <div class="otp-modal-content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        {{-- <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="mb-0">Login with OTP</h6>
             <button type="button" class="btn-close" onclick="hideOtpModal()"></button>
-        </div>
-        
+        </div> --}}
+
         <div id="mobile-step">
             <div class="mb-3">
                 <input type="tel" id="otp_mobile_number" class="form-control"
@@ -411,7 +411,7 @@
                 <i class="fas fa-paper-plane me-1"></i> Send OTP
             </button>
         </div>
-        
+
         <div id="otp-step" class="d-none">
             <div class="mb-3">
                 <input type="text" id="otp_code" class="form-control otp-input"
@@ -440,7 +440,7 @@
     function togglePassword(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
-        
+
         if (input.type === 'password') {
             input.type = 'text';
             icon.classList.remove('bi-eye-slash');
@@ -487,7 +487,7 @@
         const mobileInput = document.getElementById('otp_mobile_number');
         const otpInput = document.getElementById('otp_code');
         const countdownEl = document.getElementById('countdown');
-        
+
         let countdownTimer;
         let countdownSeconds = 300; // 5 minutes
 
@@ -516,7 +516,7 @@
         // Send OTP
         sendOtpBtn.addEventListener('click', function() {
             const mobileNumber = mobileInput.value;
-            
+
             if (!mobileNumber || mobileNumber.length !== 11) {
                 showAlert('Please enter a valid 11-digit mobile number', 'danger');
                 return;
@@ -554,7 +554,7 @@
         verifyOtpBtn.addEventListener('click', function() {
             const mobileNumber = mobileInput.value;
             const otp = otpInput.value;
-            
+
             if (!otp || otp.length !== 6) {
                 showAlert('Please enter a valid 6-digit OTP', 'danger');
                 return;
@@ -568,9 +568,9 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     mobile_number: mobileNumber,
-                    otp: otp 
+                    otp: otp
                 })
             })
             .then(response => response.json())
@@ -619,14 +619,14 @@
         function startCountdown() {
             countdownSeconds = 300;
             resendOtpBtn.classList.add('d-none');
-            
+
             countdownTimer = setInterval(() => {
                 const minutes = Math.floor(countdownSeconds / 60);
                 const seconds = countdownSeconds % 60;
                 countdownEl.textContent = `Resend available in ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                
+
                 countdownSeconds--;
-                
+
                 if (countdownSeconds < 0) {
                     clearInterval(countdownTimer);
                     countdownEl.textContent = '';
@@ -659,7 +659,7 @@
             // Remove existing alerts
             const existingAlerts = document.querySelectorAll('.alert');
             existingAlerts.forEach(alert => alert.remove());
-            
+
             // Create new alert
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
@@ -667,7 +667,7 @@
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
-            
+
             // Insert alert at the top of the login card
             const loginCard = document.querySelector('.login-card');
             const logoDiv = document.querySelector('.login-logo');

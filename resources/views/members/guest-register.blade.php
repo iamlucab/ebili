@@ -48,7 +48,7 @@
             background-color: #63189e !important;
             border-color: #63189e !important;
         }
-        
+
         .btn-primary:hover {
             background-color: #531185 !important;
             border-color: #531185 !important;
@@ -110,7 +110,7 @@
         body.dark-mode footer {
             color: #aaa;
         }
-        
+
         /* Mobile Footer */
         .mobile-footer {
             position: fixed;
@@ -123,12 +123,12 @@
             z-index: 1000;
             transition: background-color 0.3s ease;
         }
-        
+
         body.dark-mode .mobile-footer {
             background-color: #1e1e1e;
             border-top: 1px solid #333;
         }
-        
+
         .mobile-footer .nav-link {
             display: flex;
             flex-direction: column;
@@ -137,24 +137,24 @@
             color: #666;
             transition: color 0.3s ease;
         }
-        
+
         body.dark-mode .mobile-footer .nav-link {
             color: #aaa;
         }
-        
+
         .mobile-footer .nav-link.active {
             color: #63189e;
         }
-        
+
         body.dark-mode .mobile-footer .nav-link.active {
             color: #a35edb;
         }
-        
+
         .mobile-footer .nav-link i {
             font-size: 1.2rem;
             margin-bottom: 2px;
         }
-        
+
         /* Add padding to bottom to account for fixed footer */
         body {
             padding-bottom: 60px;
@@ -248,6 +248,38 @@
             @error('photo') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
+        {{-- Payment Options --}}
+        <div class="mb-3">
+            <label class="form-label">Membership Payment</label>
+            <select name="payment_option" id="paymentOption" class="form-control" required>
+                <option value="">Select Payment Option</option>
+                <option value="pay_now">Pay Now (GCash)</option>
+                <option value="pay_later">Pay Later</option>
+            </select>
+            @error('payment_option') <small class="text-danger">{{ $message }}</small> @enderror
+        </div>
+
+        <!-- Payment Proof Section (Hidden by default) -->
+        <div id="paymentProofSection" class="mb-3 d-none">
+            <label class="form-label">Payment Method</label>
+            <select name="payment_method" id="paymentMethod" class="form-control mb-2">
+                <option value="gcash_qr">Scan QR to Pay</option>
+            </select>
+
+            <div id="qrCodeSection" class="mb-3 d-none">
+                <label class="form-label">GCash QR Code</label>
+                <div class="text-center">
+                    <img src="{{ asset('images/gcashQR.jpeg') }}" alt="GCash QR Code" class="img-fluid" style="max-width: 200px;">
+                    <p class="mt-2">Scan this QR code to make payment</p>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label for="payment_proof" class="form-label">Upload Payment Proof</label>
+                <input type="file" name="payment_proof" id="payment_proof" class="form-control" accept="image/*">
+            </div>
+        </div>
+
         {{-- Terms --}}
         <div class="form-check mb-3 small">
             <input class="form-check-input" type="checkbox" id="agreeTerms">
@@ -259,7 +291,7 @@
         <button type="submit" class="btn btn-primary w-100" id="submitBtn" disabled>Register</button>
     </form>
     <div class="text-center mt-3">
-        <a href="{{ route('login') }}" class="text-decoration-none"><small>Already have an account? Login</a></small>  
+        <a href="{{ route('login') }}" class="text-decoration-none"><small>Already have an account? Login</a></small>
 
     <div class="card-disclaimer mt-4">
         Thank you for your interest in E-Bili Online.<br>
@@ -348,6 +380,34 @@
             toast.show();
             setTimeout(() => window.location.href = "{{ url('/') }}", 4000);
         @endif
+
+        // Payment option change handler
+        const paymentOption = document.getElementById('paymentOption');
+        const paymentProofSection = document.getElementById('paymentProofSection');
+        const paymentMethod = document.getElementById('paymentMethod');
+        const qrCodeSection = document.getElementById('qrCodeSection');
+
+        if (paymentOption) {
+            paymentOption.addEventListener('change', function() {
+                if (this.value === 'pay_now') {
+                    paymentProofSection.classList.remove('d-none');
+                    qrCodeSection.classList.remove('d-none');
+                } else {
+                    paymentProofSection.classList.add('d-none');
+                    qrCodeSection.classList.add('d-none');
+                }
+            });
+        }
+
+        if (paymentMethod) {
+            paymentMethod.addEventListener('change', function() {
+                if (this.value === 'gcash_qr') {
+                    qrCodeSection.classList.remove('d-none');
+                } else {
+                    qrCodeSection.classList.add('d-none');
+                }
+            });
+        }
     });
 </script>
 

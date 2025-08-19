@@ -9,11 +9,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="card rounded-3 shadow-sm">
-<<<<<<< HEAD
         <div class="card-header">
-=======
-        <div class="card-header  text-white">
->>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
             <h6 class="mb-0 text-white>Wallet Transaction History</h6>
         </div>
 
@@ -107,7 +103,7 @@
 
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    
+
     {{-- Toastr Success/Error Messages --}}
     @if(session('success'))
         <script>
@@ -134,9 +130,4 @@
     @endif
 @endsection
 
-<<<<<<< HEAD
-<!--@include('partials.reusable-mobile-footer')-->
 @include('partials.mobile-footer')
-=======
-{{-- @include('partials.mobile-footer') --}}
->>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
