@@ -15,7 +15,10 @@
 
 @section('css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<<<<<<< HEAD
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+=======
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
 <style>
     .level-card {
         transition: all 0.3s ease;
@@ -36,18 +39,30 @@
     .level-9 { border-left-color: #6c757d; }
     .level-10 { border-left-color: #343a40; }
     .level-11 { border-left-color: #007bff; }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
     .stats-card {
         background: linear-gradient(135deg, #6f42c1 0%, #8e44ad 100%);
         color: white;
         border: none;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
     .filter-card {
         background: #f8f9fa;
         border: 1px solid #dee2e6;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
     .member-item {
         transition: all 0.2s ease;
     }
@@ -55,7 +70,11 @@
         background-color: #f8f9fa;
         border-radius: 8px;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
     .collapse-toggle {
         cursor: pointer;
         transition: transform 0.2s ease;
@@ -63,6 +82,7 @@
     .collapse-toggle.collapsed {
         transform: rotate(-90deg);
     }
+<<<<<<< HEAD
 
     /* Pagination improvements to prevent overlapping */
     .pagination-wrapper {
@@ -135,6 +155,8 @@
         max-width: 100%;
         overflow: hidden;
     }
+=======
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
 </style>
 @endsection
 
@@ -228,6 +250,7 @@
                                 <div class="fw-bold text-success">₱{{ number_format($levelData['bonus_earned'], 2) }}</div>
                             </div>
                         </div>
+<<<<<<< HEAD
 
                         @if($levelData['count'] > 0)
                             <!--<button class="btn btn-outline-primary btn-sm w-100" -->
@@ -239,6 +262,19 @@
                             <!--    View Members-->
                             <!--</button>-->
 
+=======
+                        
+                        @if($levelData['count'] > 0)
+                            {{-- <button class="btn btn-outline-primary btn-sm w-100" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#level{{ $levelData['level'] }}Details" 
+                                    aria-expanded="false">
+                                <i class="bi bi-chevron-down collapse-toggle me-1"></i>
+                                View Members
+                            </button> --}}
+                            
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
                             <div class="collapse mt-3" id="level{{ $levelData['level'] }}Details">
                                 <div class="border-top pt-3">
                                     @foreach($levelData['referrals'] as $referral)
@@ -292,7 +328,11 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
+<<<<<<< HEAD
                     <table class="table table-sm" id="bonusActivityTable">
+=======
+                    <table class="table table-sm">
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -319,20 +359,26 @@
                     </table>
                 </div>
             </div>
+<<<<<<< HEAD
 </div>
                 <div class="ebili-pagination mt-3">
                     <div class="pagination-controls">
                         {{ $recentBonusLogs->onEachSide(1)->links('vendor.pagination.ebili-pagination') }}
                     </div>
                 </div>
+=======
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
         </div>
     @endif
 
 </div>
 @stop
 
+<<<<<<< HEAD
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+=======
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
@@ -346,7 +392,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
     // Auto-submit form when date changes
     document.querySelectorAll('input[type="date"], select[name="level"]').forEach(function(element) {
         element.addEventListener('change', function() {
@@ -364,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
 @if(session('error'))
     toastr.error("{{ session('error') }}");
 @endif
+<<<<<<< HEAD
 
     // Initialize DataTables for bonus activity table (with server-side pagination)
     $('#bonusActivityTable').DataTable({
@@ -376,8 +427,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+=======
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
 </script>
 @endsection
 
 {{-- Mobile Footer --}}
+<<<<<<< HEAD
 @include('partials.mobile-footer')
+=======
+@include('partials.mobile-footer')
+>>>>>>> 88683a79a8561339598c5a454c661ead1363a03e
