@@ -51,9 +51,11 @@ jobs:
             public/hot
             storage/*.key
             vendor/**
-            public/storage/uploads/**   # 🔹 exclude user uploads
-            include: |
-            resources/views/**/*.blade.php
-            public/storage/uploads/**   # 🔹 include only new/changed uploads if needed
-            force: true
+            public/storage/uploads/**   # exclude user uploads
+            **/resources/lang/**
+            **/resources/js/**
+            **/resources/sass/**
+             include: |
+            resources/views/**/*.blade.php   # always deploy Blade templates
+            force: true                        # overwrite even if "same"
             security: loose
