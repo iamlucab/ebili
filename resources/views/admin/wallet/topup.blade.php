@@ -3,11 +3,7 @@
 @section('title', 'Wallet Top-up / Refund')
 
 @section('content')
-<div class="container-fluid px-2">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8">
-
-            {{-- Header --}}
+<div class="container-fluid px-2"><br>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0"><i class="bi bi-wallet2 text-primary"></i> Wallet Top-up / Refund</h4>
             </div>
@@ -43,11 +39,12 @@
 
             {{-- Show form only if member is loaded --}}
             @if(isset($member) && $member)
-            <div class="card shadow-sm rounded-3 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <strong>Top-up / Refund for {{ $member->full_name }}</strong>
+            <div class="card shadow-sm rounded-3 mb-4 text-white ">
+                <div class="card-header bg-primary">
+                    <strong class="text-white">Top-up / Refund</strong>
                 </div>
                 <div class="card-body">
+                     <p class="text-purple"> Member Name:<strong> {{ $member->full_name }} </strong>
                     <form method="POST" action="{{ route('admin.wallet.topup.store') }}" onsubmit="return confirm('Confirm this wallet transaction?');">
                         @csrf
                         <input type="hidden" name="mobile_number" value="{{ $member->mobile_number }}">

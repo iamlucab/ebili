@@ -184,89 +184,73 @@ class Member extends Model
                     ],
                 ]);
 
-                // Apply referral bonuses (cashback wallet)
-                if ($member->sponsor) {
-                    // Get active configuration
-                    $config = ReferralConfiguration::getActive();
-                    if (!$config) {
-                        // Fallback to default values if no configuration exists
-                        $member->sponsor->cashbackWallet?->credit(
-                            env('LEVEL_1_BONUS', 25),
-                            "Direct referral bonus from {$member->full_name}"
-                        );
-                        
-                        ReferralBonusLog::create([
-                            'member_id' => $member->sponsor->id,
-                            'referred_member_id' => $member->id,
-                            'level' => 1,
-                            'amount' => env('LEVEL_1_BONUS', 25),
-                            'description' => "Direct referral bonus from {$member->full_name}"
-                        ]);
-
-                        $level2 = $member->sponsor->sponsor;
-                        if ($level2) {
-                            $level2->cashbackWallet?->credit(
-                                env('LEVEL_2_BONUS', 15),
-                                "2nd level referral bonus from {$member->full_name}"
-                            );
-                            
-                            ReferralBonusLog::create([
-                                'member_id' => $level2->id,
-                                'referred_member_id' => $member->id,
-                                'level' => 2,
-                                'amount' => env('LEVEL_2_BONUS', 15),
-                                'description' => "2nd level referral bonus from {$member->full_name}"
-                            ]);
-
-                            $level3 = $level2->sponsor;
-                            if ($level3) {
-                                $level3->cashbackWallet?->credit(
-                                    env('LEVEL_3_BONUS', 10),
-                                    "3rd level referral bonus from {$member->full_name}"
-                                );
-                                
-                                ReferralBonusLog::create([
-                                    'member_id' => $level3->id,
-                                    'referred_member_id' => $member->id,
-                                    'level' => 3,
-                                    'amount' => env('LEVEL_3_BONUS', 10),
-                                    'description' => "3rd level referral bonus from {$member->full_name}"
-                                ]);
-                            }
-                        }
-                    } else {
-                        // Use dynamic configuration
-                        $sponsor = $member->sponsor;
-                        $level = 1;
-                        
-                        // Calculate all bonus amounts once
-                        $bonuses = $config->getAllBonuses();
-                        
-                        while ($sponsor && $level <= $config->max_level) {
-                            $bonusAmount = $bonuses[$level] ?? 0;
-                            
-                            if ($bonusAmount > 0 && $sponsor->cashbackWallet) {
-                                $levelText = $level == 1 ? "Direct" : "{$level}nd level";
-                                $sponsor->cashbackWallet->credit(
-                                    $bonusAmount,
-                                    "{$levelText} referral bonus from {$member->full_name}"
-                                );
-                                
-                                ReferralBonusLog::create([
-                                    'member_id' => $sponsor->id,
-                                    'referred_member_id' => $member->id,
-                                    'level' => $level,
-                                    'amount' => $bonusAmount,
-                                    'description' => "{$levelText} referral bonus from {$member->full_name}"
-                                ]);
-                            }
-                            
-                            $sponsor = $sponsor->sponsor;
-                            $level++;
-                        }
-                    }
-                }
+                // Note: Referral bonuses are now only applied when member status changes to 'Approved'
+                // This is handled in MemberApprovalController and MembersController
             });
         });
+    }
+
+    // ─── Referral Methods ─────────────────────────────────────────────
+
+    /**
+     * Get all direct referrals (1st level)
+     */
+    public function getDirectReferrals()
+    {
+        return $this->sponsoredMembers()->where('status', 'Approved');
+    }
+
+    /**
+     * Get referrals by specific level
+     */
+    public function getReferralsByLevel($level)
+    {
+        if ($level == 1) {
+            return $this->getDirectReferrals();
+        }
+
+        $currentLevel = collect([$this]);
+        
+        for ($i = 1; $i < $level; $i++) {
+            $nextLevel = collect();
+            foreach ($currentLevel as $member) {
+                $nextLevel = $nextLevel->merge($member->sponsoredMembers()->where('status', 'Approved')->get());
+            }
+            $currentLevel = $nextLevel;
+        }
+        
+        return $currentLevel;
+    }
+
+    /**
+     * Get count of referrals by level
+     */
+    public function getReferralCountByLevel($level)
+    {
+        return $this->getReferralsByLevel($level)->count();
+    }
+
+    /**
+     * Get all referrals up to specified level with counts
+     */
+    public function getAllReferralCounts($maxLevel = 11)
+    {
+        $counts = [];
+        for ($level = 1; $level <= $maxLevel; $level++) {
+            $counts[$level] = $this->getReferralCountByLevel($level);
+            // Stop if no referrals at this level
+            if ($counts[$level] == 0) {
+                break;
+            }
+        }
+        return $counts;
+    }
+
+    /**
+     * Get total referral count across all levels
+     */
+    public function getTotalReferralCount($maxLevel = 11)
+    {
+        return array_sum($this->getAllReferralCounts($maxLevel));
     }
 }

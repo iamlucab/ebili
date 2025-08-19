@@ -170,20 +170,20 @@
     }
 
     .social-icon.google {
-        background-color: #db4437;
+        background-color: #f6ce04;
     }
 
     .social-icon.google:hover {
-        background-color: #c23321;
+        background-color: #109817;
         color: white;
     }
 
     .social-icon.facebook {
-        background-color: #3b5998;
+        background-color: #0c81d5;
     }
 
     .social-icon.facebook:hover {
-        background-color: #2d4373;
+        background-color: #103689;
         color: white;
     }
 
@@ -321,16 +321,17 @@
         </div>
 
         @if(session('error'))
-            <div class="alert alert-danger alert-sm">{{ session('error') }}</div>
+            <div class="alert alert-danger alert-sm alert-tiny">{{ session('error') }}</div>
         @endif
         @if(session('success'))
-            <div class="alert alert-success alert-sm">{{ session('success') }}</div>
+            <div class="alert alert-success alert-sm alert-tiny">{{ session('success') }}</div>
         @endif
         @if(session('status'))
-            <div class="alert alert-info alert-sm">{{ session('status') }}</div>
+            <div class="alert alert-info alert-sm alert-tiny">{{ session('status') }}</div>
         @endif
         @if ($errors->any())
-            <div class="alert alert-danger alert-sm">{{ $errors->first() }}</div>
+            <div class="alert alert-danger alert-sm alert-tiny ">{{ $errors->first() }}</div>
+            <div class="alert alert-danger alert-sm alert-tiny ">{{ $errors->first() }}</div>
         @endif
 
         <!-- Main Login Form -->
@@ -379,11 +380,15 @@
             <a href="#" class="alt-login-btn" onclick="showOtpModal()">
                 <i class="fas fa-sms"></i> Login with OTP
             </a>
+            
+               <a href="{{ route('guest.register') }}" class="alt-login-btn">
+                <i class="fas fa-user"></i> Create Account
+            </a>
         </div>
 
-        <div class="small-links">
+        {{-- <div class="small-links">
             <a href="{{ route('guest.register') }}">Create Account</a>
-        </div>
+        </div> --}}
     </div>
 </div>
 
@@ -428,7 +433,7 @@
 </div>
 
 <hr>
-<p class="small text-muted text-center mb-3">Shop to Save, Share to Earn! &copy; 2025</p>
+<p class="small text-muted text-center mb-3">Buy to Save, Share to Earn! &copy; 2025</p>
 
 <script>
     // Password toggle functionality

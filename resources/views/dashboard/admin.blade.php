@@ -14,7 +14,7 @@
         <img src="{{ asset('storage/icons/ebili-logo.png') }}" alt="eBILI Logo" style="width: 80px; height: 80px; object-fit: contain;">
     </div>
     
-    <h2 class="fw-bold mb-2" style="color: var(--primary-purple);">Admin Dashboard</h2>
+    <h4 class="fw-bold mb-2" style="color: var(--primary-purple);">Admin Dashboard</h4>
     <p class="slogan mb-0" style="font-size: 0.9rem;">Manage Your E-Bili Community</p>
 </div>
 @stop

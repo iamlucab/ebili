@@ -29,7 +29,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Admin\ReferralBonusController;
 use App\Http\Controllers\MemberProductController;
-use App\Http\Controllers\OrderController;    
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderReportController;
@@ -40,11 +40,16 @@ use App\Http\Controllers\Admin\AdminWalletController;
 
         // ✅ Welcome Page
         Route::get('/', function () {
-            $featuredProducts = \App\Models\Product::where('active', 1)
-                ->with('category')
-                ->inRandomOrder()
-                ->take(8)
-                ->get();
+            try {
+                $featuredProducts = \App\Models\Product::where('active', 1)
+                    ->with('category')
+                    ->inRandomOrder()
+                    ->take(8)
+                    ->get();
+            } catch (\Exception $e) {
+                // Fallback if products table doesn't exist or has issues
+                $featuredProducts = collect();
+            }
             return view('welcome', compact('featuredProducts'));
         });
 
@@ -71,7 +76,7 @@ use App\Http\Controllers\Admin\AdminWalletController;
             Route::delete('/tokens/{tokenId}', [\App\Http\Controllers\PushNotificationController::class, 'removeToken'])->name('tokens.remove');
         });
 
-       
+
 
     // 🛒 Cart & Order Routes (Member Only)
 Route::middleware(['auth', 'can:member-only'])->group(function () {
@@ -90,7 +95,7 @@ Route::patch('/shop/cart/{id}/update', [ShopController::class, 'updateQuantity']
     // Checkout
 Route::get('/shop/checkout', [ShopController::class, 'checkoutPage'])->name('shop.checkout.page');
 Route::post('/shop/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
-   
+
 Route::get('/shop/checkout', [ShopController::class, 'checkoutPage'])->name('shop.checkout.page');
 
 
@@ -102,7 +107,7 @@ Route::get('/shop/checkout', [ShopController::class, 'checkoutPage'])->name('sho
         Route::get('/register-member', [MemberRegistrationController::class, 'create'])->name('member.register');
         Route::post('/register-member', [MemberRegistrationController::class, 'store'])->name('member.store');
 
-   
+
         // Password Reset Flow
         Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
         Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
@@ -154,7 +159,7 @@ Route::get('/shop/checkout', [ShopController::class, 'checkoutPage'])->name('sho
                 return redirect()->route('home');
             });
 
- 
+
 Route::get('storage/photos/{filename}', function ($filename) {
     $path = storage_path('photos/' . $filename);
 
@@ -209,13 +214,13 @@ Route::get('/check-mobile', [MemberRegistrationController::class, 'checkMobile']
 
 
             // Route::resource('admin/loans', \App\Http\Controllers\LoanController::class);
- 
+
         // ✅ Wallet Management
         Route::middleware('auth')->group(function () {
             Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
             Route::post('/wallet/transfer', [WalletController::class, 'transfer'])->name('wallet.transfer');
             Route::post('/wallet/cashin', [WalletController::class, 'cashin'])->name('wallet.cashin');
-            
+
             // Payment Request QR Code Routes
             Route::get('/payment-request/{walletId}', [WalletController::class, 'showPaymentRequest'])->name('payment.request');
             Route::post('/payment-request/{walletId}/send', [WalletController::class, 'processPaymentRequest'])->name('payment.request.send');
@@ -237,7 +242,7 @@ Route::get('/wallet/cashback-history', [WalletController::class, 'cashbackHistor
 
 
 
-// Admin Wallet Top-Up 
+// Admin Wallet Top-Up
 Route::post('/admin/wallet/topup', [WalletController::class, 'adminTopUp'])->name('admin.wallet.topup');
 
 Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function () {
@@ -245,7 +250,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
     Route::post('/wallet/topup', [AdminWalletController::class, 'processTopup'])->name('admin.wallet.topup.store');
 });
 
-    
+
 
 
 
@@ -288,7 +293,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
             // 🔹 Loan Payments: Pay Now (Multiple Payment Methods)
             Route::post('/loan-payments/{id}/pay-now', [LoanPaymentController::class, 'payNow'])
                 ->name('loan-payments.pay-now');
-                
+
             // 🔹 Loan Payments: Show Payment Modal
             Route::get('/loan-payments/{id}/payment-modal', [LoanPaymentController::class, 'showPaymentModal'])
                 ->name('loan-payments.payment-modal');
@@ -309,7 +314,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
             Route::post('/cashin-approvals/{id}/approve', [CashInApprovalController::class, 'approve'])->name('admin.cashin.approve');
             Route::post('/cashin-approvals/{id}/reject', [CashInApprovalController::class, 'reject'])->name('admin.cashin.reject');
             Route::post('/cashin-approvals/{id}/reviewed', [CashInApprovalController::class, 'markAsReviewed'])->name('admin.cashin.reviewed');
-            
+
         });
 
 
@@ -330,7 +335,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
             Route::get('/loans/{loan}', [LoanManagementController::class, 'show'])->name('loans.show');
             Route::post('/loans/{loan}/approve', [LoanManagementController::class, 'approve'])->name('loans.approve');
             Route::post('/loans/{loan}/reject', [LoanManagementController::class, 'reject'])->name('loans.reject');
-            
+
             // Payment Management
             Route::post('/payment/{id}/verify', [LoanPaymentController::class, 'verifyPayment'])->name('payment.verify');
             Route::post('/payment/store', [LoanPaymentController::class, 'storeManual'])->name('payment.store');
@@ -413,7 +418,7 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
     Route::get('members/pending', [MemberApprovalController::class, 'index'])->name('members.pending');
     Route::post('members/approve/{id}', [MemberApprovalController::class, 'approve'])->name('members.approve');
     Route::post('members/reject/{id}', [MemberApprovalController::class, 'reject'])->name('members.reject');
-    
+
     // Push Notification Admin Routes (Legacy - keeping for API compatibility)
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::post('/send-to-user', [\App\Http\Controllers\PushNotificationController::class, 'sendToUser'])->name('send.user');
@@ -428,17 +433,17 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
         Route::get('/sms', [\App\Http\Controllers\Admin\NotificationController::class, 'smsBlasting'])->name('sms');
         Route::get('/sms-history', [\App\Http\Controllers\Admin\NotificationController::class, 'smsHistory'])->name('sms.history');
         Route::get('/device-tokens', [\App\Http\Controllers\Admin\NotificationController::class, 'deviceTokens'])->name('devices');
-        
+
         // POST routes for sending notifications
         Route::post('/send-push', [\App\Http\Controllers\Admin\NotificationController::class, 'sendPushNotification'])->name('send.push');
         Route::post('/send-sms', [\App\Http\Controllers\Admin\NotificationController::class, 'sendSmsBlast'])->name('send.sms');
-        
+
         // AJAX routes
         Route::post('/test-push', [\App\Http\Controllers\Admin\NotificationController::class, 'testPushNotification'])->name('test.push');
         Route::post('/test-sms', [\App\Http\Controllers\Admin\NotificationController::class, 'testSms'])->name('test.sms');
         Route::get('/sms-balance', [\App\Http\Controllers\Admin\NotificationController::class, 'getSmsBalance'])->name('sms.balance');
         Route::post('/cleanup-tokens', [\App\Http\Controllers\Admin\NotificationController::class, 'cleanupTokens'])->name('cleanup.tokens');
-        
+
         // SMS Log Management
         Route::post('/sms/{id}/retry', [\App\Http\Controllers\Admin\NotificationController::class, 'retrySms'])->name('sms.retry');
         Route::delete('/sms/{id}', [\App\Http\Controllers\Admin\NotificationController::class, 'deleteSmsLog'])->name('sms.delete');
@@ -449,21 +454,43 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
 
 
 
-// ✅ Guest Registration (Public)
-Route::get('/join', [GuestRegistrationController::class, 'create'])->name('guest.register');
-Route::post('/join', [GuestRegistrationController::class, 'store'])->name('guest.register.store');
+// ✅ 3-Tier Registration System (Public)
+Route::get('/register', [GuestRegistrationController::class, 'create'])->name('guest.register');
+Route::post('/register', [GuestRegistrationController::class, 'store'])->name('guest.register.store');
 
-// ✅ Referral Registration (Public)
-Route::get('/join/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('guest.register.referral');
-Route::post('/join/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('guest.register.referral.store');
+// ✅ Admin Registration (Public)
+Route::get('/register/admin', [GuestRegistrationController::class, 'createAdmin'])->name('admin.register');
+Route::post('/register/admin', [GuestRegistrationController::class, 'storeAdmin'])->name('admin.register.store');
 
-// ✅ Fallback Route
+// ✅ Member Referral Registration (Public)
+Route::get('/register/ref/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('member.register.referral');
+Route::post('/register/ref/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('member.register.referral.store');
+
+// ✅ Legacy Routes (for backward compatibility)
+Route::get('/join', [GuestRegistrationController::class, 'create'])->name('join');
+Route::post('/join', [GuestRegistrationController::class, 'store']);
+
+// ✅ Legacy Referral Route (for backward compatibility)
+Route::get('/join/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('join.referral');
+Route::post('/join/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('join.referral.store');
+
+// ✅ Welcome Page Guest Registration (Public)
+Route::get('/welcome.php', [GuestRegistrationController::class, 'welcome'])->name('welcome.register');
+Route::post('/welcome.php', [GuestRegistrationController::class, 'store'])->name('welcome.register.store');
+
+// ✅ Fallback Route - Proper 404 handling
 Route::fallback(function () {
-    return redirect()->route('home')->with('error', 'Page not found.');
+    return response()->view('errors.404', [], 404);
 });
 
 
 // Referral Bonuses Management
+
+// ✅ Member Referral Summary
+Route::middleware(['auth'])->group(function () {
+    Route::get('/member/referral-summary', [\App\Http\Controllers\Member\ReferralController::class, 'summary'])->name('member.referral.summary');
+    Route::get('/member/referral-level/{level}', [\App\Http\Controllers\Member\ReferralController::class, 'levelDetails'])->name('member.referral.level');
+});
 
 // ✅ Member or public view (optional)
 Route::get('/referral-bonuses', [ReferralBonusController::class, 'index'])->name('referral.bonuses');
@@ -543,7 +570,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->name('admin.')->
     // 📄 Invoice
     Route::get('orders/invoice/{order}', [OrderReportController::class, 'invoice'])->name('orders.invoice');
 
-    
+
   Route::get('/orders', [OrderReportController::class, 'index'])->name('orders.index');
     Route::post('/orders/{id}/update-status', [OrderReportController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::post('/order-items/{id}/update-status', [OrderReportController::class, 'updateItemStatus'])->name('orders.updateItemStatus');

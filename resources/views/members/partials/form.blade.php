@@ -6,58 +6,58 @@
     {{-- Personal Information Section --}}
     <div class="col-12">
         <h5 class="section-title text-start" style="font-size: 1.1rem;">
-            <i class="bi bi-person me-2"></i>Personal Information
+            <i class="bi bi-person me-2"></i> Personal Information
         </h5>
     </div>
     
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-person me-1"></i>First Name <span class="text-danger">*</span>
+            <i class="bi bi-person me-1"></i> First Name <span class="text-danger">*</span>
         </label>
         <input type="text" name="first_name" class="form-control" value="{{ old('first_name', $member->first_name ?? '') }}" required>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-person me-1"></i>Middle Name
+            <i class="bi bi-person me-1"></i> Middle Name
         </label>
         <input type="text" name="middle_name" class="form-control" value="{{ old('middle_name', $member->middle_name ?? '') }}">
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-person me-1"></i>Last Name <span class="text-danger">*</span>
+            <i class="bi bi-person me-1"></i> Last Name <span class="text-danger">*</span>
         </label>
         <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $member->last_name ?? '') }}" required>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-cake me-1"></i>Birthday <span class="text-danger">*</span>
+            <i class="bi bi-cake me-1"></i> Birthday <span class="text-danger">*</span>
         </label>
         <input type="date" name="birthday" class="form-control" value="{{ old('birthday', $member->birthday ?? '') }}" required>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-phone me-1"></i>Mobile Number <span class="text-danger">*</span>
+            <i class="bi bi-phone me-1"></i> Mobile Number <span class="text-danger">*</span>
         </label>
         <input type="text" name="mobile_number" class="form-control" value="{{ old('mobile_number', $member->mobile_number ?? '') }}" required>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-envelope me-1"></i>Email
+            <i class="bi bi-envelope me-1"></i> Email
         </label>
         <input type="email" name="email" class="form-control" value="{{ old('email', $member->user->email ?? '') }}">
         <small class="text-muted">
-            <i class="bi bi-info-circle me-1"></i>Optional - for login and notifications
+            <i class="bi bi-info-circle me-1"></i> Optional - for login and notifications
         </small>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-briefcase me-1"></i>Occupation
+            <i class="bi bi-briefcase me-1"></i> Occupation
         </label>
         <input type="text" name="occupation" class="form-control" value="{{ old('occupation', $member->occupation ?? '') }}">
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-geo-alt me-1"></i>Address
+            <i class="bi bi-geo-alt me-1"></i> Address
         </label>
         <input type="text" name="address" class="form-control" value="{{ old('address', $member->address ?? '') }}">
     </div>
@@ -65,13 +65,13 @@
     {{-- System Information Section --}}
     <div class="col-12 mt-4">
         <h5 class="section-title text-start" style="font-size: 1.1rem;">
-            <i class="bi bi-gear-fill me-2"></i>System Information
+            <i class="bi bi-gear-fill me-2"></i> System Information
         </h5>
     </div>
 
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-person-tag me-1"></i>Role <span class="text-danger">*</span>
+            <i class="bi bi-person-tag me-1"></i> Role <span class="text-danger">*</span>
         </label>
         <select name="role" class="form-control" required>
             <option value="Admin" {{ (old('role', $member->role ?? '') == 'Admin') ? 'selected' : '' }}>
@@ -100,48 +100,58 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-check-circle me-1"></i>Status <span class="text-danger">*</span>
+            <i class="bi bi-check-circle me-1"></i> Status <span class="text-danger">*</span>
         </label>
         <select name="status" class="form-control" id="statusSelect">
             <option value="Pending" {{ (old('status', $member->status ?? '') == 'Pending') ? 'selected' : '' }}>
-                <span class="badge bg-warning">Pending</span>
+                <span class="badge bg-warning"> Pending</span>
             </option>
             <option value="Approved" {{ (old('status', $member->status ?? '') == 'Approved') ? 'selected' : '' }}>
-                <span class="badge bg-success">Approved</span>
+                <span class="badge bg-success"> Approved</span>
             </option>
         </select>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-qr-code me-1"></i>Membership Code <span class="text-danger">*</span>
+            <i class="bi bi-qr-code me-1"></i> Membership Code <span class="text-danger">*</span>
         </label>
         <select name="membership_code" class="form-control" required>
             <option value="">-- Select Membership Code --</option>
-            @foreach (\App\Models\MembershipCode::where('used', false)->get() as $code)
-                <option value="{{ $code->code }}">{{ $code->code }}</option>
-            @endforeach
-            @if(isset($member) && $member->membershipCode)
-                <option value="{{ $member->membershipCode->code }}" selected>{{ $member->membershipCode->code }} (Current)</option>
+            @php
+                $unusedCodes = \App\Models\MembershipCode::where('used', false)->get();
+                $currentCode = isset($member) && $member->membershipCode ? $member->membershipCode : null;
+            @endphp
+            
+            {{-- Show current code first if editing --}}
+            @if($currentCode)
+                <option value="{{ $currentCode->code }}" selected>{{ $currentCode->code }} (Current)</option>
             @endif
+            
+            {{-- Show only unused codes --}}
+            @foreach ($unusedCodes as $code)
+                @if(!$currentCode || $code->code !== $currentCode->code)
+                    <option value="{{ $code->code }}">{{ $code->code }}</option>
+                @endif
+            @endforeach
         </select>
         <small class="text-muted">
-            <i class="bi bi-info-circle me-1"></i>Required for all members
+            <i class="bi bi-info-circle me-1"></i> Only unused codes are shown
         </small>
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-key me-1"></i>Reset Password (Optional)
+            <i class="bi bi-key me-1"></i> Reset Password (Optional)
         </label>
         <input type="password" name="new_password" class="form-control" placeholder="Leave blank to keep current password">
         <small class="text-muted">
-            <i class="bi bi-info-circle me-1"></i>Enter new password to reset, or leave blank to keep current
+            <i class="bi bi-info-circle me-1"></i> Enter new password to reset, or leave blank to keep current
         </small>
     </div>
 
     {{-- Additional Settings Section --}}
     <div class="col-12 mt-4">
         <h5 class="section-title text-start" style="font-size: 1.1rem;">
-            <i class="bi bi-sliders me-2"></i>Additional Settings
+            <i class="bi bi-sliders me-2"></i> Additional Settings
         </h5>
     </div>
 
@@ -151,7 +161,7 @@
                 <input type="checkbox" name="loan_eligible" value="1" class="form-check-input" id="loanEligibleCheckbox"
                     {{ old('loan_eligible', $member->loan_eligible ?? false) ? 'checked' : '' }}>
                 <label class="form-check-label fw-bold" for="loanEligibleCheckbox">
-                    <i class="bi bi-cash-coin me-1" style="color: var(--primary-purple);"></i>
+                    <i class="bi bi-cash-coin me-1" style="color: var(--primary-purple);"></i> 
                     Eligible for Loan
                 </label>
                 <small class="text-muted d-block mt-1">
@@ -162,7 +172,7 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">
-            <i class="bi bi-camera me-1"></i>Photo
+            <i class="bi bi-camera me-1"></i> Photo
         </label>
         <input type="file" name="photo" class="form-control" accept="image/*">
         @if (isset($member) && $member->photo)
@@ -172,11 +182,11 @@
                      alt="Member Photo"
                      class="rounded-circle border border-3"
                      style="border-color: var(--primary-purple) !important; object-fit: cover;">
-                <small class="text-muted d-block mt-1">Current photo</small>
+                <small class="text-muted d-block mt-1"> Current photo</small>
             </div>
         @else
             <small class="text-muted d-block mt-1">
-                <i class="bi bi-info-circle me-1"></i>No photo uploaded
+                <i class="bi bi-info-circle me-1"></i> No photo uploaded
             </small>
         @endif
     </div>

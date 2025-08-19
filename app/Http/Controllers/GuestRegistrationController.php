@@ -15,6 +15,11 @@ class GuestRegistrationController extends Controller
         return view('members.guest-register');
     }
 
+    public function welcome()
+    {
+        return view('welcome-register');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -37,19 +42,20 @@ class GuestRegistrationController extends Controller
         }
 
         $photoPath = $request->hasFile('photo')
-            ? $request->file('photo')->store('', 'public')
+            ? $request->file('photo')->store('photos', 'public')
             : null;
 
         $member = Member::create([
-            'first_name'    => $request->first_name,
-            'middle_name'   => $request->middle_name,
-            'last_name'     => $request->last_name,
+            'first_name'    => ucfirst(strtolower($request->first_name)),
+            'middle_name'   => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
+            'last_name'     => ucfirst(strtolower($request->last_name)),
             'birthday'      => $request->birthday,
             'mobile_number' => $request->mobile_number,
-            'occupation'    => $request->occupation,
+            'occupation'    => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
             'photo'         => $photoPath,
             'role'          => 'Member',
             'status'        => 'Pending',
+            'sponsor_id'    => null, // Will be assigned by admin during approval
             'loan_eligible' => false,
         ]);
 
@@ -63,7 +69,7 @@ class GuestRegistrationController extends Controller
             'status'        => 'Pending',
         ]);
 
-        return redirect()->route('guest.register')->with('success', 'Registration submitted! Wait for admin approval.');
+        return redirect('/welcome.php')->with('success', 'Registration submitted! Wait for admin approval.');
     }
 
     /**
@@ -123,16 +129,16 @@ class GuestRegistrationController extends Controller
             : null;
 
         $member = Member::create([
-            'first_name'    => $request->first_name,
-            'middle_name'   => $request->middle_name,
-            'last_name'     => $request->last_name,
+            'first_name'    => ucfirst(strtolower($request->first_name)),
+            'middle_name'   => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
+            'last_name'     => ucfirst(strtolower($request->last_name)),
             'birthday'      => $request->birthday,
             'mobile_number' => $request->mobile_number,
-            'occupation'    => $request->occupation,
+            'occupation'    => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
             'photo'         => $photoPath,
             'role'          => 'Member',
             'status'        => 'Pending',
-            'sponsor_id'    => $sponsor_id, // Set the sponsor
+            'sponsor_id'    => $sponsor_id, // Automatically set the sponsor from referral link
             'loan_eligible' => false,
         ]);
 
@@ -146,7 +152,12 @@ class GuestRegistrationController extends Controller
             'status'        => 'Pending',
         ]);
 
-        return redirect()->route('guest.register.referral', $sponsor_id)
+        // Determine which route to redirect to based on the current request path
+        $redirectRoute = request()->is('join/*')
+            ? 'join.referral'
+            : 'member.register.referral';
+            
+        return redirect()->route($redirectRoute, $sponsor_id)
             ->with('success', 'Registration submitted! You and your sponsor will receive bonuses once approved.');
     }
 }

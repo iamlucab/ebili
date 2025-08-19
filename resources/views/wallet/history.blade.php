@@ -9,7 +9,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="card rounded-3 shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header">
             <h6 class="mb-0 text-white>Wallet Transaction History</h6>
         </div>
 
@@ -94,7 +94,7 @@
 
             {{-- Pagination --}}
             <div class="mt-3">
-                {{ $transactions->links() }}
+                <!--{{ $transactions->links() }}-->
             </div>
         </div>
     </div>
@@ -130,4 +130,5 @@
     @endif
 @endsection
 
+<!--@include('partials.reusable-mobile-footer')-->
 @include('partials.mobile-footer')

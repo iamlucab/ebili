@@ -133,20 +133,20 @@
             margin: 0 10px;
             padding: 10px;
         }
-        
+
         .category-item {
             min-width: 70px;
             padding: 10px 12px;
         }
-        
+
         .category-item i {
             font-size: 1rem;
         }
-        
+
         .category-item span {
             font-size: 0.75rem;
         }
-        
+
         .load-more-btn {
             padding: 10px 25px;
             font-size: 1rem;
@@ -179,7 +179,7 @@
         </form>
     </div>
 
-    
+
 {{-- Category Carousel --}}
 <div class="mb-4">
     <h4 class="section-title text-center">Categories</h4>
@@ -481,16 +481,16 @@
 $(document).ready(function() {
     let currentPage = 2;
     let isLoading = false;
-    
+
     // Category filter functionality
     $('.category-item').on('click', function() {
         const categoryId = $(this).data('category-id');
         const currentSearch = $('input[name="q"]').val();
-        
+
         // Update active state
         $('.category-item').removeClass('active');
         $(this).addClass('active');
-        
+
         // Update hidden input and submit form
         if (categoryId === 'all') {
             $('input[name="category"]').val('');
@@ -499,26 +499,26 @@ $(document).ready(function() {
         }
         $('#searchForm').submit();
     });
-    
+
     // Load More functionality
     $('#loadMoreBtn').on('click', function() {
         if (isLoading) return;
-        
+
         isLoading = true;
         const btn = $(this);
         const spinner = btn.find('.spinner-border');
-        const icon = btn.find('.fas');
-        
+        const icon = btn.find('i'); // Changed from .fas to i
+
         // Show loading state
         btn.prop('disabled', true);
         spinner.removeClass('d-none');
         icon.addClass('d-none');
         btn.find('span:not(.spinner-border)').text('Loading...');
-        
+
         // Get current filters
         const searchQuery = $('input[name="q"]').val();
         const categoryId = $('input[name="category"]').val();
-        
+
         // Make AJAX request
         $.ajax({
             url: '{{ route("shop.index") }}',
@@ -533,22 +533,21 @@ $(document).ready(function() {
                 if (response.success && response.html) {
                     // Append new products to grid
                     $('#productsGrid').append(response.html);
-                    
+
                     // Update page counter
                     currentPage++;
-                    btn.data('page', currentPage);
-                    
+
                     // Update products count
                     const currentCount = $('#productsGrid .col-6').length;
                     $('.products-info .badge').html(
                         '<i class="bi bi-box-seam me-1"></i>Showing ' + currentCount + ' of ' + response.totalProducts + ' products'
                     );
-                    
+
                     // Hide button if no more products
                     if (!response.hasMore) {
                         btn.closest('.text-center').fadeOut();
                     }
-                    
+
                     // Initialize Fancybox for new images
                     if (typeof $.fancybox !== 'undefined') {
                         $('[data-fancybox]').fancybox({
@@ -557,14 +556,14 @@ $(document).ready(function() {
                             protect: true
                         });
                     }
-                    
+
                     // Add fade-in animation to new products
                     $('#productsGrid .col-6:nth-last-child(-n+' + response.productsCount + ')').addClass('fade-in');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Error loading more products:', error);
-                
+
                 // Show error message
                 const alertHtml = `
                     <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
@@ -585,7 +584,7 @@ $(document).ready(function() {
             }
         });
     });
-    
+
     // Initialize Fancybox for existing images
     if (typeof $.fancybox !== 'undefined') {
         $('[data-fancybox]').fancybox({
@@ -594,7 +593,7 @@ $(document).ready(function() {
             protect: true
         });
     }
-    
+
     // Smooth scroll for category selection
     $('.category-item').on('click', function() {
         $('html, body').animate({

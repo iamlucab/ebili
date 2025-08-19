@@ -23,18 +23,18 @@
                     <div class="small text-muted">Generating QR...</div>
                 </div>
             </div>
-            
+
             {{-- Member Info Display --}}
             <div class="member-info mt-2 text-center">
                 <div class="fw-bold" style="color: var(--primary-purple); font-size: 0.9rem;">{{ auth()->user()->name }}</div>
                 <div class="text-muted" style="font-size: 0.8rem;">{{ auth()->user()->mobile_number }}</div>
             </div>
-            
+
             <div class="qr-overlay text-center mt-2" style="background: var(--accent-gold); color: var(--dark-purple); padding: 4px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; margin: 0 auto; display: inline-block;">
               <i class="fa-solid fa-wallet"></i> Scan to Send Money
             </div>
         </div>
-        
+
         {{-- QR Code Action Buttons --}}
         <div class="qr-actions mt-2">
             <button type="button" class="btn btn-sm btn-outline-primary me-2" id="shareReferralLink" title="Share Referral Link">
@@ -45,7 +45,7 @@
             </button>
         </div>
     </div>
-    
+
     {{-- <small class="text-muted d-block">Welcome back!</small>
     <h2 class="fw-bold mb-2" style="color: var(--primary-purple);">{{ strtoupper(auth()->user()->name) }}</h2>
     <p class="slogan mb-0" style="font-size: 0.9rem;">{{ strtoupper(auth()->user()->mobile_number) }}</p> --}}
@@ -246,7 +246,7 @@
                 width: 45px;
                 height: 45px;
             }
-            
+
             .back-to-top i {
                 font-size: 18px;
             }
@@ -257,12 +257,12 @@
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('js/mobile-ui.js') }}"></script>
-    
+
     {{-- Enhanced Success/Error Messages with Multiple Approaches --}}
     @if(session('success'))
         <script>
             console.log('Success session found:', "{{ session('success') }}");
-            
+
             // Approach 1: Toastr
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof toastr !== 'undefined') {
@@ -279,7 +279,7 @@
                     alert("Success: {{ session('success') }}");
                 }
             });
-            
+
             // Approach 3: AdminLTE Alert Box
             setTimeout(function() {
                 const alertHtml = `
@@ -290,7 +290,7 @@
                     </div>
                 `;
                 document.body.insertAdjacentHTML('beforeend', alertHtml);
-                
+
                 // Auto-remove after 5 seconds
                 setTimeout(function() {
                     const alert = document.querySelector('.alert-success');
@@ -303,7 +303,7 @@
     @if(session('error'))
         <script>
             console.log('Error session found:', "{{ session('error') }}");
-            
+
             // Approach 1: Toastr
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof toastr !== 'undefined') {
@@ -320,7 +320,7 @@
                     alert("Error: {{ session('error') }}");
                 }
             });
-            
+
             // Approach 3: AdminLTE Alert Box
             setTimeout(function() {
                 const alertHtml = `
@@ -331,7 +331,7 @@
                     </div>
                 `;
                 document.body.insertAdjacentHTML('beforeend', alertHtml);
-                
+
                 // Auto-remove after 7 seconds
                 setTimeout(function() {
                     const alert = document.querySelector('.alert-danger');
@@ -394,7 +394,51 @@
     </div>
 </div>
 
+{{-- ✅ Referral Network Card --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none;">
+            <div class="card-body text-white">
+                <div class="row">
+                    {{-- First Column: Referral Network --}}
+                    <div class="col-md-6 mb-3 mb-md-0 text-center">
+                                <p class="mb-1 small" style="color: rgba(255,255,255,0.9);">
+                            Direct Referrals: <strong>{{ auth()->user()->member->getDirectReferrals()->count() }}</strong>
+                        </p>
+                        <p class="mb-2 small" style="color: rgba(255,255,255,0.9);">
+                            Total Network: <strong>{{ auth()->user()->member->getTotalReferralCount() }}</strong>
+                        </p>
+                     <a href="{{ route('member.referral.summary') }}" class="btn btn-light btn-sm">
+                            <i class="bi bi-eye me-1"></i>&nbsp;View Details
+                        </a>
+                    </div>
 
+                    {{-- Second Column: Member Info --}}
+                    <div class="col-md-6" style="text-align: center;">
+                        @isset($joinDate)
+                        <p class="mb-1 small" style="color: rgba(255,255,255,0.9);">
+                            Joined Since: <strong>{{ $joinDate->format('M d, Y') }}</strong>
+                        </p>
+                        @endisset
+
+                        @isset($sponsorName)
+                        <p class="mb-1 small" style="color: rgba(255,255,255,0.9);">
+                            Referred by: <strong>{{ $sponsorName }}</strong>
+                        </p>
+                        @endisset
+
+                        @isset($totalIncome)
+                        <p class="mb-2 small" style="color: rgba(255,255,255,0.9);">
+                            Total Income: <strong>₱{{ number_format($totalIncome, 2) }}</strong>
+                        </p>
+                        @endisset
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{-- ✅ Dashboard Action Icons (Mobile-Optimized Inline Layout) --}}
 <div class="d-flex flex-wrap justify-content-around text-center mb-4" style="gap: 0.75rem">
@@ -407,7 +451,7 @@
             </div>
         </a>
 
-   
+
 {{-- Borrow --}}
 @if(auth()->user()->member->loan_eligible)
     <a href="#" data-toggle="modal" data-target="#borrowModal" class="text-decoration-none text-dark" style="flex: 0 0 30%;">
@@ -533,7 +577,7 @@
                             @else
                                 <div class="price-tag mb-2">₱{{ number_format($product->price, 2) }}</div>
                             @endif
-                            
+
                             <span class="badge bg-info text-dark rounded-pill">
                                 Cashback: ₱{{ number_format($product->cashback_amount, 2) }}
                             </span>
@@ -544,7 +588,7 @@
             </div>
         @endforeach
     </div>
-    
+
     <div class="text-center mb-4">
         <a href="{{ url('/shop') }}" class="btn btn-outline-primary">
             <i class="bi bi-bag me-1"></i> View All Products
@@ -596,7 +640,7 @@
                     </div>
 
                     <small id="recipientName" class="text-muted d-block mt-1"></small>
-                    
+
                     {{-- QR Scanner for Send --}}
                     <div id="qrScannerSend" class="mt-3" style="display: none;">
                         <div class="text-center">
@@ -703,7 +747,7 @@
                     <h6 class="modal-title text-white">Request Cash In</h6>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                
+
                 <div class="modal-body">
                {{-- Payment Method --}}
 <label class="mt-3">Payment Method</label>
@@ -725,7 +769,7 @@
             </button>
         </div>
     </div>
-    
+
     {{-- QR Scanner for Cash In --}}
     <div id="qrScannerCashin" class="mt-3" style="display: none;">
         <div class="text-center">
@@ -1070,24 +1114,24 @@ class QRScanner {
             this.canvas.height = this.video.videoHeight;
             this.canvas.width = this.video.videoWidth;
             this.context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
-            
+
             const imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
             const code = jsQR(imageData.data, imageData.width, imageData.height);
-            
+
             if (code) {
                 this.processQRCode(code.data);
                 this.stopScanning();
                 return;
             }
         }
-        
+
         requestAnimationFrame(() => this.scanFrame());
     }
 
     processQRCode(data) {
         // Try to extract mobile number or amount from QR code
         console.log('QR Code data:', data);
-        
+
         // Check if it's a payment request URL (highest priority)
         if (data.includes('/payment-request/')) {
             toastr.success('Payment request QR code detected! Redirecting...');
@@ -1096,7 +1140,7 @@ class QRScanner {
             }, 1000);
             return;
         }
-        
+
         // Try to parse as JSON first (for eBili member QR codes)
         try {
             const memberData = JSON.parse(data);
@@ -1116,7 +1160,7 @@ class QRScanner {
         } catch (e) {
             // Not JSON, continue with other processing
         }
-        
+
         // Check if it's a mobile number (11 digits starting with 09)
         const mobileMatch = data.match(/09\d{9}/);
         if (mobileMatch && this.input.name === 'mobile_number') {
@@ -1125,7 +1169,7 @@ class QRScanner {
             toastr.success('Mobile number scanned successfully!');
             return;
         }
-        
+
         // Check if it's an amount (number with optional decimal)
         const amountMatch = data.match(/(\d+(?:\.\d{2})?)/);
         if (amountMatch && this.input.name === 'amount') {
@@ -1133,12 +1177,12 @@ class QRScanner {
             toastr.success('Amount scanned successfully!');
             return;
         }
-        
+
         // If it's a URL or complex data, try to extract relevant info
         try {
             const url = new URL(data);
             const params = new URLSearchParams(url.search);
-            
+
             // Check if it's a payment request URL
             if (url.pathname.includes('/payment-request/')) {
                 toastr.success('Payment request QR code detected! Redirecting...');
@@ -1147,14 +1191,14 @@ class QRScanner {
                 }, 1000);
                 return;
             }
-            
+
             if (params.has('mobile') && this.input.name === 'mobile_number') {
                 this.input.value = params.get('mobile');
                 this.input.dispatchEvent(new Event('blur'));
                 toastr.success('Mobile number extracted from QR code!');
                 return;
             }
-            
+
             if (params.has('amount') && this.input.name === 'amount') {
                 this.input.value = params.get('amount');
                 toastr.success('Amount extracted from QR code!');
@@ -1163,7 +1207,7 @@ class QRScanner {
         } catch (e) {
             // Not a URL, continue with other processing
         }
-        
+
         // Fallback: just put the raw data in the input
         this.input.value = data;
         toastr.info('QR code scanned. Please verify the data.');
@@ -1174,31 +1218,31 @@ class QRScanner {
 document.addEventListener('DOMContentLoaded', function() {
     // Send Modal QR Scanner
     const sendScanner = new QRScanner('qrVideoSend', 'qrScannerSend', 'sendMobileNumber', 'stopScanSend');
-    
+
     document.getElementById('scanQRSend').addEventListener('click', function() {
         sendScanner.startScanning();
     });
-    
+
     document.getElementById('stopScanSend').addEventListener('click', function() {
         sendScanner.stopScanning();
     });
-    
+
     // Cash In Modal QR Scanner
     const cashinScanner = new QRScanner('qrVideoCashin', 'qrScannerCashin', 'cashinAmount', 'stopScanCashin');
-    
+
     document.getElementById('scanQRCashin').addEventListener('click', function() {
         cashinScanner.startScanning();
     });
-    
+
     document.getElementById('stopScanCashin').addEventListener('click', function() {
         cashinScanner.stopScanning();
     });
-    
+
     // Stop scanning when modals are closed
     $('#sendModal').on('hidden.bs.modal', function() {
         sendScanner.stopScanning();
     });
-    
+
     $('#cashinModal').on('hidden.bs.modal', function() {
         cashinScanner.stopScanning();
     });
@@ -1218,7 +1262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const qrDisplay = document.getElementById('qrCodeDisplay');
     const shareBtn = document.getElementById('shareQRCode');
     const downloadBtn = document.getElementById('downloadQRCode');
-    
+
     const memberData = {
         mobile: "{{ auth()->user()->mobile_number }}",
         name: "{{ auth()->user()->name }}",
@@ -1228,19 +1272,19 @@ document.addEventListener('DOMContentLoaded', function() {
         type: "ebili_payment_request",
         payment_url: "{{ route('payment.request', $wallet->wallet_id ?? 'unknown') }}"
     };
-    
+
     // Create QR code data with member information for payment requests
     const qrData = memberData.payment_url;
-    
+
     console.log('Generating QR code with data:', qrData);
-    
+
     // Wait a bit for all scripts to load
     setTimeout(function() {
         generateQRCode();
     }, 1000);
-    
+
     function generateQRCode() {
-    
+
     // Function to create fallback display
     function createFallbackDisplay() {
         qrDisplay.innerHTML = `
@@ -1251,33 +1295,33 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
     }
-    
+
     // Generate QR code using qrcode-generator library
     try {
         console.log('Generating QR code with qrcode-generator library...');
-        
+
         // Create QR code using qrcode-generator library
         const qr = qrcode(0, 'M');
         qr.addData(qrData);
         qr.make();
-        
+
         // Create canvas
         const canvas = document.createElement('canvas');
         canvas.id = 'qrCanvas';
         const ctx = canvas.getContext('2d');
-        
+
         const moduleCount = qr.getModuleCount();
         const cellSize = 6;
         const margin = 12;
         const size = moduleCount * cellSize + margin * 2;
-        
+
         canvas.width = size;
         canvas.height = size;
-        
+
         // Fill background
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, size, size);
-        
+
         // Draw QR modules
         ctx.fillStyle = '#4a1570';  // Dark purple to match design
         for (let row = 0; row < moduleCount; row++) {
@@ -1292,22 +1336,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-        
+
         // Style the canvas to fit the design
         canvas.style.width = '180px';
         canvas.style.height = '180px';
         canvas.style.borderRadius = '15px';
-        
+
         qrDisplay.innerHTML = '';
         qrDisplay.appendChild(canvas);
-        
+
         console.log('QR code generated successfully with qrcode-generator');
-        
+
     } catch (error) {
         console.error('QR generation failed:', error);
         generateQRCodeAlternative();
     }
-    
+
     // Alternative QR generation method
     function generateQRCodeAlternative() {
         console.log('Using alternative QR generation method');
@@ -1332,9 +1376,9 @@ document.addEventListener('DOMContentLoaded', function() {
             createFallbackDisplay();
         }
     }
-    
+
     } // Close generateQRCode function
-    
+
     // Download QR Code functionality
     downloadBtn.addEventListener('click', function() {
         console.log('Download button clicked');
@@ -1342,73 +1386,73 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the current displayed QR code
             const currentQRCanvas = qrDisplay.querySelector('canvas');
             const currentQRImg = qrDisplay.querySelector('img');
-            
+
             console.log('QR Canvas found:', !!currentQRCanvas);
             console.log('QR Image found:', !!currentQRImg);
-            
+
             if (!currentQRCanvas && !currentQRImg) {
                 console.log('No QR code elements found');
                 showNotification('No QR code available to download', 'error');
                 return;
             }
-            
+
             // Create a high-quality canvas for download
             console.log('Creating download canvas...');
             const downloadCanvas = document.createElement('canvas');
             const downloadCtx = downloadCanvas.getContext('2d');
-            
+
             if (!downloadCtx) {
                 console.error('Failed to get 2D context');
                 showNotification('Canvas not supported by browser', 'error');
                 return;
             }
-            
+
             downloadCanvas.width = 400;
             downloadCanvas.height = 500;
             console.log('Canvas created:', downloadCanvas.width, 'x', downloadCanvas.height);
-            
+
             // White background with subtle gradient
             const gradient = downloadCtx.createLinearGradient(0, 0, 0, 500);
             gradient.addColorStop(0, '#ffffff');
             gradient.addColorStop(1, '#f8f9fa');
             downloadCtx.fillStyle = gradient;
             downloadCtx.fillRect(0, 0, 400, 500);
-            
+
             // Add border
             downloadCtx.strokeStyle = '#e9ecef';
             downloadCtx.lineWidth = 2;
             downloadCtx.strokeRect(10, 10, 380, 480);
-            
+
             // Draw E-Bili logo/title
             downloadCtx.fillStyle = '#4a1570';
             downloadCtx.font = 'bold 24px Poppins, Arial, sans-serif';
             downloadCtx.textAlign = 'center';
             downloadCtx.fillText('E-Bili Payment QR', 200, 50);
-            
+
             // Draw member name
             downloadCtx.font = 'bold 18px Poppins, Arial, sans-serif';
             downloadCtx.fillStyle = '#2c3e50';
             downloadCtx.fillText("{{ auth()->user()->name }}", 200, 80);
-            
+
             // Draw mobile number
             downloadCtx.font = '16px Poppins, Arial, sans-serif';
             downloadCtx.fillStyle = '#6c757d';
             downloadCtx.fillText("{{ auth()->user()->mobile_number }}", 200, 105);
-            
+
             @if(isset($wallet))
             // Draw wallet ID
             downloadCtx.font = '14px Poppins, Arial, sans-serif';
             downloadCtx.fillStyle = '#6c757d';
             downloadCtx.fillText("Wallet ID: {{ $wallet->wallet_id }}", 200, 125);
             @endif
-            
+
             // Create QR code area background
             downloadCtx.fillStyle = '#ffffff';
             downloadCtx.fillRect(85, 145, 230, 230);
             downloadCtx.strokeStyle = '#dee2e6';
             downloadCtx.lineWidth = 1;
             downloadCtx.strokeRect(85, 145, 230, 230);
-            
+
             // Use the SAME QR code that's currently displayed
             console.log('Drawing QR code to canvas...');
             if (currentQRCanvas) {
@@ -1448,7 +1492,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('No QR code found, using fallback');
                 generateFallbackQR();
             }
-            
+
             function generateFallbackQR() {
                 // Draw fallback QR placeholder
                 downloadCtx.fillStyle = '#6f42c1';
@@ -1459,7 +1503,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 downloadCtx.fillText("{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}", 200, 270);
                 finishDownloadImage();
             }
-            
+
             function finishDownloadImage() {
                 console.log('Finishing download image...');
                 try {
@@ -1469,32 +1513,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     downloadCtx.textAlign = 'center';
                     downloadCtx.fillText('Scan this QR code to send money', 200, 400);
                     downloadCtx.fillText('to this E-Bili account', 200, 420);
-                    
+
                     // Draw footer
                     downloadCtx.font = 'bold 12px Poppins, Arial, sans-serif';
                     downloadCtx.fillStyle = '#4a1570';
                     downloadCtx.fillText('E-Bili Online - Shop to Save, Share to Earn', 200, 450);
-                    
+
                     // Add timestamp
                     downloadCtx.font = '10px Arial, sans-serif';
                     downloadCtx.fillStyle = '#adb5bd';
                     downloadCtx.fillText('Generated on ' + new Date().toLocaleDateString(), 200, 470);
-                    
+
                     console.log('Text drawn, creating download link...');
-                    
+
                     // Download the image
                     const dataURL = downloadCanvas.toDataURL('image/png', 1.0);
                     console.log('Data URL created, length:', dataURL.length);
-                    
+
                     const link = document.createElement('a');
                     link.download = 'ebili-payment-qr-{{ auth()->user()->mobile_number }}.png';
                     link.href = dataURL;
-                    
+
                     // Add to DOM temporarily for Firefox compatibility
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
+
                     console.log('Download triggered successfully');
                     showNotification('QR Code downloaded successfully!', 'success');
                 } catch (error) {
@@ -1502,13 +1546,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     showNotification('Failed to create download: ' + error.message, 'error');
                 }
             }
-            
+
         } catch (error) {
             console.error('Download failed:', error);
             showNotification('Failed to download QR code: ' + error.message, 'error');
         }
     });
-    
+
     // Share Referral Link functionality
     const shareReferralBtn = document.getElementById('shareReferralLink');
     shareReferralBtn.addEventListener('click', function() {
@@ -1516,7 +1560,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Create referral link
             const memberId = {{ auth()->user()->member->id ?? 'null' }};
             const referralUrl = `${window.location.origin}/join/${memberId}`;
-            
+
             const shareText = `🎉 Join E-Bili Online through my referral link and we both get bonuses!\n\n` +
                              `👤 Referred by: {{ auth()->user()->name }}\n` +
                              `📱 Mobile: {{ auth()->user()->mobile_number }}\n\n` +
@@ -1526,7 +1570,7 @@ document.addEventListener('DOMContentLoaded', function() {
                              `• Access to exclusive deals\n\n` +
                              `🔗 Register here: ${referralUrl}\n\n` +
                              `#EBiliOnline #ShopToSave #ShareToEarn`;
-            
+
             if (navigator.share) {
                 navigator.share({
                     title: 'Join E-Bili Online - Referral Invitation',
@@ -1541,13 +1585,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 fallbackShareReferral(shareText, referralUrl);
             }
-            
+
         } catch (error) {
             console.error('Referral share failed:', error);
             showNotification('Failed to share referral link', 'error');
         }
     });
-    
+
     function fallbackShare(text) {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
@@ -1570,7 +1614,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(textArea);
         }
     }
-    
+
     function fallbackShareReferral(text, url) {
         if (navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
@@ -1601,58 +1645,58 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize cart count from session
     updateCartCount();
-    
+
     // Add swipe functionality to product cards
     const productCards = document.querySelectorAll('.swipeable-product');
-    
+
     productCards.forEach(card => {
         let startX = 0;
         let currentX = 0;
         let isDragging = false;
         let hasActioned = false;
-        
+
         // Add swipe action overlays
         const swipeLeft = document.createElement('div');
         swipeLeft.className = 'swipe-action swipe-left';
         swipeLeft.innerHTML = '<i class="bi bi-cart-plus"></i><br>Add to Cart';
-        
+
         const swipeRight = document.createElement('div');
         swipeRight.className = 'swipe-action swipe-right';
         swipeRight.innerHTML = '<i class="bi bi-heart"></i><br>Add to Favorites';
-        
+
         card.appendChild(swipeLeft);
         card.appendChild(swipeRight);
-        
+
         // Touch events
         card.addEventListener('touchstart', handleStart, { passive: true });
         card.addEventListener('touchmove', handleMove, { passive: false });
         card.addEventListener('touchend', handleEnd, { passive: true });
-        
+
         // Mouse events for desktop testing
         card.addEventListener('mousedown', handleStart);
         card.addEventListener('mousemove', handleMove);
         card.addEventListener('mouseup', handleEnd);
         card.addEventListener('mouseleave', handleEnd);
-        
+
         function handleStart(e) {
             isDragging = true;
             hasActioned = false;
             startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
             card.style.transition = 'none';
         }
-        
+
         function handleMove(e) {
             if (!isDragging) return;
-            
+
             e.preventDefault();
             currentX = (e.type === 'touchmove' ? e.touches[0].clientX : e.clientX) - startX;
-            
+
             // Limit swipe distance
             const maxSwipe = 100;
             currentX = Math.max(-maxSwipe, Math.min(maxSwipe, currentX));
-            
+
             card.style.transform = `translateX(${currentX}px)`;
-            
+
             // Show appropriate action
             if (currentX > 30) {
                 card.classList.add('swiping-right');
@@ -1664,16 +1708,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.classList.remove('swiping-left', 'swiping-right');
             }
         }
-        
+
         function handleEnd(e) {
             if (!isDragging) return;
-            
+
             isDragging = false;
             card.style.transition = 'transform 0.3s ease';
-            
+
             const productId = card.dataset.productId;
             const productName = card.dataset.productName;
-            
+
             // Trigger actions based on swipe distance
             if (currentX > 50 && !hasActioned) {
                 // Swipe right - Add to Favorites
@@ -1685,7 +1729,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 hasActioned = true;
                 addToCart(productId, productName);
             }
-            
+
             // Reset position
             setTimeout(() => {
                 card.style.transform = 'translateX(0)';
@@ -1693,7 +1737,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
         }
     });
-    
+
     // Add to Cart function
     function addToCart(productId, productName) {
         fetch(`/shop/order/${productId}`, {
@@ -1721,7 +1765,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showSwipeError('Failed to add to cart');
         });
     }
-    
+
     // Add to Favorites function (placeholder - you can implement this later)
     function addToFavorites(productId, productName) {
         // For now, just store in localStorage as a simple implementation
@@ -1730,11 +1774,11 @@ document.addEventListener('DOMContentLoaded', function() {
             favorites.push(productId);
             localStorage.setItem('favorites', JSON.stringify(favorites));
         }
-        
+
         // You can implement server-side favorites later
         console.log(`Added product ${productId} to favorites`);
     }
-    
+
     // Update cart count
     function updateCartCount(count = null) {
         if (count === null) {
@@ -1764,25 +1808,25 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionStorage.setItem('cartCount', count.toString());
         }
     }
-    
+
     function updateCartDisplay(count) {
         const cartCountElement = document.getElementById('cartCount');
         const floatingCart = document.getElementById('floatingCart');
-        
+
         if (cartCountElement) {
             cartCountElement.textContent = count;
         }
-        
+
         if (count > 0) {
             showFloatingCart();
         } else {
             hideFloatingCart();
         }
-        
+
         // Update sidebar cart badge
         updateSidebarCartBadge(count);
     }
-    
+
     function showFloatingCart() {
         const floatingCart = document.getElementById('floatingCart');
         if (floatingCart) {
@@ -1793,14 +1837,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 600);
         }
     }
-    
+
     function hideFloatingCart() {
         const floatingCart = document.getElementById('floatingCart');
         if (floatingCart) {
             floatingCart.style.display = 'none';
         }
     }
-    
+
     // Show success message
     function showSwipeSuccess(message, color) {
         if (typeof toastr !== 'undefined') {
@@ -1809,7 +1853,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showCustomToast(message, color);
         }
     }
-    
+
     // Show error message
     function showSwipeError(message) {
         if (typeof toastr !== 'undefined') {
@@ -1818,7 +1862,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showCustomToast(message, '#ff4757');
         }
     }
-    
+
     // Custom toast for fallback
     function showCustomToast(message, color) {
         const toast = document.createElement('div');
@@ -1836,9 +1880,9 @@ document.addEventListener('DOMContentLoaded', function() {
             animation: slideInRight 0.3s ease;
         `;
         toast.textContent = message;
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOutRight 0.3s ease';
             setTimeout(() => {
@@ -1846,12 +1890,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 3000);
     }
-    
+
     // Floating cart click handler
     document.getElementById('floatingCart')?.addEventListener('click', function() {
         window.location.href = '/shop/cart';
     });
-    
+
     // Update sidebar cart menu badge
     updateSidebarCartBadge();
 });
@@ -1860,25 +1904,25 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateSidebarCartBadge(count = null) {
     const cartMenuItem = document.querySelector('a[href*="shop/cart"]');
     if (!cartMenuItem) return;
-    
+
     if (count === null) {
         // Get count from session storage or calculate from current cart
         count = parseInt(sessionStorage.getItem('cartCount') || '0');
     }
-    
+
     // Remove existing badge
     const existingBadge = cartMenuItem.querySelector('.badge');
     if (existingBadge) {
         existingBadge.remove();
     }
-    
+
     // Add new badge if count > 0
     if (count > 0) {
         const badge = document.createElement('span');
         badge.className = 'badge badge-danger navbar-badge';
         badge.style.cssText = 'position: absolute; top: 5px; right: 10px; font-size: 10px; min-width: 16px; text-align: center;';
         badge.textContent = count;
-        
+
         // Make the link position relative and add badge
         cartMenuItem.style.position = 'relative';
         cartMenuItem.appendChild(badge);
@@ -1889,12 +1933,12 @@ function updateSidebarCartBadge(count = null) {
 document.addEventListener('DOMContentLoaded', function() {
     const backToTopButton = document.getElementById('backToTop');
     let isVisible = false;
-    
+
     // Show/hide button based on scroll position
     function toggleBackToTop() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const shouldShow = scrollTop > 300; // Show after scrolling 300px
-        
+
         if (shouldShow && !isVisible) {
             backToTopButton.style.display = 'flex';
             backToTopButton.classList.remove('fade-out');
@@ -1908,26 +1952,26 @@ document.addEventListener('DOMContentLoaded', function() {
             isVisible = false;
         }
     }
-    
+
     // Smooth scroll to top
     function scrollToTop() {
         const scrollDuration = 500;
         const scrollStep = -window.scrollY / (scrollDuration / 15);
-        
+
         function scrollAnimation() {
             if (window.scrollY !== 0) {
                 window.scrollBy(0, scrollStep);
                 setTimeout(scrollAnimation, 15);
             }
         }
-        
+
         scrollAnimation();
     }
-    
+
     // Event listeners
     window.addEventListener('scroll', toggleBackToTop);
     backToTopButton.addEventListener('click', scrollToTop);
-    
+
     // Initial check
     toggleBackToTop();
 });
@@ -1945,7 +1989,7 @@ style.textContent = `
             opacity: 1;
         }
     }
-    
+
     @keyframes slideOutRight {
         from {
             transform: translateX(0);

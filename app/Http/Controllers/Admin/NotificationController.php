@@ -297,23 +297,76 @@ class NotificationController extends Controller
     public function testPushNotification(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'device_token' => 'required|string',
+            'device_token' => 'required|string|min:10',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid device token provided.',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         try {
+            // Check if Firebase is properly configured
+            if (!config('services.firebase.credentials') || !file_exists(config('services.firebase.credentials'))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Firebase credentials not configured properly. Please check your Firebase setup.'
+                ]);
+            }
+
+            // Log the test attempt
+            \Log::info('Testing push notification', [
+                'token_preview' => substr($request->device_token, 0, 20) . '...',
+                'user_id' => auth()->id()
+            ]);
+
             $result = $this->pushService->sendTestNotification($request->device_token);
 
             if ($result) {
-                return response()->json(['success' => true, 'message' => 'Test notification sent successfully!']);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Test notification sent successfully!',
+                    'result' => is_string($result) ? $result : 'Notification queued'
+                ]);
             } else {
-                return response()->json(['success' => false, 'message' => 'Failed to send test notification.']);
+                // Check if the token exists in our database
+                $tokenExists = \App\Models\DeviceToken::where('token', $request->device_token)->exists();
+                
+                $message = 'Failed to send test notification. ';
+                if (!$tokenExists) {
+                    $message .= 'The device token is not registered in our system. ';
+                }
+                $message .= 'The token may be invalid, expired, or the device is not reachable.';
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => $message
+                ]);
             }
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+            \Log::error('Push notification test failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'token' => substr($request->device_token, 0, 20) . '...'
+            ]);
+            
+            // Provide more specific error messages
+            $errorMessage = $e->getMessage();
+            if (strpos($errorMessage, 'registration-token-not-registered') !== false) {
+                $errorMessage = 'The device token is not registered or has expired. Please re-register the device.';
+            } elseif (strpos($errorMessage, 'invalid-registration-token') !== false) {
+                $errorMessage = 'The device token format is invalid. Please check the token.';
+            } elseif (strpos($errorMessage, 'authentication') !== false) {
+                $errorMessage = 'Firebase authentication failed. Please check your Firebase credentials.';
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending test notification: ' . $errorMessage
+            ]);
         }
     }
 

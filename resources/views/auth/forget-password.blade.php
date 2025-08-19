@@ -155,7 +155,7 @@
                 @error('email') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
-            <button type="submit" class="btn btn-primary w-100"><small>Send Password Reset Link</small></button>
+            <button type="submit" class="btn btn-primary text-white w-100"><small>Send Password Reset Link</small></button>
             <div class="small-links">
                 <small>Remembered your password? <a href="{{ route('login') }}">Login</a></small>
             </div>

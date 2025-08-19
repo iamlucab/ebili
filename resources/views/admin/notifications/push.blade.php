@@ -1,5 +1,9 @@
 @extends('adminlte::page')
 
+@section('adminlte_css_pre')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('content')
 <br>
 <div class="container-fluid">
@@ -264,24 +268,24 @@
 
 
 <!-- Test Notification Modal -->
-<div class="modal fade" id="testNotificationModal" tabindex="-1">
+<div class="modal fade" id="testNotificationModal" tabindex="-1" aria-labelledby="testNotificationModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-white">Test Push Notification</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="testNotificationModalLabel">Test Push Notification</h5>
+                <button type="button" class="btn-close" aria-label="Close" id="modalCloseBtn"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="testDeviceToken" class="form-label">Device Token</label>
-                    <input type="text" class="form-control" id="testDeviceToken" 
+                    <input type="text" class="form-control" id="testDeviceToken"
                            placeholder="Enter FCM device token">
                     <small class="text-muted">You can get device tokens from the device management page</small>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="sendTestNotification()">
+                <button type="button" class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="sendTestNotification()" id="sendTestBtn">
                     <i class="bi bi-send me-1"></i> Send Test
                 </button>
             </div>
@@ -292,6 +296,9 @@
 
 
 <script>
+// Global modal instance variable
+let testModalInstance = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Character counter
     const bodyTextarea = document.getElementById('body');
@@ -332,8 +339,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Test notification button
     document.getElementById('testNotificationBtn').addEventListener('click', function() {
-        const modal = new bootstrap.Modal(document.getElementById('testNotificationModal'));
-        modal.show();
+        const modalElement = document.getElementById('testNotificationModal');
+        testModalInstance = new bootstrap.Modal(modalElement, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+        testModalInstance.show();
+    });
+
+    // Close button handler
+    document.getElementById('modalCloseBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeTestModal();
+    });
+
+    // Cancel button handler
+    document.getElementById('modalCancelBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeTestModal();
     });
 });
 
@@ -345,8 +371,13 @@ function sendTestNotification() {
         return;
     }
 
+    if (!deviceToken.trim()) {
+        alert('Please enter a valid device token');
+        return;
+    }
+
     // Disable the send button to prevent multiple clicks
-    const sendBtn = document.querySelector('#testNotificationModal .btn-primary');
+    const sendBtn = document.getElementById('sendTestBtn');
     const originalText = sendBtn.innerHTML;
     sendBtn.disabled = true;
     sendBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Sending...';
@@ -357,31 +388,96 @@ function sendTestNotification() {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify({ device_token: deviceToken })
+        body: JSON.stringify({ device_token: deviceToken.trim() })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             alert('Test notification sent successfully!');
             // Close the modal properly
-            const modal = document.getElementById('testNotificationModal');
-            const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
-            modalInstance.hide();
+            closeTestModal();
             
             // Clear the input field
             document.getElementById('testDeviceToken').value = '';
         } else {
-            alert('Failed to send test notification: ' + data.message);
+            alert('Failed to send test notification: ' + (data.message || 'Unknown error occurred'));
         }
     })
     .catch(error => {
-        alert('Error: ' + error.message);
+        console.error('Push notification test error:', error);
+        alert('Error sending test notification. Please check the console for details.');
     })
     .finally(() => {
         // Re-enable the send button
         sendBtn.disabled = false;
         sendBtn.innerHTML = originalText;
     });
+}
+
+function closeTestModal() {
+    console.log('closeTestModal called');
+    
+    try {
+        // Method 1: Use global instance
+        if (testModalInstance) {
+            console.log('Using global instance');
+            testModalInstance.hide();
+            testModalInstance = null;
+            return;
+        }
+    } catch (e) {
+        console.log('Global instance method failed:', e);
+    }
+    
+    try {
+        // Method 2: Get instance from element
+        const modal = document.getElementById('testNotificationModal');
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        if (modalInstance) {
+            console.log('Using getInstance');
+            modalInstance.hide();
+            return;
+        }
+    } catch (e) {
+        console.log('getInstance method failed:', e);
+    }
+    
+    try {
+        // Method 3: Force close with jQuery if available
+        if (typeof $ !== 'undefined') {
+            console.log('Using jQuery');
+            $('#testNotificationModal').modal('hide');
+            return;
+        }
+    } catch (e) {
+        console.log('jQuery method failed:', e);
+    }
+    
+    try {
+        // Method 4: Manual DOM manipulation
+        console.log('Using manual method');
+        const modal = document.getElementById('testNotificationModal');
+        
+        // Hide modal
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        modal.removeAttribute('aria-modal');
+        modal.removeAttribute('role');
+        
+        // Remove backdrop
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+        
+        // Reset body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        
+        console.log('Manual close completed');
+    } catch (e) {
+        console.log('Manual method failed:', e);
+    }
 }
 
 function cleanupTokens() {
