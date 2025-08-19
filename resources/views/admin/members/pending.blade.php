@@ -28,6 +28,7 @@
                                 <th>Name</th>
                                 <th>Mobile</th>
                                 <th>Registered</th>
+                                <th>Payment Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -37,6 +38,17 @@
                                     <td>{{ $member->first_name }} {{ $member->last_name }}</td>
                                     <td>{{ $member->mobile_number }}</td>
                                     <td>{{ $member->created_at->format('M d, Y') }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ $member->payment_status === 'Approved' ? 'success' : ($member->payment_status === 'Rejected' ? 'danger' : 'warning') }}">
+                                            {{ $member->payment_status }}
+                                        </span>
+                                        @if($member->payment_proof)
+                                            <br>
+                                            <button type="button" class="btn btn-sm btn-info mt-1" data-toggle="modal" data-target="#proofModal{{ $member->id }}">
+                                                View Proof
+                                            </button>
+                                        @endif
+                                    </td>
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#approveModal{{ $member->id }}">
                                             <i class="bi bi-check"></i> Approve
@@ -90,10 +102,58 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+
+                            <!-- Payment Proof Modal -->
+                            @if($member->payment_proof)
+                                <div class="modal fade" id="proofModal{{ $member->id }}" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Payment Proof for {{ $member->first_name }} {{ $member->last_name }}</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body text-center">
+                                                <img src="{{ asset('storage/' . $member->payment_proof) }}" class="img-fluid" alt="Payment Proof">
+                                                <br><br>
+                                                <a href="{{ asset('storage/' . $member->payment_proof) }}" download class="btn btn-sm btn-secondary">
+                                                    Download Proof
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Update Approve Modal to include payment status -->
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    // Update approve form to include payment status
+                                    const approveForm = document.querySelector('#approveModal{{ $member->id }} form');
+                                    if (approveForm) {
+                                        // Add payment status field to the form
+                                        const paymentStatusField = document.createElement('div');
+                                        paymentStatusField.className = 'form-group';
+                                        paymentStatusField.innerHTML = `
+                                            <label for="payment_status_{{ $member->id }}">Payment Status</label>
+                                            <select name="payment_status" id="payment_status_{{ $member->id }}" class="form-control">
+                                                <option value="Approved" {{ $member->payment_status === 'Approved' ? 'selected' : '' }}>Approved</option>
+                                                <option value="Rejected" {{ $member->payment_status === 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                                                <option value="Pending" {{ $member->payment_status === 'Pending' ? 'selected' : '' }}>Pending</option>
+                                            </select>
+                                        `;
+
+                                        // Insert after the membership code field
+                                        const membershipCodeField = approveForm.querySelector('[name="membership_code"]').parentElement;
+                                        membershipCodeField.after(paymentStatusField);
+                                    }
+                                });
+                            </script>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             @else
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle"></i> No pending members found.

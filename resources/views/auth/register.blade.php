@@ -125,7 +125,7 @@
             </div>
 
             <div class="mb-3 position-relative">
-                <input type="text" name="mobile_number" id="mobile_number" class="form-control" 
+                <input type="text" name="mobile_number" id="mobile_number" class="form-control"
                     placeholder="Mobile Number" required
                     maxlength="11" minlength="11" pattern="[0-9]{11}" inputmode="numeric"
                     oninput="validateMobile(this)">
@@ -144,6 +144,38 @@
                 <span class="eye-icon" onclick="togglePassword('confirmPasswordInput', 'toggleIconConfirm')">
                     <i id="toggleIconConfirm" class="bi bi-eye-slash fs-5"></i>
                 </span>
+            </div>
+
+            <!-- Membership Payment Option -->
+            <div class="mb-3">
+                <label class="form-label">Membership Payment</label>
+                <select name="payment_option" id="paymentOption" class="form-control" required>
+                    <option value="">Select Payment Option</option>
+                    <option value="pay_now">Pay Now</option>
+                    <option value="pay_later">Pay Later</option>
+                </select>
+            </div>
+
+            <!-- Payment Proof Section (Hidden by default) -->
+            <div id="paymentProofSection" class="mb-3 d-none">
+                <label class="form-label">Payment Proof</label>
+                <select name="payment_method" id="paymentMethod" class="form-control mb-2">
+                    <option value="ebili_qr">Scan QR to Pay</option>
+                </select>
+
+                <!-- QR Code Display -->
+                <div id="qrCodeSection" class="mb-2 d-none">
+                    <div class="text-center">
+                        <img src="{{ asset('images/ebili-QR.png') }}" alt="E-Bili QR Code" class="img-fluid" style="max-width: 200px;">
+                        <p class="mt-2">Scan this QR code to make payment</p>
+                    </div>
+                </div>
+
+                <!-- Upload Payment Proof -->
+                <div class="mb-2">
+                    <label for="payment_proof" class="form-label">Upload Payment Proof</label>
+                    <input type="file" name="payment_proof" id="payment_proof" class="form-control" accept="image/*">
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary btn-md w-100">
@@ -170,6 +202,34 @@
     document.addEventListener('DOMContentLoaded', function () {
         const nameInput = document.querySelector('input[name="name"]');
         if (nameInput) nameInput.focus();
+
+        // Payment option change handler
+        const paymentOption = document.getElementById('paymentOption');
+        const paymentProofSection = document.getElementById('paymentProofSection');
+        const paymentMethod = document.getElementById('paymentMethod');
+        const qrCodeSection = document.getElementById('qrCodeSection');
+
+        if (paymentOption) {
+            paymentOption.addEventListener('change', function() {
+                if (this.value === 'pay_now') {
+                    paymentProofSection.classList.remove('d-none');
+                    qrCodeSection.classList.remove('d-none');
+                } else {
+                    paymentProofSection.classList.add('d-none');
+                    qrCodeSection.classList.add('d-none');
+                }
+            });
+        }
+
+        if (paymentMethod) {
+            paymentMethod.addEventListener('change', function() {
+                if (this.value === 'ebili_qr') {
+                    qrCodeSection.classList.remove('d-none');
+                } else {
+                    qrCodeSection.classList.add('d-none');
+                }
+            });
+        }
     });
 </script>
 

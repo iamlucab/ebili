@@ -62,12 +62,12 @@
                                 @else
                                     <span class="badge bg-success fs-3 rounded-pill">₱{{ number_format($product->price, 2) }}</span>
                                 @endif
-                                
+
                                 <span class="badge bg-info text-dark fs-6 rounded-pill">
                                     Cashback: ₱{{ number_format($product->cashback_amount, 2) }}
                                 </span>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <small class="text-muted d-block">
                                     Cashback distributed from Level 1 to Level {{ $product->cashback_max_level }}
@@ -84,8 +84,16 @@
                             {{-- Gallery --}}
                             @php
                                 $gallery = $product->gallery ?? [];
+                                // Ensure gallery is properly decoded from JSON if it's a string
+                                if (is_string($gallery)) {
+                                    $gallery = json_decode($gallery, true) ?? [];
+                                }
+                                // Ensure it's an array
                                 $gallery = is_array($gallery) ? $gallery : [];
-                                array_unshift($gallery, $product->thumbnail);
+                                // Add thumbnail to the beginning of gallery
+                                if ($product->thumbnail) {
+                                    array_unshift($gallery, $product->thumbnail);
+                                }
                             @endphp
 
                             @if(count($gallery) > 1)
@@ -93,10 +101,12 @@
                                     <label class="fw-bold">Product gallery</label>
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach ($gallery as $image)
+                                            @if (is_string($image))
                                             <img src="{{ asset('storage/' . $image) }}"
                                                  data-full="{{ asset('storage/' . $image) }}"
                                                  class="img-thumbnail gallery-thumb"
                                                  style="height: 70px; width: 70px; object-fit: cover; cursor: pointer; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.15);">
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>
@@ -164,6 +174,8 @@
     </div>
 </div>
 @endsection
+
+@include('partials.mobile-footer')
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -269,3 +281,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endsection
+

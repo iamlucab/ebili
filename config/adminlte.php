@@ -120,6 +120,7 @@ return [
             'submenu' => [
                 ['text' => 'All Members', 'url' => '/admin/members', 'icon' => 'bi bi-list'],
                 ['text' => 'Membership Codes', 'url' => 'admin/membership-codes', 'icon' => 'bi bi-qr-code'],
+                ['text' => 'Requested Codes', 'url' => 'admin/membership-code-requests', 'icon' => 'bi bi-upc-scan'],
             ],
         ],
 
@@ -151,7 +152,7 @@ return [
                // ['text' => 'Cashback Programs', 'url' => 'admin/cashback-programs', 'icon' => 'fas fa-percent'],
                // ['text' => 'Cashback Transactions', 'url' => 'admin/cashback-transactions', 'icon' => 'fas fa-exchange-alt'],
                //['text' => 'Cashback Settings', 'url' => 'admin/cashback-settings', 'icon' => 'fas fa-cog'],
-            
+
             ],
         ],
 

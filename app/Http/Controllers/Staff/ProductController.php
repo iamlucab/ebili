@@ -21,7 +21,7 @@ class ProductController extends Controller
 
         $query = Product::with('category')
             ->where('created_by', Auth::user()->id);
-            
+
         if ($selectedCategoryId) {
             $query->where('category_id', $selectedCategoryId);
         }
@@ -78,7 +78,7 @@ class ProductController extends Controller
             'discount_type' => 'nullable|in:flat,percent',
             'promo_code' => 'nullable|string|max:50',
         ]);
-        
+
         // Convert cashback_level_bonuses to proper format if provided
         if ($request->has('cashback_level_bonuses')) {
             $levelBonuses = [];
@@ -134,7 +134,7 @@ class ProductController extends Controller
     {
         // Get the actual user ID from the authenticated user
         $currentUserId = Auth::user()->id;
-        
+
         // Check if the product belongs to the current staff user
         if ($product->created_by !== $currentUserId) {
             abort(403, 'You can only view products you created.');
@@ -155,7 +155,7 @@ class ProductController extends Controller
 
         $categories = Category::all();
         $units = Unit::all();
-        
+
         return view('staff.products.edit', compact('product', 'categories', 'units'));
     }
 
@@ -186,7 +186,7 @@ class ProductController extends Controller
             'discount_type'         => 'nullable|in:flat,percent',
             'promo_code'            => 'nullable|string|max:50',
         ]);
-        
+
         // Convert cashback_level_bonuses to proper format if provided
         if ($request->has('cashback_level_bonuses')) {
             $levelBonuses = [];
@@ -213,6 +213,11 @@ class ProductController extends Controller
                 $galleryPaths[] = $image->store('products/gallery', 'public');
             }
 
+            // If product already has gallery images, merge with new ones
+            if (!empty($product->gallery) && is_array($product->gallery)) {
+                $galleryPaths = array_merge($product->gallery, $galleryPaths);
+            }
+
             $product->gallery = json_encode($galleryPaths);
         }
 
@@ -234,7 +239,7 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('staff.products.index')->with('success', 'Product deleted.');
     }
-    
+
     /**
      * Preview cashback distribution based on provided parameters.
      */
@@ -243,22 +248,22 @@ class ProductController extends Controller
         $cashbackAmount = $request->input('cashback_amount', 0);
         $maxLevel = $request->input('cashback_max_level', 1);
         $levelBonuses = $request->input('cashback_level_bonuses', []);
-        
+
         // Create a temporary product for preview
         $product = new Product([
             'cashback_amount' => $cashbackAmount,
             'cashback_max_level' => $maxLevel,
             'cashback_level_bonuses' => $levelBonuses,
         ]);
-        
+
         $cashbacks = $product->getAllCashbacks();
-        
+
         return response()->json([
             'cashbacks' => $cashbacks,
             'total' => array_sum($cashbacks),
         ]);
     }
-    
+
     /**
      * Toggle the active status of a product (only if created by current staff user).
      */
@@ -273,7 +278,7 @@ class ProductController extends Controller
         $product->save();
 
         $status = $product->active ? 'activated' : 'deactivated';
-        
+
         return redirect()->back()->with('success', "Product has been {$status} successfully.");
     }
 }

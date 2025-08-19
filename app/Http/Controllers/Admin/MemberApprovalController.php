@@ -24,47 +24,49 @@ class MemberApprovalController extends Controller
     }
 
     public function approve(Request $request, $id)
-{
-    $request->validate([
-        'sponsor_id' => 'required|exists:members,id',
-        'membership_code' => 'required|exists:membership_codes,code',
-    ]);
+    {
+        $request->validate([
+            'sponsor_id' => 'required|exists:members,id',
+            'membership_code' => 'required|exists:membership_codes,code',
+            'payment_status' => 'nullable|in:Pending,Approved,Rejected',
+        ]);
 
-    $member = Member::findOrFail($id);
-    $user = User::where('member_id', $member->id)->firstOrFail();
-    $code = MembershipCode::where('code', $request->membership_code)->where('used', false)->first();
+        $member = Member::findOrFail($id);
+        $user = User::where('member_id', $member->id)->firstOrFail();
+        $code = MembershipCode::where('code', $request->membership_code)->where('used', false)->first();
 
-    if (!$code) {
-        return back()->withErrors(['membership_code' => 'Code is invalid or already used.']);
-    }
-
-    $member->update([
-        'sponsor_id' => $request->sponsor_id,
-        'status' => 'Approved',
-    ]);
-
-    $user->update(['status' => 'Approved']);
-
-    $code->update([
-        'used' => true,
-        'used_by' => $user->id,
-        'used_at' => now(),
-    ]);
-
-    // Apply referral bonuses since member is now approved
-    if ($member->sponsor) {
-        // Check if bonuses haven't been awarded yet to prevent duplicates
-        if (!ReferralBonusService::bonusesAlreadyAwarded($member)) {
-            ReferralBonusService::awardReferralBonuses($member);
+        if (!$code) {
+            return back()->withErrors(['membership_code' => 'Code is invalid or already used.']);
         }
+
+        $member->update([
+            'sponsor_id' => $request->sponsor_id,
+            'payment_status' => $request->payment_status ?? $member->payment_status,
+            'status' => 'Approved',
+        ]);
+
+        $user->update(['status' => 'Approved']);
+
+        $code->update([
+            'used' => true,
+            'used_by' => $user->id,
+            'used_at' => now(),
+        ]);
+
+        // Apply referral bonuses since member is now approved
+        if ($member->sponsor) {
+            // Check if bonuses haven't been awarded yet to prevent duplicates
+            if (!ReferralBonusService::bonusesAlreadyAwarded($member)) {
+                ReferralBonusService::awardReferralBonuses($member);
+            }
+        }
+
+        // 🔔 Send notification and broadcast
+        $user->notify(new \App\Notifications\MemberApprovedNotification());
+        event(new \App\Events\MemberApproved($user->id, 'Your membership has been approved!'));
+
+        return back()->with('success', 'Member approved, notified, and referral bonuses distributed.');
     }
-
-    // 🔔 Send notification and broadcast
-    $user->notify(new \App\Notifications\MemberApprovedNotification());
-    event(new \App\Events\MemberApproved($user->id, 'Your membership has been approved!'));
-
-    return back()->with('success', 'Member approved, notified, and referral bonuses distributed.');
-}
 
     public function reject($id)
     {

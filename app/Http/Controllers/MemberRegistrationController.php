@@ -42,6 +42,8 @@ class MemberRegistrationController extends Controller
         'mobile_number'   => 'required|unique:members,mobile_number|unique:users,mobile_number',
         'occupation'      => 'nullable|string|max:191',
         'photo'           => 'nullable|image|max:2048',
+        'payment_proof'   => 'nullable|image|max:2048',
+        'payment_status'  => 'nullable|in:Pending,Approved,Rejected',
         'role'            => 'required|in:Member,Staff,Admin',
         'sponsor_id'      => $isMember ? 'nullable' : 'required|exists:members,id',
         'membership_code' => [
@@ -65,21 +67,28 @@ class MemberRegistrationController extends Controller
         $photoPath = $request->file('photo')->store('', 'public');
     }
 
+    $paymentProofPath = null;
+    if ($request->hasFile('payment_proof')) {
+        $paymentProofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+    }
+
     $sponsorId = $isMember ? $user->member->id : $request->sponsor_id;
 
     try {
         $member = Member::create([
-            'first_name'    => ucfirst(strtolower($request->first_name)),
-            'middle_name'   => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
-            'last_name'     => ucfirst(strtolower($request->last_name)),
-            'birthday'      => $request->birthday,
-            'mobile_number' => $request->mobile_number,
-            'occupation'    => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
-            'photo'         => $photoPath,
-            'role'          => $request->role,
-            'sponsor_id'    => $sponsorId,
-            'voter_id'      => null,
-            'status'        => 'Approved', // ✅ set Member status
+            'first_name'      => ucfirst(strtolower($request->first_name)),
+            'middle_name'     => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
+            'last_name'       => ucfirst(strtolower($request->last_name)),
+            'birthday'        => $request->birthday,
+            'mobile_number'   => $request->mobile_number,
+            'occupation'      => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
+            'photo'           => $photoPath,
+            'payment_proof'   => $paymentProofPath,
+            'payment_status'  => $request->payment_status ?? 'Pending',
+            'role'            => $request->role,
+            'sponsor_id'      => $sponsorId,
+            'voter_id'        => null,
+            'status'          => 'Approved', // ✅ set Member status
         ]);
 
         $createdUser = User::create([

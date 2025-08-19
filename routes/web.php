@@ -194,8 +194,15 @@ Route::get('/check-mobile', [MemberRegistrationController::class, 'checkMobile']
 
         //    Route::view('/member/dashboard', 'dashboard.member')->name('member.dashboard');
             Route::get('/staff/dashboard', [\App\Http\Controllers\Staff\StaffDashboardController::class, 'index'])->name('staff.dashboard');
+Route::get('/member/dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
 
-        Route::get('/member/dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
+// Membership Code Requests
+Route::prefix('member/membership-code-request')->middleware(['auth', 'can:member-only'])->group(function () {
+    Route::get('/', [\App\Http\Controllers\Member\MembershipCodeRequestController::class, 'index'])->name('member.membership-code-request.index');
+    Route::get('/create', [\App\Http\Controllers\Member\MembershipCodeRequestController::class, 'create'])->name('member.membership-code-request.create');
+    Route::post('/', [\App\Http\Controllers\Member\MembershipCodeRequestController::class, 'store'])->name('member.membership-code-request.store');
+});
+
 
 
             // ✅ Member Utilities
@@ -353,6 +360,14 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
         Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function () {
             Route::get('/membership-codes', [\App\Http\Controllers\Admin\MembershipCodeController::class, 'index'])->name('admin.membership-codes.index');
             Route::post('/membership-codes/generate', [\App\Http\Controllers\Admin\MembershipCodeController::class, 'generate'])->name('admin.membership-codes.generate');
+
+            // Membership Code Requests
+            Route::get('/membership-code-requests', [\App\Http\Controllers\Admin\MembershipCodeRequestController::class, 'index'])->name('admin.membership-code-requests.index');
+            Route::get('/membership-code-requests/{membershipCodeRequest}', [\App\Http\Controllers\Admin\MembershipCodeRequestController::class, 'show'])->name('admin.membership-code-requests.show');
+            Route::post('/membership-code-requests/{membershipCodeRequest}/approve', [\App\Http\Controllers\Admin\MembershipCodeRequestController::class, 'approve'])->name('admin.membership-code-requests.approve');
+            Route::post('/membership-code-requests/{membershipCodeRequest}/reject', [\App\Http\Controllers\Admin\MembershipCodeRequestController::class, 'reject'])->name('admin.membership-code-requests.reject');
+            Route::post('/membership-code-requests/{membershipCodeRequest}/assign-codes', [\App\Http\Controllers\Admin\MembershipCodeRequestController::class, 'assignCodes'])->name('admin.membership-code-requests.assign-codes');
+            Route::get('/membership-code-requests/codes', [\App\Http\Controllers\Admin\MembershipCodeRequestController::class, 'getAvailableCodes'])->name('admin.membership-code-requests.codes');
         });
 
         // ✅ Admin Reward Management

@@ -2,7 +2,7 @@
 @section('title', 'Your Cart')
 
 @section('content')
-<div class="container-fluid px-2">
+<div class="container-fluid px-2"><br>
     <h5 class="mb-3"><i class="bi bi-cart me-1"></i> Your Shopping Cart</h5>
 
     @if(count($cart) > 0)
@@ -34,7 +34,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                
+
                                 <!-- Product Details -->
                                 <div class="col-8 col-md-9">
                                     <div class="d-flex flex-column h-100">
@@ -55,7 +55,7 @@
                                                 </button>
                                             </form>
                                         </div>
-                                        
+
                                         <!-- Price & Quantity Controls -->
                                         <div class="d-flex justify-content-between align-items-center">
                                             <!-- Quantity Controls -->
@@ -70,7 +70,7 @@
                                                             style="width: 32px; height: 32px; font-size: 0.9rem;">+</button>
                                                 </form>
                                             </div>
-                                            
+
                                             <!-- Price Info -->
                                             <div class="text-end">
                                                 <div class="cart-unit-price">₱{{ number_format($item['price'], 2) }} each</div>
@@ -89,19 +89,19 @@
         <!-- Mobile-Optimized Cart Summary -->
         <div class="cart-summary">
             <div class="summary-row">
-                <span><i class="bi bi-calculator me-2"></i>Subtotal:</span>
+                <span><i class="bi bi-calculator me-2"></i>&nbsp;Subtotal:</span>
                 <span class="fw-bold">₱{{ number_format($total, 2) }}</span>
             </div>
             <div class="summary-row cashback">
-                <span><i class="bi bi-cash-coin me-2"></i>Total Cashback:</span>
+                <span><i class="bi bi-cash-coin me-2"></i>&nbsp;Total Cashback:</span>
                 <span class="fw-bold">₱{{ number_format($totalCashback, 2) }}</span>
             </div>
             <div class="summary-row wallet">
-                <span><i class="bi bi-wallet2 me-2"></i>Wallet Balance:</span>
+                <span><i class="bi bi-wallet2 me-2"></i>&nbsp;Wallet Balance:</span>
                 <span class="fw-bold text-success">₱{{ number_format(auth()->user()->member->wallet_balance ?? 0, 2) }}</span>
             </div>
             <div class="summary-row">
-                <span class="text-primary"><i class="bi bi-tag me-2"></i>Total Amount:</span>
+                <span class="text-primary"><i class="bi bi-tag me-2"></i>&nbsp;Total Amount:</span>
                 <span class="fw-bold text-primary fs-5">₱{{ number_format($total, 2) }}</span>
             </div>
         </div>
@@ -109,10 +109,10 @@
         <!-- Mobile-Optimized Action Buttons -->
         <div class="cart-actions">
             <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                <i class="bi bi-arrow-left me-2"></i>&nbsp;Continue Shopping
             </a>
             <a href="{{ route('shop.checkout.page') }}" class="btn btn-primary">
-                <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+                <i class="bi bi-credit-card me-2"></i>&nbsp;Proceed to Checkout
             </a>
         </div>
 
@@ -294,24 +294,24 @@
     .cart-product-placeholder {
         height: 70px;
     }
-    
+
     .cart-product-name {
         font-size: 0.9rem !important;
     }
-    
+
     .quantity-display {
         font-size: 1rem;
         min-width: 25px;
     }
-    
+
     .cart-subtotal {
         font-size: 1rem;
     }
-    
+
     .cart-unit-price {
         font-size: 0.75rem;
     }
-    
+
     /* Ensure buttons are touch-friendly */
     .quantity-controls .btn {
         min-width: 32px !important;
@@ -324,16 +324,16 @@
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
     }
-    
+
     .cart-item-card .card-body {
         padding: 0.75rem !important;
     }
-    
+
     .cart-product-image,
     .cart-product-placeholder {
         height: 60px;
     }
-    
+
     .cart-product-name {
         font-size: 0.85rem !important;
     }
@@ -443,22 +443,22 @@
         padding: 1rem;
         margin-top: 0.75rem;
     }
-    
+
     .cart-summary .summary-row {
         padding: 0.4rem 0;
         font-size: 0.9rem;
     }
-    
+
     .cart-summary .summary-row:last-child {
         font-size: 1rem;
         padding-top: 0.75rem;
         margin-top: 0.25rem;
     }
-    
+
     .empty-cart {
         padding: 2rem 1rem;
     }
-    
+
     .empty-cart i {
         font-size: 3rem;
     }

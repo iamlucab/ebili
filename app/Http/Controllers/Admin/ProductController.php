@@ -68,7 +68,7 @@ class ProductController extends Controller
             'discount_type' => 'nullable|in:flat,percent',
             'promo_code' => 'nullable|string|max:50',
         ]);
-        
+
         // Convert cashback_level_bonuses to proper format if provided
         if ($request->has('cashback_level_bonuses')) {
             $levelBonuses = [];
@@ -142,7 +142,7 @@ public function update(Request $request, Product $product)
         'discount_type'         => 'nullable|in:flat,percent',
         'promo_code'            => 'nullable|string|max:50',
     ]);
-    
+
     // Convert cashback_level_bonuses to proper format if provided
     if ($request->has('cashback_level_bonuses')) {
         $levelBonuses = [];
@@ -169,6 +169,11 @@ public function update(Request $request, Product $product)
             $galleryPaths[] = $image->store('products/gallery', 'public');
         }
 
+        // If product already has gallery images, merge with new ones
+        if (!empty($product->gallery) && is_array($product->gallery)) {
+            $galleryPaths = array_merge($product->gallery, $galleryPaths);
+        }
+
         $product->gallery = json_encode($galleryPaths);
     }
 
@@ -182,7 +187,7 @@ public function update(Request $request, Product $product)
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Product deleted.');
     }
-    
+
     /**
      * Preview cashback distribution based on provided parameters.
      */
@@ -191,16 +196,16 @@ public function update(Request $request, Product $product)
         $cashbackAmount = $request->input('cashback_amount', 0);
         $maxLevel = $request->input('cashback_max_level', 1);
         $levelBonuses = $request->input('cashback_level_bonuses', []);
-        
+
         // Create a temporary product for preview
         $product = new Product([
             'cashback_amount' => $cashbackAmount,
             'cashback_max_level' => $maxLevel,
             'cashback_level_bonuses' => $levelBonuses,
         ]);
-        
+
         $cashbacks = $product->getAllCashbacks();
-        
+
         return response()->json([
             'cashbacks' => $cashbacks,
             'total' => array_sum($cashbacks),

@@ -28,8 +28,8 @@
             <option disabled selected value="">Choose payment option</option>
             <option value="Wallet">💼 Wallet</option>
             <option value="GCash">📱 GCash</option>
-            <option value="Bank">🏦 Bank Transfer</option>
-            <option value="COD">💵 Cash on Delivery</option>
+            {{-- <option value="Bank">🏦 Bank Transfer</option>
+            <option value="COD">💵 Cash on Delivery</option> --}}
         </select>
     </div>
 
@@ -38,9 +38,9 @@
         <div class="card border-0 shadow-sm p-3 mb-4 bg-light rounded-4">
             <div class="text-center">
                 <label class="fw-bold d-block mb-2">📲 Scan GCash QR Code</label>
-                <img src="{{ asset('images/gcashQR.jpeg') }}" class="img-fluid rounded shadow mb-2" style="max-width: 180px;">
-                <small class="text-muted d-block">GCash Account: <strong>LU*** CAB*</strong></small>
-                <a href="{{ asset('images/gcashQR.jpeg') }}" download class="btn btn-sm btn-outline-primary mt-2 rounded-pill">
+                <img src="{{ asset('images/ebili-QR.png') }}" class="img-fluid rounded shadow mb-2" style="max-width: 180px;">
+                <small class="text-muted d-block">GCash Account: <strong>RO***E JU* R*</strong></small>
+                <a href="{{ asset('images/ebili-QR.png') }}" download class="btn btn-sm btn-outline-primary mt-2 rounded-pill">
                     <i class="bi bi-download"></i> Download QR
                 </a>
             </div>

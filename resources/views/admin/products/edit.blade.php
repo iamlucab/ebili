@@ -46,7 +46,7 @@
                                 <small class="text-muted">Maximum number of levels to distribute cashback</small>
                             </div>
                         </div>
-                        
+
                         <div class="card mt-3 mb-4">
                             <div class="card-header bg-light">
                                 <h5>Cashback Level Distribution</h5>
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="card mt-3 mb-4">
                             <div class="card-header bg-light">
                                 <h5>Cashback Preview</h5>
@@ -87,7 +87,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Category</label>
@@ -113,8 +113,10 @@
                             <label class="form-label">Thumbnail Image</label>
                             @if ($product->thumbnail)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $product->thumbnail) }}" class="img-thumbnail" style="max-height: 100px;" alt="Current Thumbnail">
+                                    <img src="{{ asset('storage/' . $product->thumbnail) }}" class="img-thumbnail" style="max-height: 100px;" alt="Current Thumbnail" onerror="this.onerror=null; this.src='{{ asset('images/product-placeholder.png') }}';">
                                 </div>
+                            @else
+                                <p class="text-muted">No thumbnail image found</p>
                             @endif
                             <input type="file" name="thumbnail" class="form-control rounded-3">
                         </div>
@@ -122,12 +124,27 @@
                         <div class="mb-3">
                             <label class="form-label">Gallery Images</label>
                             <input type="file" name="gallery[]" multiple class="form-control rounded-3">
-                            @if ($product->gallery && is_array($product->gallery))
+                            @php
+                                $gallery = $product->gallery ?? [];
+                                // Ensure gallery is properly decoded from JSON if it's a string
+                                if (is_string($gallery)) {
+                                    $gallery = json_decode($gallery, true) ?? [];
+                                }
+                                // Ensure it's an array
+                                $gallery = is_array($gallery) ? $gallery : [];
+                            @endphp
+                            @if ($gallery && is_array($gallery))
                                 <div class="mt-2 d-flex flex-wrap gap-2">
-                                    @foreach ($product->gallery as $image)
-                                        <img src="{{ asset('storage/' . $image) }}" alt="Gallery Image" class="img-thumbnail" style="height: 80px;">
+                                    @foreach ($gallery as $image)
+                                        @if (is_string($image))
+                                            <img src="{{ asset('storage/' . $image) }}" alt="Gallery Image" class="img-thumbnail" style="height: 80px;" onerror="this.onerror=null; this.src='{{ asset('images/product-placeholder.png') }}';">
+                                        @else
+                                            <span class="badge badge-warning">Invalid image data</span>
+                                        @endif
                                     @endforeach
                                 </div>
+                            @else
+                                <p class="text-muted">No gallery images found</p>
                             @endif
                         </div>
 
@@ -155,7 +172,7 @@
                                 <div class="alert alert-info">
                                     <i class="bi bi-info-circle me-2"></i> These discounts and promotions will only apply to members during checkout.
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Discount Value</label>
@@ -175,7 +192,7 @@
                                     <label class="form-label">Promo Code</label>
                                     <input type="text" id="promo_code" name="promo_code" class="form-control rounded-3" value="{{ old('promo_code', $product->promo_code) }}">
                                 </div>
-                                
+
                                 <div id="price-preview" class="mt-3 p-3 border rounded bg-light">
                                     <h6 class="mb-2">Price Preview for Members</h6>
                                     <div class="d-flex justify-content-between">
@@ -219,9 +236,9 @@ function generateCashbackLevelInputs() {
     const maxLevel = parseInt($('#cashback_max_level').val());
     const container = $('#cashback-level-inputs');
     container.empty();
-    
+
     const row = $('<div class="row"></div>');
-    
+
     for (let i = 1; i <= maxLevel; i++) {
         // Get existing value if available
         let existingValue = '';
@@ -231,7 +248,7 @@ function generateCashbackLevelInputs() {
                 existingValue = levelBonuses[i];
             }
         @endif
-        
+
         const col = $(`
             <div class="col-md-4 mb-3">
                 <div class="form-group">
@@ -242,10 +259,10 @@ function generateCashbackLevelInputs() {
                 </div>
             </div>
         `);
-        
+
         row.append(col);
     }
-    
+
     container.append(row);
 }
 
@@ -253,7 +270,7 @@ function generateCashbackLevelInputs() {
 function updateCashbackPreview() {
     const cashbackAmount = parseFloat($('#cashback_amount').val()) || 0;
     const maxLevel = parseInt($('#cashback_max_level').val()) || 1;
-    
+
     // Collect custom values
     const levelBonuses = {};
     $('.cashback-level-bonus').each(function() {
@@ -263,7 +280,7 @@ function updateCashbackPreview() {
             levelBonuses[level] = parseFloat(value);
         }
     });
-    
+
     // Send to server for calculation
     $.ajax({
         url: '{{ route("admin.products.preview-cashback") }}',
@@ -277,11 +294,11 @@ function updateCashbackPreview() {
         success: function(response) {
             const previewTable = $('#cashback-preview-table');
             previewTable.empty();
-            
+
             for (let i = 1; i <= maxLevel; i++) {
                 const amount = response.cashbacks[i] || 0;
                 const isCustom = levelBonuses[i] !== undefined;
-                
+
                 previewTable.append(`
                     <tr>
                         <td>Level ${i}</td>
@@ -294,7 +311,7 @@ function updateCashbackPreview() {
                     </tr>
                 `);
             }
-            
+
             $('#cashback-preview-total').text(`₱${response.total.toFixed(2)}`);
         }
     });
@@ -304,26 +321,26 @@ function updateCashbackPreview() {
 $(function() {
     generateCashbackLevelInputs();
     updateCashbackPreview();
-    
+
     // Event listeners for cashback configuration
     $('#cashback_max_level').on('change', function() {
         generateCashbackLevelInputs();
         updateCashbackPreview();
     });
-    
+
     $('#cashback_amount').on('input', updateCashbackPreview);
-    
+
     $(document).on('input', '.cashback-level-bonus', updateCashbackPreview);
-    
+
     // Price preview calculation
     function updatePricePreview() {
         const originalPrice = parseFloat($('input[name="price"]').val()) || 0;
         const discountValue = parseFloat($('#discount_value').val()) || 0;
         const discountType = $('#discount_type').val();
-        
+
         let discountAmount = 0;
         let finalPrice = originalPrice;
-        
+
         // Calculate discount based on type
         if (discountType === 'flat' && discountValue > 0) {
             discountAmount = discountValue;
@@ -332,12 +349,12 @@ $(function() {
             discountAmount = (originalPrice * discountValue) / 100;
             finalPrice = originalPrice - discountAmount;
         }
-        
+
         // Update the preview
         $('#original-price').text(`₱${originalPrice.toFixed(2)}`);
         $('#discount-amount').text(`-₱${discountAmount.toFixed(2)}`);
         $('#final-price').text(`₱${finalPrice.toFixed(2)}`);
-        
+
         // Show/hide the preview based on whether there's a price entered
         if (originalPrice > 0) {
             $('#price-preview').show();
@@ -345,10 +362,10 @@ $(function() {
             $('#price-preview').hide();
         }
     }
-    
+
     // Initial update
     updatePricePreview();
-    
+
     // Update on change of relevant fields
     $('input[name="price"], #discount_value, #discount_type').on('change input', updatePricePreview);
 });

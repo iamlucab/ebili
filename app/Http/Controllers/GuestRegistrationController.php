@@ -23,14 +23,16 @@ class GuestRegistrationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name'    => 'required|string|max:191',
-            'middle_name'   => 'nullable|string|max:191',
-            'last_name'     => 'required|string|max:191',
-            'birthday'      => 'required|date',
-            'mobile_number' => 'required|string|max:11|regex:/^09\d{9}$/',
-            'occupation'    => 'nullable|string|max:191',
-            'photo'         => 'nullable|image|max:2048',
-            'password'      => 'required|string|min:6',
+            'first_name'      => 'required|string|max:191',
+            'middle_name'     => 'nullable|string|max:191',
+            'last_name'       => 'required|string|max:191',
+            'birthday'        => 'required|date',
+            'mobile_number'   => 'required|string|max:11|regex:/^09\d{9}$/',
+            'occupation'      => 'nullable|string|max:191',
+            'photo'           => 'nullable|image|max:2048',
+            'password'        => 'required|string|min:6',
+            'payment_option'  => 'required|in:pay_now,pay_later',
+            'payment_proof'   => 'nullable|image|max:2048',
         ]);
 
         // ✅ Check if mobile is already registered
@@ -45,18 +47,24 @@ class GuestRegistrationController extends Controller
             ? $request->file('photo')->store('photos', 'public')
             : null;
 
+        $paymentProofPath = $request->hasFile('payment_proof')
+            ? $request->file('payment_proof')->store('payment_proofs', 'public')
+            : null;
+
         $member = Member::create([
-            'first_name'    => ucfirst(strtolower($request->first_name)),
-            'middle_name'   => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
-            'last_name'     => ucfirst(strtolower($request->last_name)),
-            'birthday'      => $request->birthday,
-            'mobile_number' => $request->mobile_number,
-            'occupation'    => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
-            'photo'         => $photoPath,
-            'role'          => 'Member',
-            'status'        => 'Pending',
-            'sponsor_id'    => null, // Will be assigned by admin during approval
-            'loan_eligible' => false,
+            'first_name'      => ucfirst(strtolower($request->first_name)),
+            'middle_name'     => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
+            'last_name'       => ucfirst(strtolower($request->last_name)),
+            'birthday'        => $request->birthday,
+            'mobile_number'   => $request->mobile_number,
+            'occupation'      => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
+            'photo'           => $photoPath,
+            'payment_proof'   => $paymentProofPath,
+            'payment_status'  => $request->payment_option === 'pay_now' ? 'Pending' : 'Pending',
+            'role'            => 'Member',
+            'status'          => 'Pending',
+            'sponsor_id'      => null, // Will be assigned by admin during approval
+            'loan_eligible'   => false,
         ]);
 
         User::create([
@@ -96,15 +104,17 @@ class GuestRegistrationController extends Controller
     public function storeWithReferral(Request $request, $sponsor_id)
     {
         $request->validate([
-            'first_name'    => 'required|string|max:191',
-            'middle_name'   => 'nullable|string|max:191',
-            'last_name'     => 'required|string|max:191',
-            'birthday'      => 'required|date',
-            'mobile_number' => 'required|string|max:11|regex:/^09\d{9}$/',
-            'occupation'    => 'nullable|string|max:191',
-            'photo'         => 'nullable|image|max:2048',
-            'password'      => 'required|string|min:6|confirmed',
-            'sponsor_id'    => 'required|exists:members,id',
+            'first_name'      => 'required|string|max:191',
+            'middle_name'     => 'nullable|string|max:191',
+            'last_name'       => 'required|string|max:191',
+            'birthday'        => 'required|date',
+            'mobile_number'   => 'required|string|max:11|regex:/^09\d{9}$/',
+            'occupation'      => 'nullable|string|max:191',
+            'photo'           => 'nullable|image|max:2048',
+            'password'        => 'required|string|min:6|confirmed',
+            'sponsor_id'      => 'required|exists:members,id',
+            'payment_option'  => 'required|in:pay_now,pay_later',
+            'payment_proof'   => 'nullable|image|max:2048',
         ]);
 
         // Validate sponsor exists and is approved
@@ -128,18 +138,24 @@ class GuestRegistrationController extends Controller
             ? $request->file('photo')->store('photos', 'public')
             : null;
 
+        $paymentProofPath = $request->hasFile('payment_proof')
+            ? $request->file('payment_proof')->store('payment_proofs', 'public')
+            : null;
+
         $member = Member::create([
-            'first_name'    => ucfirst(strtolower($request->first_name)),
-            'middle_name'   => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
-            'last_name'     => ucfirst(strtolower($request->last_name)),
-            'birthday'      => $request->birthday,
-            'mobile_number' => $request->mobile_number,
-            'occupation'    => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
-            'photo'         => $photoPath,
-            'role'          => 'Member',
-            'status'        => 'Pending',
-            'sponsor_id'    => $sponsor_id, // Automatically set the sponsor from referral link
-            'loan_eligible' => false,
+            'first_name'      => ucfirst(strtolower($request->first_name)),
+            'middle_name'     => $request->middle_name ? ucfirst(strtolower($request->middle_name)) : null,
+            'last_name'       => ucfirst(strtolower($request->last_name)),
+            'birthday'        => $request->birthday,
+            'mobile_number'   => $request->mobile_number,
+            'occupation'      => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
+            'photo'           => $photoPath,
+            'payment_proof'   => $paymentProofPath,
+            'payment_status'  => $request->payment_option === 'pay_now' ? 'Pending' : 'Pending',
+            'role'            => 'Member',
+            'status'          => 'Pending',
+            'sponsor_id'      => $sponsor_id, // Automatically set the sponsor from referral link
+            'loan_eligible'   => false,
         ]);
 
         User::create([
@@ -156,7 +172,7 @@ class GuestRegistrationController extends Controller
         $redirectRoute = request()->is('join/*')
             ? 'join.referral'
             : 'member.register.referral';
-            
+
         return redirect()->route($redirectRoute, $sponsor_id)
             ->with('success', 'Registration submitted! You and your sponsor will receive bonuses once approved.');
     }

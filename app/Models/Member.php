@@ -27,6 +27,8 @@ class Member extends Model
         'mobile_number',
         'occupation',
         'photo',
+        'payment_proof',
+        'payment_status',
         'address',
         'status',
         'role',
@@ -99,7 +101,7 @@ class Member extends Model
     {
         return $this->hasMany(Order::class);
     }
-    
+
     public function membershipCode()
     {
         return $this->hasOneThrough(
@@ -210,7 +212,7 @@ class Member extends Model
         }
 
         $currentLevel = collect([$this]);
-        
+
         for ($i = 1; $i < $level; $i++) {
             $nextLevel = collect();
             foreach ($currentLevel as $member) {
@@ -218,7 +220,7 @@ class Member extends Model
             }
             $currentLevel = $nextLevel;
         }
-        
+
         return $currentLevel;
     }
 

@@ -49,24 +49,26 @@
                             {{-- Product Image --}}
                             @if($product->thumbnail)
                                 <div class="text-center mb-4">
-                                    <img src="{{ asset('storage/' . $product->thumbnail) }}" 
-                                         alt="{{ $product->name }}" 
+                                    <img src="{{ asset('storage/' . $product->thumbnail) }}"
+                                         alt="{{ $product->name }}"
                                          class="img-fluid rounded"
                                          style="max-height: 300px;">
                                 </div>
                             @endif
 
                             {{-- Gallery --}}
-                            @if($product->gallery && count($product->gallery) > 0)
+                            @if($product->gallery && is_array($product->gallery) && count($product->gallery) > 0)
                                 <div class="mb-4">
                                     <h5>Gallery</h5>
                                     <div class="row">
                                         @foreach($product->gallery as $image)
+                                            @if(is_string($image))
                                             <div class="col-4 mb-2">
-                                                <img src="{{ asset('storage/' . $image) }}" 
-                                                     alt="Gallery Image" 
+                                                <img src="{{ asset('storage/' . $image) }}"
+                                                     alt="Gallery Image"
                                                      class="img-fluid rounded">
                                             </div>
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>
