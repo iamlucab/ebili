@@ -687,9 +687,10 @@ body {
           <div class="tab-pane fade p-3" id="referral" role="tabpanel">
             <h6 class="fw-bold">📈 Referral Earnings</h6>
          <ul>
-              <li>Level A -  From your invite you get:₱25</li>
-              <li>Level B - Invite's invite you get: ₱15</li>
-              <li>Level C - A friend's Invite's(3rd level) you get: ₱10</li>
+              <li>Level A -  From your invite you get a referral bonus </li>
+              <li>Level B - Invite's invite you get another bonus</li>
+              <li>Level C - A friend's Invite's(3rd level) you get another bonus</li>
+              <li> so on... and so forth.</li>
             </ul>
             <p>Earn as you grow the E-bili friend group.</p>
           </div>
