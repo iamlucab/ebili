@@ -34,6 +34,8 @@ class Member extends Model
         'role',
         'sponsor_id',
         'loan_eligible',
+        'payment_option',
+        'payment_method',
     ];
 
     protected $casts = [

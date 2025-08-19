@@ -93,6 +93,42 @@
                         </div>
                     </div>
 
+                    {{-- Payment Options --}}
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Membership Payment</label>
+                            <select name="payment_option" id="paymentOption" class="form-control" required>
+                                <option value="">Select Payment Option</option>
+                                <option value="pay_now">Pay Now (GCash)</option>
+                                <option value="pay_later">Pay Later</option>
+                            </select>
+                            @error('payment_option') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Payment Proof Section (Hidden by default) -->
+                    <div id="paymentProofSection" class="col-md-6 d-none">
+                        <div class="form-group">
+                            <label class="form-label">Payment Method</label>
+                            <select name="payment_method" id="paymentMethod" class="form-control mb-2">
+                                <option value="gcash_qr">Scan QR to Pay</option>
+                            </select>
+
+                            <div id="qrCodeSection" class="mb-3 d-none">
+                                <label class="form-label">GCash QR Code</label>
+                                <div class="text-center">
+                                    <img src="{{ asset('images/gcashQR.jpeg') }}" alt="GCash QR Code" class="img-fluid" style="max-width: 200px;">
+                                    <p class="mt-2">Scan this QR code to make payment</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="payment_proof" class="form-label">Upload Payment Proof</label>
+                                <input type="file" name="payment_proof" id="payment_proof" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Role --}}
                     <div class="col-md-6">
                         <div class="form-group">
@@ -166,5 +202,33 @@
             feedback.textContent = '';
         }
     });
+
+    // Payment option change handler
+    const paymentOption = document.getElementById('paymentOption');
+    const paymentProofSection = document.getElementById('paymentProofSection');
+    const paymentMethod = document.getElementById('paymentMethod');
+    const qrCodeSection = document.getElementById('qrCodeSection');
+
+    if (paymentOption) {
+        paymentOption.addEventListener('change', function() {
+            if (this.value === 'pay_now') {
+                paymentProofSection.classList.remove('d-none');
+                qrCodeSection.classList.remove('d-none');
+            } else {
+                paymentProofSection.classList.add('d-none');
+                qrCodeSection.classList.add('d-none');
+            }
+        });
+    }
+
+    if (paymentMethod) {
+        paymentMethod.addEventListener('change', function() {
+            if (this.value === 'gcash_qr') {
+                qrCodeSection.classList.remove('d-none');
+            } else {
+                qrCodeSection.classList.add('d-none');
+            }
+        });
+    }
 </script>
 @endsection

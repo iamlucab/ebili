@@ -9,7 +9,7 @@
             <i class="bi bi-person me-2"></i> Personal Information
         </h5>
     </div>
-    
+
     <div class="col-md-4">
         <label class="form-label">
             <i class="bi bi-person me-1"></i> First Name <span class="text-danger">*</span>
@@ -121,12 +121,12 @@
                 $unusedCodes = \App\Models\MembershipCode::where('used', false)->get();
                 $currentCode = isset($member) && $member->membershipCode ? $member->membershipCode : null;
             @endphp
-            
+
             {{-- Show current code first if editing --}}
             @if($currentCode)
                 <option value="{{ $currentCode->code }}" selected>{{ $currentCode->code }} (Current)</option>
             @endif
-            
+
             {{-- Show only unused codes --}}
             @foreach ($unusedCodes as $code)
                 @if(!$currentCode || $code->code !== $currentCode->code)
@@ -138,6 +138,38 @@
             <i class="bi bi-info-circle me-1"></i> Only unused codes are shown
         </small>
     </div>
+
+    {{-- Payment Information Section --}}
+    <div class="col-md-4">
+        <label class="form-label">
+            <i class="bi bi-credit-card me-1"></i> Payment Status
+        </label>
+        <select name="payment_status" class="form-control">
+            <option value="Pending" {{ (old('payment_status', $member->payment_status ?? '') == 'Pending') ? 'selected' : '' }}>
+                Pending
+            </option>
+            <option value="Approved" {{ (old('payment_status', $member->payment_status ?? '') == 'Approved') ? 'selected' : '' }}>
+                Approved
+            </option>
+            <option value="Rejected" {{ (old('payment_status', $member->payment_status ?? '') == 'Rejected') ? 'selected' : '' }}>
+                Rejected
+            </option>
+        </select>
+    </div>
+
+    @if (isset($member) && $member->payment_proof)
+    <div class="col-md-4">
+        <label class="form-label">
+            <i class="bi bi-image me-1"></i> Payment Proof
+        </label>
+        <div class="mt-2">
+            <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#paymentProofModal">
+                <i class="bi bi-eye me-1"></i> View Proof
+            </a>
+        </div>
+    </div>
+    @endif
+
     <div class="col-md-4">
         <label class="form-label">
             <i class="bi bi-key me-1"></i> Reset Password (Optional)
@@ -161,7 +193,7 @@
                 <input type="checkbox" name="loan_eligible" value="1" class="form-check-input" id="loanEligibleCheckbox"
                     {{ old('loan_eligible', $member->loan_eligible ?? false) ? 'checked' : '' }}>
                 <label class="form-check-label fw-bold" for="loanEligibleCheckbox">
-                    <i class="bi bi-cash-coin me-1" style="color: var(--primary-purple);"></i> 
+                    <i class="bi bi-cash-coin me-1" style="color: var(--primary-purple);"></i>
                     Eligible for Loan
                 </label>
                 <small class="text-muted d-block mt-1">
@@ -191,6 +223,65 @@
         @endif
     </div>
 </div>
+
+{{-- Payment Proof Modal --}}
+@if (isset($member) && $member->payment_proof)
+<div class="modal fade" id="paymentProofModal" tabindex="-1" aria-labelledby="paymentProofModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentProofModalLabel">Payment Proof</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ asset('storage/' . $member->payment_proof) }}"
+                     class="img-fluid payment-proof-image"
+                     alt="Payment Proof"
+                     style="max-height: 80vh; cursor: zoom-in;"
+                     data-bs-toggle="tooltip"
+                     data-bs-placement="bottom"
+                     title="Click to zoom in/out">
+                <div class="mt-2">
+                    <a href="{{ asset('storage/' . $member->payment_proof) }}"
+                       download
+                       class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-download me-1"></i> Download Proof
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Zoom functionality for payment proof image
+        const paymentProofImage = document.querySelector('.payment-proof-image');
+
+        if (paymentProofImage) {
+            let isZoomed = false;
+
+            paymentProofImage.addEventListener('click', function() {
+                if (isZoomed) {
+                    // Zoom out
+                    this.style.transform = 'scale(1)';
+                    this.style.cursor = 'zoom-in';
+                    isZoomed = false;
+                } else {
+                    // Zoom in
+                    this.style.transform = 'scale(1.5)';
+                    this.style.cursor = 'zoom-out';
+                    this.style.transition = 'transform 0.3s ease';
+                    isZoomed = true;
+                }
+            });
+        }
+    });
+</script>
+@endif
 
 <style>
     .form-label {

@@ -15,7 +15,11 @@
                         <h1 class="display-1 text-primary fw-bold">404</h1>
                         <h2 class="mb-4">Page Not Found</h2>
                         <p class="lead mb-4">
-                            Sorry, the page you're looking for doesn't exist or has been moved.
+                            @if(isset($exception) && $exception->getMessage())
+                                {{ $exception->getMessage() }}
+                            @else
+                                Sorry, the page you're looking for doesn't exist or has been moved.
+                            @endif
                         </p>
                         <div class="d-grid gap-2 d-md-flex justify-content-center">
                             <a href="{{ route('home') }}" class="btn btn-primary btn-lg px-4">

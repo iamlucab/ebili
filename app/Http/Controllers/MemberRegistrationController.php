@@ -57,9 +57,13 @@ class MemberRegistrationController extends Controller
                 }
             },
         ],
+        'payment_option'  => 'required|in:pay_now,pay_later',
+        'payment_method'  => 'nullable|required_if:payment_option,pay_now|in:gcash_qr',
     ], [
         'mobile_number.unique' => 'This mobile number is already registered.',
         'membership_code.exists' => 'The membership code does not exist.',
+        'payment_option.required' => 'Please select a payment option.',
+        'payment_method.required_if' => 'Please select a payment method when choosing "Pay Now".',
     ]);
 
     $photoPath = null;
@@ -89,6 +93,8 @@ class MemberRegistrationController extends Controller
             'sponsor_id'      => $sponsorId,
             'voter_id'        => null,
             'status'          => 'Approved', // ✅ set Member status
+            'payment_option'  => $request->payment_option,
+            'payment_method'  => $request->payment_method,
         ]);
 
         $createdUser = User::create([
@@ -147,9 +153,13 @@ public function referral($memberId)
     // Find the sponsor member
     $sponsor = Member::find($memberId);
 
-    // If sponsor doesn't exist or is not approved, show 404
-    if (!$sponsor || $sponsor->status !== 'Approved') {
-        abort(404);
+    // If sponsor doesn't exist or is not approved, show 404 with specific message
+    if (!$sponsor) {
+        abort(404, 'The referral link is invalid. Member with ID ' . $memberId . ' does not exist.');
+    }
+
+    if ($sponsor->status !== 'Approved') {
+        abort(404, 'The referral link is invalid. Member ' . $sponsor->full_name . ' is not approved.');
     }
 
     // Return the registration view with sponsor pre-filled

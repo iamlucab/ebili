@@ -26,10 +26,10 @@
     {{-- Bootstrap + Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    
+
     {{-- Google Fonts --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
 :root,
 [data-bs-theme="light"] {
@@ -301,6 +301,90 @@ body {
     color: var(--accent-gold);
 }
 </style>
+
+
+@push('css')
+<style>
+    .product-card {
+        height: 360px; /* 🔹 desktop/tablet height */
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-image,
+    .product-placeholder {
+        width: 100%;
+        height: 180px; /* 🔹 image area desktop */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9f9f9;
+    }
+
+    .product-image {
+        object-fit: cover; /* keeps aspect ratio */
+    }
+
+    .product-placeholder {
+        flex-direction: column;
+        color: #aaa;
+    }
+
+    .product-card .p-3 {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .product-card h6 {
+        min-height: 38px;
+        overflow: hidden;
+    }
+
+    .product-card p {
+        flex-grow: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .price-tag {
+        font-weight: bold;
+        color: #198754;
+    }
+
+    /* 🔹 Mobile adjustments */
+    @media (max-width: 576px) {
+        .product-card {
+            height: 300px; /* smaller height on mobile */
+        }
+        .product-image,
+        .product-placeholder {
+            height: 140px; /* smaller image area */
+        }
+        .product-card h6 {
+            font-size: 0.9rem;
+            min-height: auto; /* allow natural wrap */
+        }
+        .product-card p {
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+    }
+</style>
+@endpush
+
+
 </head>
 <body class="d-flex flex-column" style="min-height: 100vh;">
 
@@ -334,7 +418,7 @@ body {
     <div class="logo-container">
         <img src="{{ asset('storage/icons/ebili-logo.png') }}" alt="eBILI Logo" style="width: 100px; height: 100px; object-fit: contain;">
     </div>
-    
+
     <h2 class="mb-2 fw-bold" style="color: var(--primary-purple);">E-Bili Online</h2>
     <p class="slogan">Shop to Save, Share to Earn</p>
 
@@ -428,7 +512,7 @@ body {
                 </div>
                 @empty
                 {{-- Fallback if no products --}}
-                @for($i = 1; $i <= 8; $i++)
+                @for($i = 1; $i <= 20; $i++)
                 <div class="swiper-slide">
                     <div class="product-card" onclick="showMembershipModal()">
                         <div class="product-placeholder">
@@ -472,7 +556,7 @@ body {
             <span>Offers</span>
         </div>
     </div>
-    
+
     <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 my-4">
         <a href="{{ route('login') }}" class="btn btn-lg btn-primary px-5 py-2">
             🔒 Login
@@ -483,7 +567,7 @@ body {
     </div>
 
     <hr style="border-color: var(--primary-purple); opacity: 0.3;">
-    <p class="small" style="color: var(--primary-purple);"> More than just a member. Be an E-bili friend. &copy; 2025</p> 
+    <p class="small" style="color: var(--primary-purple);"> More than just a member. Be an E-bili friend. &copy; 2025</p>
 </div>
 
 {{-- Reusable Modals --}}
@@ -504,7 +588,8 @@ body {
                 <h5 class="mb-3 fw-bold">{{ $title }}</h5>
                 @if ($id === 'why')
                     <p class="text-muted">
-                        <strong>E-bili friends</strong> is derived from the Spanish word for "friends."<br><br>
+                       <strong>E-bili Friends</strong> is a fun name inspired by the mix of “E-Commerce” and the Filipino word “bili,” which means “to buy.” It reflects our goal of making online shopping easy, friendly, and connected with our community.
+<br><br>
                         At E-bili online community, we believe in friendship with purpose — built on trust, cooperation, and shared goals.<br>
                         <strong>One community. One purpose. Helping each other thrive.</strong><br><br>
                         It's more than an app — it's a digital bayanihan, empowering members to support and uplift one another.
@@ -518,7 +603,7 @@ body {
                 @elseif ($id === 'offers')
                     <p class="text-muted">
                         <strong>Everyone has something to give.</strong><br><br>
-                        Whether it's your skills, stories, time, or talents — Hugpong E-bili friends is a platform where you can share what you have to offer, connect with others, and even earn while doing so.<br>
+                        Whether it's your skills, stories, time, or talents — E-bili friends is a platform where you can share what you have to offer, connect with others, and even earn while doing so.<br>
                         We believe in <strong>value exchange within the community</strong>.
                     </p>
                 @endif
@@ -545,7 +630,7 @@ body {
     <div class="modal-content">
       <div class="modal-header border-0 justify-content-center">
         <h5 class="modal-title fw-bold text-white" id="programsModalLabel">
-          Hugpong E-bili friends: Bayanihan-Inspired Programs
+        E-bili friends: Bayanihan-Inspired Programs
         </h5>
       </div>
       <div class="modal-body">
@@ -581,7 +666,7 @@ body {
         <div class="tab-content swipe-tabs" id="programTabsContent">
           <div class="tab-pane fade show active p-3" id="vision" role="tabpanel">
             <h6 class="fw-bold">🌟 Our Vision</h6>
-            <p>To build a bayanihan-style, friends-of-friends cooperative group united by shared interests, values, and advocacies. This is Hugpong E-bili friends — not just a group, but with purpose-driven individuals becoming one under the name "E-bili friend".</p>
+            <p>To build a bayanihan-style, friends-of-friends cooperative group united by shared interests, values, and advocacies. This is E-bili friends — not just a group, but with purpose-driven individuals becoming one under the name "E-bili friend".</p>
           </div>
           <div class="tab-pane fade p-3" id="membership" role="tabpanel">
             <h6 class="fw-bold">🔑 E-bili friend Membership</h6>
@@ -676,7 +761,7 @@ function toggleTheme() {
     const html = document.documentElement;
     const isDark = html.getAttribute('data-bs-theme') === 'dark';
     html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
-    
+
     // Toggle icon and label
     const toggleBtn = document.querySelector('.btn-toggle i');
     const toggleText = document.querySelector('.btn-toggle');
@@ -710,7 +795,7 @@ function updateSwiper() {
     const slideWidth = slides[0].offsetWidth + 15; // width + margin
     const visibleSlides = Math.floor(wrapper.parentElement.offsetWidth / slideWidth);
     const maxSlide = Math.max(0, totalSlides - visibleSlides);
-    
+
     currentSlide = Math.min(currentSlide, maxSlide);
     wrapper.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
 }
@@ -732,10 +817,10 @@ document.getElementById('productsWrapper').addEventListener('touchmove', (e) => 
 document.getElementById('productsWrapper').addEventListener('touchend', (e) => {
     if (!isDragging) return;
     isDragging = false;
-    
+
     const endX = e.changedTouches[0].clientX;
     const diff = startX - endX;
-    
+
     if (Math.abs(diff) > 50) {
         if (diff > 0 && currentSlide < totalSlides - 1) {
             currentSlide++;
@@ -752,7 +837,7 @@ setInterval(() => {
     const slideWidth = slides[0].offsetWidth + 15;
     const visibleSlides = Math.floor(wrapper.parentElement.offsetWidth / slideWidth);
     const maxSlide = Math.max(0, totalSlides - visibleSlides);
-    
+
     currentSlide = (currentSlide + 1) % (maxSlide + 1);
     updateSwiper();
 }, 4000);
@@ -769,14 +854,14 @@ const backToTop = document.getElementById('backToTop');
 
 window.addEventListener('scroll', function () {
     let st = window.pageYOffset || document.documentElement.scrollTop;
-    
+
     // Show back to top if scrolled down enough
     if (st > 200) {
         backToTop.style.display = 'block';
     } else {
         backToTop.style.display = 'none';
     }
-    
+
     lastScrollTop = st <= 0 ? 0 : st;
 });
 

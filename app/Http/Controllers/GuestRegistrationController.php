@@ -77,7 +77,7 @@ class GuestRegistrationController extends Controller
             'status'        => 'Pending',
         ]);
 
-        return redirect('/welcome.php')->with('success', 'Registration submitted! Wait for admin approval.');
+        return redirect()->route('welcome')->with('success', 'Registration submitted! Wait for admin approval.');
     }
 
     /**
@@ -168,12 +168,8 @@ class GuestRegistrationController extends Controller
             'status'        => 'Pending',
         ]);
 
-        // Determine which route to redirect to based on the current request path
-        $redirectRoute = request()->is('join/*')
-            ? 'join.referral'
-            : 'member.register.referral';
-
-        return redirect()->route($redirectRoute, $sponsor_id)
+        // Redirect to welcome page after successful registration
+        return redirect()->route('welcome')
             ->with('success', 'Registration submitted! You and your sponsor will receive bonuses once approved.');
     }
 }

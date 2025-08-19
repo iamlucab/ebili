@@ -51,10 +51,11 @@ use App\Http\Controllers\Admin\AdminWalletController;
                 $featuredProducts = collect();
             }
             return view('welcome', compact('featuredProducts'));
-        });
+        })->name('welcome');
 
-        // ✅ Referral Link Route
-        Route::get('/join/{memberId}', [MemberRegistrationController::class, 'referral'])->name('member.referral');
+        // ✅ Referral Link Route (Public)
+        Route::get('/join/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('join.referral');
+        Route::post('/join/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('join.referral.store');
 
              // ✅ Authentication Routes
         Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -475,6 +476,10 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
 // ✅ 3-Tier Registration System (Public)
 Route::get('/register', [GuestRegistrationController::class, 'create'])->name('guest.register');
 Route::post('/register', [GuestRegistrationController::class, 'store'])->name('guest.register.store');
+
+// ✅ Welcome Registration System (Public)
+Route::get('/welcome-register', [GuestRegistrationController::class, 'welcome'])->name('welcome.register');
+Route::post('/welcome-register', [GuestRegistrationController::class, 'store'])->name('welcome.register.store');
 
 // ✅ Admin Registration (Public)
 Route::get('/register/admin', [GuestRegistrationController::class, 'createAdmin'])->name('admin.register');
