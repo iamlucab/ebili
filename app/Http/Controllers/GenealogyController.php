@@ -28,11 +28,11 @@ class GenealogyController extends Controller
 
    private function buildGenealogy($member, $sponsorName, &$chartData)
 {
-   $photoUrl = $member->photo 
-        ? asset('storage/photos/' . $member->photo)
+   $photoUrl = $member->photo
+        ? asset('storage/' . $member->photo)
         : asset('images/default-profile.png');  // ← this replaces the placeholder URL
 
-    
+
     $fullName = $member->first_name . ' ' . $member->last_name;
 
     $html = '<div style="text-align:center;">
