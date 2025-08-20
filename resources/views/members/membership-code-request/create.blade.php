@@ -404,7 +404,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
                                         <h6 class="card-title mb-1">Request # &nbsp; {{ $request->id }}</h6>
-                                        <small class="text-muted">{{ $request->created_at ? $request->created_at->format('M d, Y H:i') : 'N/A' }}</small>
+                                        <small class="text-muted">&nbsp;{{ $request->created_at ? $request->created_at->format('M d, Y H:i') : 'N/A' }}</small>
                                     </div>
                                     <div>
                                         @if($request->status === 'pending')

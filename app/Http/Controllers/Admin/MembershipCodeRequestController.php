@@ -51,6 +51,22 @@ class MembershipCodeRequestController extends Controller
             'status' => 'approved'
         ]);
 
+        // If payment method was Wallet, log the transaction in member's wallet history
+        if ($membershipCodeRequest->payment_method === 'Wallet') {
+            $member = $membershipCodeRequest->member;
+            $wallet = $member->wallet;
+
+            if ($wallet) {
+                // Add a transaction record for the approval
+                $wallet->transactions()->create([
+                    'type' => 'debit',
+                    'amount' => $membershipCodeRequest->total_amount,
+                    'description' => 'Membership code request approved - ' . $membershipCodeRequest->quantity . ' codes',
+                    'member_id' => $member->id,
+                ]);
+            }
+        }
+
         return redirect()->back()->with('success', 'Request approved and codes reserved successfully.');
     }
 

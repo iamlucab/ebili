@@ -42,8 +42,6 @@ class MemberRegistrationController extends Controller
         'mobile_number'   => 'required|unique:members,mobile_number|unique:users,mobile_number',
         'occupation'      => 'nullable|string|max:191',
         'photo'           => 'nullable|image|max:2048',
-        'payment_proof'   => 'nullable|image|max:2048',
-        'payment_status'  => 'nullable|in:Pending,Approved,Rejected',
         'role'            => 'required|in:Member,Staff,Admin',
         'sponsor_id'      => $isMember ? 'nullable' : 'required|exists:members,id',
         'membership_code' => [
@@ -57,13 +55,9 @@ class MemberRegistrationController extends Controller
                 }
             },
         ],
-        'payment_option'  => 'required|in:pay_now,pay_later',
-        'payment_method'  => 'nullable|required_if:payment_option,pay_now|in:gcash_qr',
     ], [
         'mobile_number.unique' => 'This mobile number is already registered.',
         'membership_code.exists' => 'The membership code does not exist.',
-        'payment_option.required' => 'Please select a payment option.',
-        'payment_method.required_if' => 'Please select a payment method when choosing "Pay Now".',
     ]);
 
     $photoPath = null;
@@ -71,9 +65,9 @@ class MemberRegistrationController extends Controller
         $photoPath = $request->file('photo')->store('', 'public');
     }
 
-    $paymentProofPath = null;
-    if ($request->hasFile('payment_proof')) {
-        $paymentProofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+    $photoPath = null;
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('', 'public');
     }
 
     $sponsorId = $isMember ? $user->member->id : $request->sponsor_id;
@@ -87,14 +81,10 @@ class MemberRegistrationController extends Controller
             'mobile_number'   => $request->mobile_number,
             'occupation'      => $request->occupation ? ucfirst(strtolower($request->occupation)) : null,
             'photo'           => $photoPath,
-            'payment_proof'   => $paymentProofPath,
-            'payment_status'  => $request->payment_status ?? 'Pending',
             'role'            => $request->role,
             'sponsor_id'      => $sponsorId,
             'voter_id'        => null,
             'status'          => 'Approved', // ✅ set Member status
-            'payment_option'  => $request->payment_option,
-            'payment_method'  => $request->payment_method,
         ]);
 
         $createdUser = User::create([
@@ -109,11 +99,7 @@ class MemberRegistrationController extends Controller
 
         // Mark membership code as used
         $membershipCode = MembershipCode::where('code', $request->membership_code)->first();
-        $membershipCode->update([
-            'used'     => true,
-            'used_by'  => $createdUser->id,
-            'used_at'  => now(),
-        ]);
+        $membershipCode->markAsUsed($createdUser->id);
 
         // Award referral bonuses since member is automatically approved
         ReferralBonusService::awardReferralBonuses($member);
@@ -127,7 +113,7 @@ class MemberRegistrationController extends Controller
         throw $e;
     }
 
-    return redirect()->back()->with('success', 'Member registered successfully!');
+    return redirect()->route('admin.members.index')->with('success', 'Member registered successfully!');
 }
 
 

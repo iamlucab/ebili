@@ -378,7 +378,10 @@
         @if (session('success'))
             const toast = new bootstrap.Toast(document.getElementById('joinSuccessToast'));
             toast.show();
-            setTimeout(() => window.location.href = "{{ url('/') }}", 4000);
+            // Show the toast for 6 seconds before redirecting
+            setTimeout(() => {
+                window.location.href = "{{ url('/') }}";
+            }, 6000);
         @endif
 
         // Payment option change handler

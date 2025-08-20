@@ -32,8 +32,10 @@ class MembershipCodeRequestController extends Controller
             ->latest()
             ->get();
 
-        // Flatten all reserved codes from all requests
-        $reservedCodes = $membershipCodeRequests->flatMap->reservedCodes;
+        // Flatten all reserved codes from all requests and filter out used codes
+        $reservedCodes = $membershipCodeRequests->flatMap->reservedCodes->filter(function ($code) {
+            return !$code->used;
+        });
 
         return view('members.membership-code-request.create', compact(
             'wallet',
@@ -61,6 +63,18 @@ class MembershipCodeRequestController extends Controller
         $proofPath = null;
         if ($request->hasFile('proof')) {
             $proofPath = $request->file('proof')->store('payment_proofs', 'public');
+        }
+
+        // Handle wallet payment immediately
+        if ($request->payment_method === 'Wallet') {
+            $wallet = $member->wallet;
+
+            if ($wallet->balance < $totalAmount) {
+                return redirect()->back()->with('error', 'Insufficient wallet balance.')->withInput();
+            }
+
+            // Deduct from wallet immediately
+            $wallet->debit($totalAmount, 'Membership code request payment for ' . $request->quantity . ' codes');
         }
 
         // Create membership code request

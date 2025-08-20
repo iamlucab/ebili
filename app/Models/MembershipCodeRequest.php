@@ -30,4 +30,14 @@ class MembershipCodeRequest extends Model
         return $this->belongsToMany(MembershipCode::class, 'membership_code_request_codes')
                     ->withPivot('reserved_at');
     }
+
+    /**
+     * Get the count of non-used reserved codes for this request.
+     *
+     * @return int
+     */
+    public function getReservedCodesCountAttribute()
+    {
+        return $this->reservedCodes()->where('used', false)->count();
+    }
 }

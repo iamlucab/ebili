@@ -74,11 +74,6 @@
                                         @endif
 
                                         @if($request->status === 'pending')
-                                            <!-- Button to trigger manual code assignment modal -->
-                                            <button class="btn btn-sm btn-primary mb-1" data-toggle="modal" data-target="#assignCodesModal{{ $request->id }}">
-                                                <i class="bi bi-key"></i> Assign Codes
-                                            </button>
-
                                             <form action="{{ route('admin.membership-code-requests.approve', $request) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-success mb-1" onclick="return confirm('Are you sure you want to approve this request? This will automatically generate codes.')">
@@ -143,44 +138,6 @@
         </div>
     @endif
 
-    <!-- Manual Code Assignment Modal -->
-    <div class="modal" id="assignCodesModal{{ $request->id }}" tabindex="-1" role="dialog" data-quantity="{{ $request->quantity }}">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form action="{{ route('admin.membership-code-requests.assign-codes', $request) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-header">
-                        <h5 class="modal-title">Assign Membership Codes</h5>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Assigning <strong>{{ $request->quantity }}</strong> codes to <strong>{{ $request->member->full_name ?? 'N/A' }}</strong></p>
-
-                        <div class="form-group">
-                            <label for="searchCodes{{ $request->id }}">Search Available Codes:</label>
-                            <input type="text" class="form-control" id="searchCodes{{ $request->id }}" placeholder="Enter code to search...">
-                            <button type="button" class="btn btn-sm btn-info mt-1" onclick="searchCodes({{ $request->id }})">Search</button>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Select {{ $request->quantity }} Codes:</label>
-                            <div id="availableCodesList{{ $request->id }}" class="border p-2" style="max-height: 300px; overflow-y: auto;">
-                                <!-- Available codes will be loaded here -->
-                                <p class="text-muted">Click "Search" to load available codes</p>
-                            </div>
-                        </div>
-
-                        <input type="hidden" id="selectedCodes{{ $request->id }}" value="">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" onclick="return validateCodeSelection({{ $request->id }}, {{ $request->quantity }})">Assign Codes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 @endforeach
 
 @section('css')
@@ -201,114 +158,6 @@
         });
     });
 
-    // Load available codes when modal is shown
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add event listener to all modals
-        document.querySelectorAll('[id^="assignCodesModal"]').forEach(modal => {
-            modal.addEventListener('shown.bs.modal', function() {
-                const requestId = this.id.replace('assignCodesModal', '');
-                searchCodes(requestId);
-            });
-        });
-    });
-
-    function searchCodes(requestId) {
-        const searchInput = document.getElementById('searchCodes' + requestId);
-        const searchValue = searchInput.value;
-
-        // Get the modal to access the data-quantity attribute
-        const modal = document.getElementById('assignCodesModal' + requestId);
-        const quantity = modal ? modal.getAttribute('data-quantity') : 20;
-
-        // Show loading indicator
-        const codesList = document.getElementById('availableCodesList' + requestId);
-        codesList.innerHTML = '<p class="text-muted">Loading...</p>';
-
-        // Get CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // Make AJAX request to get available codes
-        fetch(`/admin/membership-code-requests/codes?search=${encodeURIComponent(searchValue)}`, {
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(result => {
-                // Handle the updated response format
-                const codes = result.data || result;
-                codesList.innerHTML = '';
-
-                if (!codes || codes.length === 0) {
-                    codesList.innerHTML = '<p class="text-muted">No available codes found</p>';
-                    return;
-                }
-
-                codes.forEach(code => {
-                    const codeElement = document.createElement('div');
-                    codeElement.className = 'form-check mb-2';
-                    codeElement.innerHTML = `
-                        <input class="form-check-input code-checkbox" type="checkbox" value="${code.id}" id="code${code.id}_${requestId}">
-                        <label class="form-check-label" for="code${code.id}_${requestId}">
-                            ${code.code} <span class="badge badge-secondary">${code.status || 'available'}</span>
-                        </label>
-                    `;
-                    codesList.appendChild(codeElement);
-                });
-
-                // Add event listener to checkboxes
-                document.querySelectorAll('.code-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        updateSelectedCodes(requestId);
-                    });
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                codesList.innerHTML = '<p class="text-danger">Error loading codes. Please try again.</p>';
-            });
-    }
-
-    function updateSelectedCodes(requestId) {
-        const checkboxes = document.querySelectorAll(`#assignCodesModal${requestId} .code-checkbox:checked`);
-        const selectedCodesInput = document.getElementById('selectedCodes' + requestId);
-
-        const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-        selectedCodesInput.value = selectedIds.join(',');
-    }
-
-    function validateCodeSelection(requestId, requiredQuantity) {
-        const selectedCodesInput = document.getElementById('selectedCodes' + requestId);
-        const selectedIds = selectedCodesInput.value ? selectedCodesInput.value.split(',').filter(id => id !== '') : [];
-
-        if (selectedIds.length !== requiredQuantity) {
-            alert(`Please select exactly ${requiredQuantity} codes.`);
-            return false;
-        }
-
-        // Update the hidden input field with individual values for Laravel
-        const form = document.querySelector(`#assignCodesModal${requestId} form`);
-
-        // Remove all existing hidden inputs with name "code_ids[]"
-        const existingHiddenInputs = form.querySelectorAll('input[name="code_ids[]"]');
-        existingHiddenInputs.forEach(input => {
-            input.remove();
-        });
-
-        // Add individual hidden inputs for each selected code
-        selectedIds.forEach(id => {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'code_ids[]';
-            hiddenInput.value = id;
-            form.appendChild(hiddenInput);
-        });
-
-        return true;
-    }
 </script>
 @stop
 

@@ -127,31 +127,6 @@
                 </div>
             </div>
 
-            {{-- Payment Status --}}
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="payment_status">Payment Status</label>
-                    <select name="payment_status" class="form-control">
-                        <option value="Pending" {{ old('payment_status') === 'Pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="Approved" {{ old('payment_status') === 'Approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="Rejected" {{ old('payment_status') === 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-                </div>
-            </div>
-
-            {{-- Payment Proof Upload --}}
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="payment_proof">Payment Proof</label>
-                    <input type="file" name="payment_proof" class="form-control" accept="image/*">
-                    @if(isset($member) && $member->payment_proof)
-                        <div class="mt-2">
-                            <a href="{{ asset('storage/' . $member->payment_proof) }}" target="_blank">View Current Proof</a>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
             {{-- Submit --}}
             <div class="col-md-12 mt-3">
                 <button class="btn btn-primary" id="submitBtn">Register</button>
