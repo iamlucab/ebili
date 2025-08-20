@@ -42,7 +42,7 @@
             <!-- Toggle View Button for Mobile -->
             <div class="d-md-none text-center mb-3">
                 <button id="toggle-view" class="btn btn-primary">
-                    <i class="fas fa-exchange-alt"></i> Switch to Visual View
+                    <i class="bi bi-arrow-left-right"></i> Switch to Visual View
                 </button>
                 <div class="mt-2 text-muted">
                     <small>Click between tree and visual views</small>
@@ -129,7 +129,7 @@
         .tree-node-children {
             margin-left: 30px;
             margin-top: 10px;
-            display: none;
+            display: block;
         }
 
         .tree-node.expanded > .tree-node-children {
@@ -374,11 +374,11 @@
                   if (mobileChartCard.style.display === 'none') {
                       mobileChartCard.style.display = 'block';
                       treeCard.style.display = 'none';
-                      this.innerHTML = '<i class="fas fa-exchange-alt"></i> Switch to Tree View';
+                      this.innerHTML = '<i class="bi bi-arrow-left-right"></i> Switch to Tree View';
                   } else {
                       mobileChartCard.style.display = 'none';
                       treeCard.style.display = 'block';
-                      this.innerHTML = '<i class="fas fa-exchange-alt"></i> Switch to Visual View';
+                      this.innerHTML = '<i class="bi bi-arrow-left-right"></i> Switch to Visual View';
                   }
               });
           }
