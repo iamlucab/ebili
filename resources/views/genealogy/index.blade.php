@@ -129,7 +129,7 @@
         .tree-node-children {
             margin-left: 30px;
             margin-top: 10px;
-            display: block;
+            display: none;
         }
 
         .tree-node.expanded > .tree-node-children {
