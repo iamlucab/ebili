@@ -99,7 +99,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
 
-                            
+
                             <div class="fw-bold">Total Purchases</div>
                             <small class="text-white-50">Orders you've paid for</small>
                         </div>
@@ -274,7 +274,34 @@
 </div>
 @endsection
 
+@section('css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+@endsection
+
 @section('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    // Display success/error messages using toastr
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', function() {
+            toastr.success("{{ session('success') }}", "Success", {
+                timeOut: 3000,
+                progressBar: true,
+                positionClass: 'toast-top-right'
+            });
+        });
+    @endif
+
+    @if(session('error'))
+        document.addEventListener('DOMContentLoaded', function() {
+            toastr.error("{{ session('error') }}", "Error", {
+                timeOut: 5000,
+                progressBar: true,
+                positionClass: 'toast-top-right'
+            });
+        });
+    @endif
+</script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {

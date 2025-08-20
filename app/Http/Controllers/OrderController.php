@@ -63,7 +63,7 @@ class OrderController extends Controller
                     'wallet_id' => $wallet->id,
                     'type'      => 'debit',
                     'amount'    => $order->total_amount + $order->shipping_fee,
-                    'reference' => 'Order #' . $order->id,
+                    'description' => 'Order #' . $order->id,
                     'status'    => 'Completed',
                 ]);
             }
@@ -110,7 +110,7 @@ $walletCashback = $orders->where('status', 'Delivered')
     ->flatMap->items
     ->sum('cashback_amount');
 
-    
+
     // Paginate orders after filtering
     $paginated = $orders->forPage($request->get('page', 1), 10);
 
@@ -141,7 +141,7 @@ $walletCashback = $orders->where('status', 'Delivered')
         return view('members.orders.show', compact('order'));
     }
 
-    
+
     /**
      * 🚚 Track order status
      */

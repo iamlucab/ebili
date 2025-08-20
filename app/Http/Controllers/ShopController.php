@@ -63,7 +63,7 @@ class ShopController extends Controller
     public function order(Request $request, Product $product)
     {
         $cart = session()->get('cart', []);
-        
+
         // Check if request is JSON (from fetch API)
         if ($request->isJson()) {
             $data = $request->json()->all();
@@ -72,10 +72,10 @@ class ShopController extends Controller
             // Regular form submission
             $quantity = (int)$request->input('quantity', 1);
         }
-        
+
         // Ensure quantity is at least 1
         $quantity = max(1, $quantity);
-        
+
         // If product already exists in cart, update quantity
         if (isset($cart[$product->id])) {
             $cart[$product->id]['quantity'] += $quantity;
@@ -95,7 +95,7 @@ class ShopController extends Controller
         }
 
         session()->put('cart', $cart);
-        
+
         // Return JSON response if request is JSON
         if ($request->isJson() || $request->wantsJson()) {
             return response()->json([
@@ -198,55 +198,61 @@ class ShopController extends Controller
 
         $subtotal = $total;
         $totalCashback = collect($cart)->sum(fn($item) => ($item['cashback'] ?? 0) * $item['quantity']);
-        
+
         // Apply promo code if provided
         $promoDiscount = 0;
         if ($request->filled('promo_code')) {
             $promoCode = $request->promo_code;
-            
+
             // Check if any product in cart has this promo code
             foreach ($cart as $item) {
                 $product = Product::find($item['id']);
                 if ($product && $product->promo_code === $promoCode) {
                     // Calculate discount for this product
                     $itemTotal = $item['price'] * $item['quantity'];
-                    
+
                     if ($product->discount_type === 'percentage') {
                         $itemDiscount = $itemTotal * ($product->discount_value / 100);
                     } else {
                         // Fixed amount discount
                         $itemDiscount = $product->discount_value * $item['quantity'];
                     }
-                    
+
                     $promoDiscount += $itemDiscount;
                 }
             }
-            
+
             // Apply the discount to subtotal
             if ($promoDiscount > 0) {
                 $subtotal -= $promoDiscount;
             }
         }
 
-        if ($request->payment_method === 'Wallet') {
-            $wallet = $member->wallet;
+       if ($request->payment_method === 'Wallet') {
+    $wallet = $member->wallet;
 
-            if (!$wallet || $wallet->balance < $total) {
-                return back()->with('error', 'Insufficient wallet balance.');
-            }
+    if (!$wallet || $wallet->balance < $total) {
+        return back()->with('error', 'Insufficient wallet balance.');
+    }
 
-            $wallet->balance -= $total;
-            $wallet->save();
+    $wallet->balance -= $total;
+    $wallet->save();
 
-            WalletTransaction::create([
-                'wallet_id' => $wallet->id,
-                'member_id' => $member->id,
-                'amount'    => -$total,
-                'type'      => 'payment',
-                'notes'     => 'Order paid via wallet at checkout',
-            ]);
-        }
+    // Prepare cart items description
+    $cartItems = [];
+    foreach ($cart as $item) {
+        $cartItems[] = $item['name'] . ' x ' . $item['quantity'];
+    }
+    $itemsDescription = implode(', ', $cartItems);
 
+    WalletTransaction::create([
+        'wallet_id'   => $wallet->id,
+        'member_id'   => $member->id,
+        'amount'      => -$total,
+        'type'        => 'payment',
+        'description' => 'Purchase of ' . $itemsDescription,
+    ]);
+}
         $filename = null;
         if ($request->hasFile('reference_image')) {
             $filename = $request->file('reference_image')->store('payments', 'public');
@@ -315,7 +321,7 @@ class ShopController extends Controller
     {
         $promoCode = $request->input('promo_code');
         $cart = session('cart', []);
-        
+
         if (empty($cart)) {
             return response()->json([
                 'valid' => false,
@@ -326,22 +332,22 @@ class ShopController extends Controller
         // Check if any product in cart has this promo code
         $validProduct = null;
         $totalDiscount = 0;
-        
+
         foreach ($cart as $item) {
             $product = Product::find($item['id']);
             if ($product && $product->promo_code === $promoCode) {
                 $validProduct = $product;
-                
+
                 // Calculate discount for this product
                 $itemTotal = $item['price'] * $item['quantity'];
-                
+
                 if ($product->discount_type === 'percentage') {
                     $itemDiscount = $itemTotal * ($product->discount_value / 100);
                 } else {
                     // Fixed amount discount
                     $itemDiscount = $product->discount_value * $item['quantity'];
                 }
-                
+
                 $totalDiscount += $itemDiscount;
             }
         }

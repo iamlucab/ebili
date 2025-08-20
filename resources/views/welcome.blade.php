@@ -733,7 +733,7 @@ body {
                     • Member discounts on all products<br>
                     • Cashback rewards on purchases<br>
                     • Access to exclusive deals<br>
-                    • Community marketplace features
+                    • Community marketplace features and more..
                 </p>
 
                 {{-- CTA Buttons --}}
