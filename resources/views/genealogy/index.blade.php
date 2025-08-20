@@ -10,14 +10,14 @@
             <!-- Visual Chart View (Desktop) -->
             <div class="card d-none d-md-block">
                 <div class="card-header">
-                    <h3 class="card-title">Network Visualization</h3>
+                    <h3 class="card-title">Network View</h3>
                 </div>
                 <div class="card-body">
                     <div id="chart-container" class="chart-container">
                         <div id="chart_div" class="org-chart"></div>
                     </div>
                     <div class="mt-3 text-muted">
-                        <small><i class="fas fa-info-circle"></i> Use pinch-to-zoom to navigate the chart</small>
+                        <small><i class="fas fa-info-circle"></i> Use pinch-to-zoom </small>
                     </div>
                 </div>
             </div>
@@ -45,14 +45,14 @@
                     <i class="fas fa-exchange-alt"></i> Switch to Visual View
                 </button>
                 <div class="mt-2 text-muted">
-                    <small>Toggle between tree and visual views</small>
+                    <small>Click between tree and visual views</small>
                 </div>
             </div>
 
             <!-- Visual Chart View (Mobile - Initially Hidden) -->
             <div class="card d-md-none" id="mobile-chart-card" style="display: none;">
                 <div class="card-header">
-                    <h3 class="card-title">Network Visualization</h3>
+                    <h3 class="card-title">Network Visual</h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                             <i class="fas fa-minus"></i>
@@ -64,7 +64,7 @@
                         <div id="mobile_chart_div" class="org-chart"></div>
                     </div>
                     <div class="mt-3 text-muted">
-                        <small><i class="fas fa-info-circle"></i> Use pinch-to-zoom to navigate</small>
+                        <small><i class="fas fa-info-circle"></i> Use pinch-to-zoom to view</small>
                     </div>
                 </div>
             </div>
