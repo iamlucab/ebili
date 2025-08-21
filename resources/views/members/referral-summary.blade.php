@@ -299,7 +299,7 @@
                                     <td class="text-purple">{{ $log->created_at->format('M d, Y') }}</td>
                                     <td><span class="badge bg-info">Level {{ $log->level }}</span></td>
                                     <td>
-                                        <div class="text-purple">{{ $log->referredMember->full_name ?? 'N/A' }}</div>
+                                        <div class="text-purple">{{ $log->referredMember->full_name ?? 'Not exists or maybe deleted' }}</div>
                                         <small class="text-muted">{{ $log->referredMember->mobile_number ?? '' }}</small>
                                     </td>
                                     <td class="text-success fw-bold">₱{{ number_format($log->amount, 2) }}</td>

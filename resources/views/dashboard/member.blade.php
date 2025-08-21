@@ -398,7 +398,7 @@
                             Direct Referrals: <strong>{{ auth()->user()->member->getDirectReferrals()->count() }}</strong>
                         </p>
                         <p class="mb-2 small" style="color: rgba(255,255,255,0.9);">
-                            Total Network: <strong>{{ auth()->user()->member->getTotalReferralCount() }}</strong>
+                            Total referrals within the Network: <strong>{{ auth()->user()->member->getTotalReferralCount() }}</strong>
                         </p>
                      <a href="{{ route('member.referral.summary') }}" class="btn btn-light btn-sm">
                             <i class="bi bi-eye me-1"></i>&nbsp;View Details
