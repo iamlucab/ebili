@@ -198,7 +198,7 @@ Route::get('/check-mobile', [MemberRegistrationController::class, 'checkMobile']
 
         //    Route::view('/member/dashboard', 'dashboard.member')->name('member.dashboard');
             Route::get('/staff/dashboard', [\App\Http\Controllers\Staff\StaffDashboardController::class, 'index'])->name('staff.dashboard');
-Route::get('/member/dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
+Route::get('/member/dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard')->middleware(['auth', 'can:member-only']);
 
 // Membership Code Requests
 Route::prefix('member/membership-code-request')->middleware(['auth', 'can:member-only'])->group(function () {
@@ -214,15 +214,13 @@ Route::prefix('member/membership-code-request')->middleware(['auth', 'can:member
             Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-        Route::middleware('auth')->prefix('admin')->group(function () {
+        Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->group(function () {
             Route::resource('members', App\Http\Controllers\MembersController::class);
         });
 
-
-        Route::middleware('auth')->group(function () {
+        Route::middleware(['auth', 'can:admin-only'])->group(function () {
             Route::resource('admin/members', \App\Http\Controllers\MembersController::class);
         });
-
 
             // Route::resource('admin/loans', \App\Http\Controllers\LoanController::class);
 
@@ -375,7 +373,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
         });
 
         // ✅ Admin Reward Management
-        Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+        Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->group(function () {
             Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
             Route::get('rewards/create', [RewardController::class, 'create'])->name('rewards.create');
             Route::post('rewards', [RewardController::class, 'store'])->name('rewards.store');
