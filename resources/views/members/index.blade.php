@@ -1,5 +1,9 @@
 @extends('adminlte::page')
 
+@section('meta_tags')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@stop
+
 @section('title', 'Members List')
 
 {{-- E-Bili Theme Styling --}}
@@ -105,15 +109,9 @@
                                        title="Edit Member">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    {{-- Uncomment if delete functionality is needed
-                                    <form action="{{ route('members.destroy', $member->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this member?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger" title="Delete Member">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                    --}}
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete Member" onclick="confirmDelete({{ $member->id }}, '{{ $member->first_name }} {{ $member->last_name }}', '{{ route('members.destroy', $member->id) }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -123,6 +121,7 @@
         </div>
     </div>
 </div>
+
 
 {{-- 📱 Reusable Mobile Footer --}}
 @include('partials.reusable-mobile-footer')
@@ -176,7 +175,7 @@
                 text-align: left;
                 margin-bottom: 1rem;
             }
-            
+
             .table-responsive {
                 border-radius: 15px;
             }
@@ -221,6 +220,38 @@
                     $('#members-table tbody tr').addClass('fade-in');
                 }
             });
+
+            // Delete member function
+            window.confirmDelete = function(memberId, memberName, deleteUrl) {
+                if (confirm('Are you sure you want to delete member "' + memberName + '"? This action cannot be undone.')) {
+                    // Create a form dynamically
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = deleteUrl;
+
+                    // Add CSRF token
+                    var csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (csrfToken) {
+                        var csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = csrfToken.content;
+                        form.appendChild(csrfInput);
+                    }
+
+                    // Add method field for DELETE
+                    var methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+
+                    // Submit the form
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            };
+
 
             // Add hover effect to table rows
             $('#members-table tbody').on('mouseenter', 'tr', function() {

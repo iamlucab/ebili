@@ -132,7 +132,7 @@
             display: none;
         }
 
-        .tree-node.expanded > .tree-node-children {
+        .tree-node.expanded + .tree-node-children {
             display: block;
         }
 
@@ -212,7 +212,7 @@
         }
 
         /* Ensure profile images are visible */
-        .profile-img {
+        .tree-node .profile-img {
             width: 100% !important;
             height: auto !important;
             max-width: 50px !important;
@@ -222,7 +222,7 @@
         }
 
         @media (max-width: 575.98px) {
-            .profile-img {
+            .tree-node .profile-img {
                 max-width: 30px !important;
                 max-height: 30px !important;
             }
@@ -349,7 +349,7 @@
           html += '</div>';
 
           if (hasChildren) {
-              html += '<div class="tree-node-children" data-node-id="' + node.id + '">';
+              html += '<div class="tree-node-children" data-node-id="' + node.id + '" style="margin-left: ' + indent + 'px;">';
               node.children.forEach(function(child) {
                   html += buildTreeNode(child, level + 1);
               });

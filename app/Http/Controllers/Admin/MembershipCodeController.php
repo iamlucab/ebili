@@ -8,10 +8,10 @@ use App\Models\MembershipCode;
 class MembershipCodeController extends Controller
 {
     public function index()
-    {
-        $codes = MembershipCode::with('user')->latest()->paginate(15);
-        return view('admin.codes.index', compact('codes'));
-    }
+        {
+            $codes = MembershipCode::with(['user.member', 'reservation.member'])->latest()->paginate(15);
+            return view('admin.codes.index', compact('codes'));
+        }
 
     public function generate(Request $request)
     {

@@ -38,36 +38,47 @@
             <div class="table-responsive">
                 <table id="codesTable" class="table table-striped table-bordered table-sm codes-table">
                     <thead class="d-none d-md-table-header-group">
-                        <tr>
-                            <th>Code</th>
-                            <th>Status</th>
-                            <th>Used By</th>
-                            <th>Used At</th>
-                            <th>Created At</th>
-                        </tr>
-                    </thead>
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Status</th>
+                                                <th>Used By</th>
+                                                <th>Mobile Number</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
                     <tbody>
                         @foreach($codes as $code)
-                            <tr>
-                                <td data-label="Code"><strong>{{ $code->code }}</strong></td>
-                                <td data-label="Status">
-                                    @if($code->used)
-                                        <span class="badge badge-success">Used</span>
-                                    @else
-                                        <span class="badge badge-secondary">Unused</span>
-                                    @endif
-                                </td>
-                                <td data-label="Used By">
-                                    @if($code->user && $code->user->member)
-                                        {{ $code->user->member->full_name }}
-                                        <small class="text-muted d-block">{{ $code->user->mobile_number }}</small>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td data-label="Used At">{{ $code->used_at ?? '-' }}</td>
-                                <td data-label="Created At">{{ $code->created_at }}</td>
-                            </tr>
+                                                    <tr>
+                                                        <td data-label="Code"><strong>{{ $code->code }}</strong></td>
+                                                        <td data-label="Status">
+                                                            @if($code->used)
+                                                                <span class="badge badge-success">Used</span>
+                                                            @elseif($code->reserved)
+                                                                <span class="badge badge-warning">Reserved</span>
+                                                            @else
+                                                                <span class="badge badge-secondary">Unused</span>
+                                                            @endif
+                                                        </td>
+                                                        <td data-label="Used By">
+                                                            @if($code->used && $code->user && $code->user->member)
+                                                                {{ $code->user->member->full_name }}
+                                                            @elseif($code->reserved && $code->reservation && $code->reservation->member)
+                                                                {{ $code->reservation->member->full_name }}
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                        <td data-label="Mobile Number">
+                                                            @if($code->used && $code->user)
+                                                                {{ $code->user->mobile_number }}
+                                                            @elseif($code->reserved && $code->reservation && $code->reservation->member)
+                                                                {{ $code->reservation->member->mobile_number }}
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                        <td data-label="Date">{{ $code->created_at->format('Y-m-d H:i:s') }}</td>
+                                                    </tr>
                         @endforeach
                     </tbody>
                 </table>

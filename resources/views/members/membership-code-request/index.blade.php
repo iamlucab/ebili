@@ -31,7 +31,7 @@
                             <div class="card h-100 shadow-sm border-0">
                                 <div class="card-header bg-light">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0 text-muted">Request #{{ $request->id }}</h6>
+                                        <h6 class="mb-0 text-muted">Request # &nbsp;{{ $request->id }}</h6>
                                         <span class="badge badge-{{ $request->status === 'pending' ? 'warning' : ($request->status === 'approved' ? 'success' : ($request->status === 'rejected' ? 'danger' : 'secondary')) }}">
                                             {{ ucfirst($request->status) }}
                                         </span>

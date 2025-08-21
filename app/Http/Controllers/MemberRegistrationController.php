@@ -113,7 +113,7 @@ class MemberRegistrationController extends Controller
         throw $e;
     }
 
-    return redirect()->route('admin.members.index')->with('success', 'Member registered successfully!');
+    return redirect()->route('members.index')->with('success', 'Member registered successfully!');
 }
 
 
