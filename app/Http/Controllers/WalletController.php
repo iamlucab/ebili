@@ -21,11 +21,11 @@ class WalletController extends Controller
     public function index()
     {
         $member = Auth::user()->member;
-        
+
         if (!$member) {
             return redirect()->back()->withErrors(['member' => 'Member profile not found for this user.']);
         }
-        
+
         $wallet = $member->wallet;
 
         if (!$wallet) {
@@ -91,11 +91,11 @@ class WalletController extends Controller
         ]);
 
         $sender = Auth::user()->member;
-        
+
         if (!$sender) {
             return back()->withErrors(['member' => 'Member profile not found.'])->withInput(['_modal' => 'send']);
         }
-        
+
         $recipient = Member::where('mobile_number', $request->mobile_number)->firstOrFail();
 
         $amount = $request->amount;
@@ -133,14 +133,14 @@ class WalletController extends Controller
             );
 
             DB::commit();
-            
+
             // Debug logging
             \Log::info('Transfer successful, setting success message', [
                 'sender_id' => $sender->id,
                 'recipient_id' => $recipient->id,
                 'amount' => $amount
             ]);
-            
+
             return redirect()->route('member.dashboard')->with('success', 'Wallet credits sent successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -160,17 +160,17 @@ class WalletController extends Controller
             'description' => 'nullable|string|max:255',
             'proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf,gif|max:2048',
             'note' => 'nullable|string|max:255',
-            
+
         ]);
 
         $proofPath = $this->handleProofUpload($request);
 
         $member = Auth::user()->member;
-        
+
         if (!$member) {
             return back()->with('error', 'Member profile not found.');
         }
-        
+
         $cashIn = CashInRequest::create([
             'member_id' => $member->id,
             'amount' => $request->amount,
@@ -183,14 +183,14 @@ class WalletController extends Controller
 
         if ($cashIn) {
             Log::info('✅ Cash in saved!', ['id' => $cashIn->id, 'member_id' => $member->id, 'amount' => $request->amount]);
-            
+
             // Debug logging for success message
             \Log::info('Cash in successful, setting success message', [
                 'cash_in_id' => $cashIn->id,
                 'member_id' => $member->id,
                 'amount' => $request->amount
             ]);
-            
+
             return redirect()->route('member.dashboard')->with('success', 'Cash in request submitted successfully! Please wait for admin approval.');
         }
 
@@ -254,11 +254,11 @@ class WalletController extends Controller
         ]);
 
         $member = auth()->user()->member;
-        
+
         if (!$member) {
             return back()->with('error', 'Member profile not found.');
         }
-        
+
         $cashbackWallet = $member->cashbackWallet;
         $mainWallet = $member->wallet;
 
@@ -316,7 +316,7 @@ class WalletController extends Controller
     {
         // Find the recipient by wallet ID
         $recipientWallet = Wallet::where('wallet_id', $walletId)->first();
-        
+
         if (!$recipientWallet) {
             return redirect()->route('member.dashboard')->with('error', 'Invalid payment request. Wallet not found.');
         }
@@ -351,17 +351,17 @@ class WalletController extends Controller
         ]);
 
         $recipientWallet = Wallet::where('wallet_id', $walletId)->first();
-        
+
         if (!$recipientWallet) {
             return back()->withErrors(['error' => 'Invalid payment request. Wallet not found.']);
         }
 
         $sender = Auth::user()->member;
-        
+
         if (!$sender) {
             return back()->withErrors(['error' => 'Member profile not found.']);
         }
-        
+
         $recipient = $recipientWallet->member;
         $amount = $request->amount;
         $senderWallet = $sender->wallet;
@@ -379,29 +379,29 @@ class WalletController extends Controller
         DB::beginTransaction();
 
         try {
-            // Debit from sender
-            WalletTransaction::debitFrom(
-                $senderWallet,
-                $amount,
-                'QR Payment to ' . $recipient->mobile_number,
-                $recipient->id,
-                'qr_payment'
-            );
+           // Debit from sender
+WalletTransaction::debitFrom(
+    $senderWallet,
+    $amount,
+    'QR Payment to ' . $recipient->first_name . ' ' . $recipient->last_name . ' (' . $recipient->mobile_number . ')',
+    $recipient->id,
+    'qr_payment'
+);
 
             // Credit to recipient
             WalletTransaction::creditTo(
                 $recipientWallet,
                 $amount,
-                'QR Payment from ' . $sender->mobile_number,
+               'QR Payment from ' . $recipient->first_name . ' ' . $recipient->last_name . ' (' . $recipient->mobile_number . ')',
                 $sender->id,
                 'qr_payment'
             );
 
             DB::commit();
-            
+
             return redirect()->route('member.dashboard')->with('success',
                 'Payment of ₱' . number_format($amount, 2) . ' sent successfully to ' . $recipient->full_name . '!');
-                
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Payment failed', ['error' => $e->getMessage()]);

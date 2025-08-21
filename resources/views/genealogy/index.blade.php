@@ -10,14 +10,14 @@
             <!-- Visual Chart View (Desktop) -->
             <div class="card d-none d-md-block">
                 <div class="card-header">
-                    <h3 class="card-title">Network View</h3>
+                    <h3 class="card-title text-white ">Network View</h3>
                 </div>
                 <div class="card-body">
                     <div id="chart-container" class="chart-container">
                         <div id="chart_div" class="org-chart"></div>
                     </div>
                     <div class="mt-3 text-muted">
-                        <small><i class="fas fa-info-circle"></i> Use pinch-to-zoom </small>
+                        <small><i class="bi bi-zoom-in"></i> Use pinch-to-zoom </small>
                     </div>
                 </div>
             </div>
@@ -25,10 +25,10 @@
             <!-- Collapsible Tree View (Mobile) -->
             <div class="card d-md-none">
                 <div class="card-header">
-                    <h3 class="card-title">Network Tree</h3>
+                    <h3 class="card-title text-white ">Network Tree</h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
+
                         </button>
                     </div>
                 </div>
