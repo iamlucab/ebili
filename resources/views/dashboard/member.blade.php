@@ -348,14 +348,6 @@
 <div class="container-fluid px-2">
 
 {{-- Success/Error Messages - HTML Approach --}}
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-        <i class="bi bi-check-circle me-2"></i>
-        <strong>Success!</strong> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
 @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
         <i class="bi bi-exclamation-triangle me-2"></i>

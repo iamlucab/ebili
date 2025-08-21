@@ -403,7 +403,7 @@ Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function (
         });
 
         // Admin Ticket Replies
-        Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+        Route::prefix('admin')->name('admin.')->middleware(['auth', 'can:admin-only'])->group(function () {
             Route::get('/tickets', [\App\Http\Controllers\Admin\TicketController::class, 'index'])->name('tickets.index');
             Route::get('/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])->name('tickets.show');
             Route::post('/tickets/{id}/reply', [\App\Http\Controllers\Admin\TicketController::class, 'reply'])->name('tickets.reply');
@@ -599,7 +599,7 @@ Route::middleware(['auth', 'can:member-only'])->group(function () {
 
 });
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'can:admin-only'])->group(function () {
     Route::resource('product-categories', \App\Http\Controllers\Admin\CategoryController::class)
          ->names('admin.categories');
 });
