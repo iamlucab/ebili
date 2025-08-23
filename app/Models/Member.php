@@ -130,7 +130,7 @@ class Member extends Model
 
     public function getPhotoUrlAttribute()
     {
-        return $this->photo ? asset('storage/' . $this->photo) : asset('images/default-profile.png');
+        return $this->photo ? asset('storage/photos/' . $this->photo) : asset('images/default-profile.png');
     }
 
     public function getSponsorNameAttribute()

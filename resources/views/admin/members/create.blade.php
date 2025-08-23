@@ -17,7 +17,7 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-<form method="POST" action="{{ route('admin.members.store') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('members.store') }}" enctype="multipart/form-data">
     @csrf
 
         <div class="form-group">
@@ -55,9 +55,9 @@
     <label for="photo" class="upload-btn btn btn-outline-primary rounded-pill px-4 py-2">
         <i class="bi bi-camera"></i> Choose Photo
     </label>
-    
+
     <input type="file" name="photo" id="photo" class="d-none" accept="image/*" onchange="previewPhoto(event)">
-    
+
     <!-- Preview Image -->
     <div class="mt-3">
         <img id="photoPreview" src="{{ asset('images/default-profile.png') }}" alt="Preview" class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
@@ -74,7 +74,27 @@
                 @endforeach
             </select>
         </div>
-<input type="hidden" name="role" value="member">
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-person-tag me-1"></i> Role <span class="text-danger">*</span>
+            </label>
+            <select name="role" class="form-control" required>
+                <option value="Admin">Admin</option>
+                <option value="Staff">Staff</option>
+                <option value="Member" selected>Member</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-check-circle me-1"></i> Status <span class="text-danger">*</span>
+            </label>
+            <select name="status" class="form-control" required>
+                <option value="Pending" selected>Pending</option>
+                <option value="Approved">Approved</option>
+            </select>
+        </div>
 
         <button type="submit" class="btn btn-primary btn-block mt-2">Register</button>
     </form>

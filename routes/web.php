@@ -215,11 +215,11 @@ Route::prefix('member/membership-code-request')->middleware(['auth', 'can:member
             Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
         Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->group(function () {
-            Route::resource('members', App\Http\Controllers\MembersController::class);
+            Route::resource('members', App\Http\Controllers\Admin\MembersController::class);
         });
 
         Route::middleware(['auth', 'can:admin-only'])->group(function () {
-            Route::resource('admin/members', \App\Http\Controllers\MembersController::class);
+            Route::resource('admin/members', \App\Http\Controllers\Admin\MembersController::class);
         });
 
             // Route::resource('admin/loans', \App\Http\Controllers\LoanController::class);
