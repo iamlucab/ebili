@@ -96,6 +96,21 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-key me-1"></i> Membership Code (Optional)
+            </label>
+            <select name="membership_code_id" class="form-control" id="membershipCodeSelect">
+                <option value="">-- Select Membership Code --</option>
+                @if(isset($membershipCodes))
+                    @foreach($membershipCodes as $code)
+                        <option value="{{ $code->id }}">{{ $code->code }}</option>
+                    @endforeach
+                @endif
+            </select>
+            <small class="form-text text-muted">Select an available membership code to assign to this member.</small>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-block mt-2">Register</button>
     </form>
 </div>

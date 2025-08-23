@@ -24,7 +24,8 @@ class MembersController extends Controller
     public function create()
     {
         $sponsors = Member::where('status', 'Approved')->get();
-        return view('admin.members.create', compact('sponsors'));
+        $membershipCodes = \App\Models\MembershipCode::available()->get();
+        return view('admin.members.create', compact('sponsors', 'membershipCodes'));
     }
 
     public function store(Request $request)
@@ -44,6 +45,7 @@ class MembersController extends Controller
                 'role'          => 'required|in:Admin,Staff,Member',
                 'sponsor_id'    => 'nullable|exists:members,id',
                 'status'        => 'required|in:Pending,Approved',
+                'membership_code_id' => 'nullable|exists:membership_codes,id',
             ]);
 
             // Log validated data
@@ -91,6 +93,18 @@ class MembersController extends Controller
                 ReferralBonusService::awardReferralBonuses($member);
             }
 
+            // Assign membership code if provided
+            if (!empty($validated['membership_code_id'])) {
+                try {
+                    $membershipCode = \App\Models\MembershipCode::find($validated['membership_code_id']);
+                    if ($membershipCode && !$membershipCode->used && !$membershipCode->reserved) {
+                        $membershipCode->markAsUsed($user->id);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error assigning membership code:', ['message' => $e->getMessage()]);
+                }
+            }
+
             return redirect()->route('members.index')->with('success', 'Member created successfully.');
         } catch (\Exception $e) {
             \Log::error('Error creating member:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
@@ -101,7 +115,8 @@ class MembersController extends Controller
     public function edit(Member $member)
     {
         $sponsors = Member::where('status', 'Approved')->get();
-        return view('admin.members.edit', compact('member', 'sponsors'));
+        $membershipCodes = \App\Models\MembershipCode::available()->get();
+        return view('admin.members.edit', compact('member', 'sponsors', 'membershipCodes'));
     }
 
     public function update(Request $request, Member $member)
@@ -124,6 +139,7 @@ class MembersController extends Controller
                 'role'          => 'required|in:Admin,Staff,Member',
                 'sponsor_id'    => 'nullable|exists:members,id',
                 'status'        => 'required|in:Pending,Approved',
+                'membership_code_id' => 'nullable|exists:membership_codes,id',
             ];
 
             $validated = $request->validate($rules);
@@ -195,6 +211,21 @@ class MembersController extends Controller
                 // Check if bonuses haven't been awarded yet to prevent duplicates
                 if (!ReferralBonusService::bonusesAlreadyAwarded($member)) {
                     ReferralBonusService::awardReferralBonuses($member);
+                }
+            }
+
+            // Assign membership code if provided
+            if (!empty($validated['membership_code_id'])) {
+                try {
+                    $membershipCode = \App\Models\MembershipCode::find($validated['membership_code_id']);
+                    if ($membershipCode && !$membershipCode->used && !$membershipCode->reserved) {
+                        // If member already has a user, mark the code as used by that user
+                        if ($user) {
+                            $membershipCode->markAsUsed($user->id);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error assigning membership code:', ['message' => $e->getMessage()]);
                 }
             }
 

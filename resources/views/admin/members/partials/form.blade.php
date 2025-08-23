@@ -173,6 +173,25 @@
             </small>
         @endif
     </div>
+
+    <div class="col-md-4">
+        <label class="form-label">
+            <i class="bi bi-key me-1"></i> Membership Code (Optional)
+        </label>
+        <select name="membership_code_id" class="form-control" id="membershipCodeSelect">
+            <option value="">-- Select Membership Code --</option>
+            @if(isset($membershipCodes))
+                @foreach($membershipCodes as $code)
+                    <option value="{{ $code->id }}" {{ (isset($member) && $member->membershipCode && $member->membershipCode->id == $code->id) ? 'selected' : '' }}>
+                        {{ $code->code }}
+                    </option>
+                @endforeach
+            @endif
+        </select>
+        <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i> Select an available membership code to assign to this member.
+        </small>
+    </div>
 </div>
 
 <style>

@@ -141,6 +141,11 @@ class MembershipCodeRequestController extends Controller
     {
         $query = MembershipCode::available();
 
+        // If unused parameter is explicitly set, ensure we only get unused codes
+        if ($request->has('unused') && $request->unused) {
+            $query->where('used', false);
+        }
+
         if ($request->has('search') && $request->search) {
             $query->where('code', 'like', '%' . $request->search . '%');
         }
