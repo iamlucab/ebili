@@ -114,6 +114,7 @@ class MembersController extends Controller
 
     public function edit(Member $member)
     {
+        $member->load('membershipCode'); // Load the member's existing membership code
         $sponsors = Member::where('status', 'Approved')->get();
         $membershipCodes = \App\Models\MembershipCode::available()->get();
         return view('admin.members.edit', compact('member', 'sponsors', 'membershipCodes'));
@@ -123,6 +124,16 @@ class MembersController extends Controller
     {
         // Log the request data for debugging
         \Log::info('Admin member update request data:', $request->all());
+
+        // Log specifically the membership_code_id if it exists
+        if ($request->has('membership_code_id')) {
+            \Log::info('Membership code ID in request:', [
+                'membership_code_id' => $request->input('membership_code_id'),
+                'membership_code_id_empty' => empty($request->input('membership_code_id'))
+            ]);
+        } else {
+            \Log::info('Membership code ID not in request');
+        }
 
         try {
             $rules = [
@@ -216,17 +227,61 @@ class MembersController extends Controller
 
             // Assign membership code if provided
             if (!empty($validated['membership_code_id'])) {
+                \Log::info('Membership code assignment requested:', [
+                    'membership_code_id' => $validated['membership_code_id'],
+                    'member_id' => $member->id,
+                    'user_id' => $user->id ?? null
+                ]);
+
                 try {
                     $membershipCode = \App\Models\MembershipCode::find($validated['membership_code_id']);
-                    if ($membershipCode && !$membershipCode->used && !$membershipCode->reserved) {
-                        // If member already has a user, mark the code as used by that user
-                        if ($user) {
-                            $membershipCode->markAsUsed($user->id);
+                    \Log::info('Membership code lookup result:', [
+                        'membership_code' => $membershipCode ? $membershipCode->toArray() : null
+                    ]);
+
+                    if ($membershipCode) {
+                        \Log::info('Membership code found, checking availability:', [
+                            'used' => $membershipCode->used,
+                            'reserved' => $membershipCode->reserved
+                        ]);
+
+                        if (!$membershipCode->used && !$membershipCode->reserved) {
+                            \Log::info('Membership code is available, attempting to assign to user:', [
+                                'user_id' => $user->id ?? null
+                            ]);
+
+                            // If member already has a user, mark the code as used by that user
+                            if ($user) {
+                                $membershipCode->markAsUsed($user->id);
+                                \Log::info('Membership code successfully assigned:', [
+                                    'membership_code_id' => $membershipCode->id,
+                                    'user_id' => $user->id
+                                ]);
+                            } else {
+                                \Log::warning('Cannot assign membership code - no user found for member:', [
+                                    'member_id' => $member->id
+                                ]);
+                            }
+                        } else {
+                            \Log::warning('Membership code is not available:', [
+                                'membership_code_id' => $membershipCode->id,
+                                'used' => $membershipCode->used,
+                                'reserved' => $membershipCode->reserved
+                            ]);
                         }
+                    } else {
+                        \Log::warning('Membership code not found:', [
+                            'membership_code_id' => $validated['membership_code_id']
+                        ]);
                     }
                 } catch (\Exception $e) {
-                    \Log::error('Error assigning membership code:', ['message' => $e->getMessage()]);
+                    \Log::error('Error assigning membership code:', [
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
                 }
+            } else {
+                \Log::info('No membership code provided for assignment');
             }
 
             return redirect()->route('members.index')->with('success', 'Member updated.');
