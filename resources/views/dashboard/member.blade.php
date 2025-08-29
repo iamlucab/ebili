@@ -394,7 +394,33 @@
     </div>
 </div>
 
-
+{{-- ✅ Referral Network Card --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none;">
+            <div class="card-body text-white">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h6 class="card-title mb-1" style="color: white !important;">
+                            <i class="bi bi-people-fill me-2"></i>My Referral Network
+                        </h6>
+                        <p class="mb-0 small" style="color: rgba(255,255,255,0.9);">
+                            Direct Referrals: <strong>{{ auth()->user()->member->getDirectReferrals()->count() }}</strong>
+                        </p>
+                        <p class="mb-0 small" style="color: rgba(255,255,255,0.9);">
+                            Total Network: <strong>{{ auth()->user()->member->getTotalReferralCount() }}</strong>
+                        </p>
+                    </div>
+                    <div class="col-4 text-end">
+                        <a href="{{ route('member.referral.summary') }}" class="btn btn-light btn-sm">
+                            <i class="bi bi-eye me-1"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{-- ✅ Dashboard Action Icons (Mobile-Optimized Inline Layout) --}}
 <div class="d-flex flex-wrap justify-content-around text-center mb-4" style="gap: 0.75rem">

@@ -431,7 +431,9 @@ function sendTestSms() {
     .then(data => {
         if (data.success) {
             alert('Test SMS sent successfully!');
-            bootstrap.Modal.getInstance(document.getElementById('testSmsModal')).hide();
+            const modal = document.getElementById('testSmsModal');
+            const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+            modalInstance.hide();
         } else {
             alert('Failed to send test SMS: ' + data.message);
         }

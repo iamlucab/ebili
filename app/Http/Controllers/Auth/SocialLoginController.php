@@ -72,9 +72,9 @@ class SocialLoginController extends Controller
             
             // Create member first
             $member = Member::create([
-                'first_name' => $firstName,
+                'first_name' => ucfirst(strtolower($firstName)),
                 'middle_name' => '',
-                'last_name' => $lastName,
+                'last_name' => ucfirst(strtolower($lastName)),
                 'birthday' => now()->subYears(25)->format('Y-m-d'), // Default age
                 'mobile_number' => null, // Will need to be filled later
                 'occupation' => 'Not specified',

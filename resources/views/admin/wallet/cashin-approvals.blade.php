@@ -43,8 +43,12 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
-                                    <strong>{{ $request->member->first_name }} {{ $request->member->last_name }}</strong><br>
-                                    <small>{{ $request->member->mobile_number }}</small>
+                                    @if($request->member)
+                                        <strong>{{ $request->member->first_name }} {{ $request->member->last_name }}</strong><br>
+                                        <small>{{ $request->member->mobile_number }}</small>
+                                    @else
+                                        <span class="text-muted">Member not found</span>
+                                    @endif
                                 </td>
                                 <td>₱{{ number_format($request->amount, 2) }}</td>
                                 <td>{{ $request->payment_method }}</td>
@@ -63,46 +67,6 @@
                                        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#proofModal{{ $request->id }}">
                                             View
                                        </button>
-
-                                     <!-- Proof Modal -->
-<div class="modal fade" id="proofModal{{ $request->id }}" tabindex="-1" role="dialog" aria-labelledby="proofModalLabel{{ $request->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-        
-            <div class="modal-header">
-                <h5 class="modal-title" id="proofModalLabel{{ $request->id }}">Payment Proof</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-
-            <div class="modal-body text-center">
-                @php
-                    $proofPath = $request->proof_path;
-                    $proofUrl = $proofPath ? asset('storage/' . $proofPath) : null;
-                @endphp
-
-                @if ($proofPath)
-                    @php
-                        $isPdf = Str::endsWith(strtolower($proofPath), '.pdf');
-                    @endphp
-
-                    @if ($isPdf)
-                        <iframe src="{{ $proofUrl }}" width="100%" height="500px"></iframe>
-                    @else
-                        <img src="{{ $proofUrl }}" class="img-fluid rounded border" alt="Payment Proof">
-                    @endif
-                        <hr>
-                    <a href="{{ $proofUrl }}" download class="btn btn-sm btn-secondary mt-3">
-                        <i class="bi bi-download"></i> Download
-                    </a>
-                @else
-                    <small class="text-muted">No proof uploaded.</small>
-                @endif
-            </div>
-
-        </div>
-    </div>
-</div>
-
                                     @else
                                         <small>No proof</small>
                                     @endif
@@ -144,8 +108,12 @@
                     <div class="card mb-2">
                         <div class="card-body">
                             <h5 class="mb-1">
-                                {{ $request->member->first_name }} {{ $request->member->last_name }}
-                                <small class="d-block text-muted">{{ $request->member->mobile_number }}</small>
+                                @if($request->member)
+                                    {{ $request->member->first_name }} {{ $request->member->last_name }}
+                                    <small class="d-block text-muted">{{ $request->member->mobile_number }}</small>
+                                @else
+                                    <span class="text-muted">Member not found</span>
+                                @endif
                             </h5>
                             <p class="mb-1"><strong>Amount:</strong> ₱{{ number_format($request->amount, 2) }}</p>
                             <p class="mb-1"><strong>Payment Method:</strong> {{ $request->payment_method }}</p>
@@ -161,7 +129,7 @@
                             <p class="mb-1"><strong>Requested:</strong> {{ $request->created_at->format('M d, Y h:i A') }}</p>
                             <p class="mb-2"><strong>Proof:</strong><br>
                                 @if($request->proof_path)
-                                    <a href="{{ ('' . $request->proof_path) }}" target="_blank" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ asset('storage/' . $request->proof_path) }}" target="_blank" class="btn btn-sm btn-info">View</a>
                                 @else
                                     <small>No uploaded proof</small>
                                 @endif
@@ -198,8 +166,33 @@
         </div>
     </div>
 </div>
+
+{{-- Proof Modals --}}
+@foreach($requests as $request)
+    @if($request->proof_path)
+        <div class="modal" id="proofModal{{ $request->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Payment Proof</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="{{ asset('storage/' . $request->proof_path) }}" class="img-fluid" alt="Payment Proof">
+                        <br><br>
+                        <a href="{{ asset('storage/' . $request->proof_path) }}" download class="btn btn-sm btn-secondary">
+                            Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
+
 @endsection
 @include('partials.mobile-footer')
+
 {{-- ✅ AdminLTE + DataTables JS --}}
 @section('js')
     <script src="{{ asset('vendor/adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>

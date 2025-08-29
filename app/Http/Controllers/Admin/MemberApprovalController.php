@@ -5,15 +5,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\User;
 use App\Models\MembershipCode;
+use App\Models\ReferralBonusLog;
+use App\Models\ReferralConfiguration;
+use App\Services\ReferralBonusService;
 use App\Notifications\MemberApprovedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MemberApprovalController extends Controller
 {
     public function index()
     {
         $pendingMembers = Member::where('status', 'Pending')->get();
-        $sponsors = Member::where('status', 'Active')->get();
+        $sponsors = Member::where('status', 'Approved')->get();
         $availableCodes = MembershipCode::where('used', false)->get();
 
         return view('admin.members.pending', compact('pendingMembers', 'sponsors', 'availableCodes'));
@@ -36,10 +40,10 @@ class MemberApprovalController extends Controller
 
     $member->update([
         'sponsor_id' => $request->sponsor_id,
-        'status' => 'Active',
+        'status' => 'Approved',
     ]);
 
-    $user->update(['status' => 'Active']);
+    $user->update(['status' => 'Approved']);
 
     $code->update([
         'used' => true,
@@ -47,11 +51,19 @@ class MemberApprovalController extends Controller
         'used_at' => now(),
     ]);
 
+    // Apply referral bonuses since member is now approved
+    if ($member->sponsor) {
+        // Check if bonuses haven't been awarded yet to prevent duplicates
+        if (!ReferralBonusService::bonusesAlreadyAwarded($member)) {
+            ReferralBonusService::awardReferralBonuses($member);
+        }
+    }
+
     // 🔔 Send notification and broadcast
     $user->notify(new \App\Notifications\MemberApprovedNotification());
     event(new \App\Events\MemberApproved($user->id, 'Your membership has been approved!'));
 
-    return back()->with('success', 'Member approved and notified.');
+    return back()->with('success', 'Member approved, notified, and referral bonuses distributed.');
 }
 
     public function reject($id)

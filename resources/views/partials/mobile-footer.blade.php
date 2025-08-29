@@ -127,7 +127,7 @@
     .mobile-footer-item.active span,
     .mobile-footer-item:hover span {
         color: var(--dark-purple) !important;
-        font-weight: 700 !important;
+        font-weight: 500 !important;
     }
 
     .mobile-footer-item i {

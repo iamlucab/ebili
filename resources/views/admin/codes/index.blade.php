@@ -57,7 +57,14 @@
                                         <span class="badge badge-secondary">Unused</span>
                                     @endif
                                 </td>
-                                <td data-label="Used By">{{ optional($code->user)->name ?? '-' }}</td>
+                                <td data-label="Used By">
+                                    @if($code->user && $code->user->member)
+                                        {{ $code->user->member->full_name }}
+                                        <small class="text-muted d-block">{{ $code->user->mobile_number }}</small>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td data-label="Used At">{{ $code->used_at ?? '-' }}</td>
                                 <td data-label="Created At">{{ $code->created_at }}</td>
                             </tr>

@@ -50,14 +50,34 @@
             <label for="sponsor_id">Select Sponsor</label>
             <select name="sponsor_id" class="form-control" required>
                 <option value="">-- Choose Sponsor --</option>
-                @foreach($sponsors as $sponsor)
+                @foreach($sponsors->where('status', 'Approved') as $sponsor)
                     <option value="{{ $sponsor->id }}">
                         {{ $sponsor->first_name }} {{ $sponsor->last_name }}
                     </option>
                 @endforeach
             </select>
         </div>
-<input type="hidden" name="role" value="member">
+
+        <div class="form-group">
+            <label for="membership_code">Membership Code <span class="text-danger">*</span></label>
+            <select name="membership_code" class="form-control" required>
+                <option value="">-- Select Membership Code --</option>
+                @foreach(\App\Models\MembershipCode::where('used', false)->get() as $code)
+                    <option value="{{ $code->code }}">{{ $code->code }}</option>
+                @endforeach
+            </select>
+            <small class="text-muted">Required for all members</small>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select name="status" class="form-control" required>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+            </select>
+        </div>
+
+<input type="hidden" name="role" value="Member">
 
         <button type="submit" class="btn btn-primary btn-block mt-2">Register</button>
     </form>

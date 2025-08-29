@@ -40,11 +40,16 @@ use App\Http\Controllers\Admin\AdminWalletController;
 
         // ✅ Welcome Page
         Route::get('/', function () {
-            $featuredProducts = \App\Models\Product::where('active', 1)
-                ->with('category')
-                ->inRandomOrder()
-                ->take(8)
-                ->get();
+            try {
+                $featuredProducts = \App\Models\Product::where('active', 1)
+                    ->with('category')
+                    ->inRandomOrder()
+                    ->take(8)
+                    ->get();
+            } catch (\Exception $e) {
+                // Fallback if products table doesn't exist or has issues
+                $featuredProducts = collect();
+            }
             return view('welcome', compact('featuredProducts'));
         });
 
@@ -449,13 +454,29 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
 
 
 
-// ✅ Guest Registration (Public)
-Route::get('/join', [GuestRegistrationController::class, 'create'])->name('guest.register');
-Route::post('/join', [GuestRegistrationController::class, 'store'])->name('guest.register.store');
+// ✅ 3-Tier Registration System (Public)
+Route::get('/register', [GuestRegistrationController::class, 'create'])->name('guest.register');
+Route::post('/register', [GuestRegistrationController::class, 'store'])->name('guest.register.store');
 
-// ✅ Referral Registration (Public)
-Route::get('/join/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('guest.register.referral');
-Route::post('/join/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('guest.register.referral.store');
+// ✅ Admin Registration (Public)
+Route::get('/register/admin', [GuestRegistrationController::class, 'createAdmin'])->name('admin.register');
+Route::post('/register/admin', [GuestRegistrationController::class, 'storeAdmin'])->name('admin.register.store');
+
+// ✅ Member Referral Registration (Public)
+Route::get('/register/ref/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('member.register.referral');
+Route::post('/register/ref/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('member.register.referral.store');
+
+// ✅ Legacy Routes (for backward compatibility)
+Route::get('/join', [GuestRegistrationController::class, 'create'])->name('join');
+Route::post('/join', [GuestRegistrationController::class, 'store']);
+
+// ✅ Legacy Referral Route (for backward compatibility)
+Route::get('/join/{sponsor_id}', [GuestRegistrationController::class, 'createWithReferral'])->name('join.referral');
+Route::post('/join/{sponsor_id}', [GuestRegistrationController::class, 'storeWithReferral'])->name('join.referral.store');
+
+// ✅ Welcome Page Guest Registration (Public)
+Route::get('/welcome.php', [GuestRegistrationController::class, 'welcome'])->name('welcome.register');
+Route::post('/welcome.php', [GuestRegistrationController::class, 'store'])->name('welcome.register.store');
 
 // ✅ Fallback Route
 Route::fallback(function () {
@@ -464,6 +485,12 @@ Route::fallback(function () {
 
 
 // Referral Bonuses Management
+
+// ✅ Member Referral Summary
+Route::middleware(['auth'])->group(function () {
+    Route::get('/member/referral-summary', [\App\Http\Controllers\Member\ReferralController::class, 'summary'])->name('member.referral.summary');
+    Route::get('/member/referral-level/{level}', [\App\Http\Controllers\Member\ReferralController::class, 'levelDetails'])->name('member.referral.level');
+});
 
 // ✅ Member or public view (optional)
 Route::get('/referral-bonuses', [ReferralBonusController::class, 'index'])->name('referral.bonuses');
