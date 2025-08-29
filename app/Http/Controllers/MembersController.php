@@ -123,13 +123,13 @@ class MembersController extends Controller
             'exists:membership_codes,code',
             function ($attribute, $value, $fail) use ($member) {
                 $code = \App\Models\MembershipCode::where('code', $value)->first();
-                
+
                 // If the member already has this code, it's valid
                 $currentCode = $member->membershipCode ? $member->membershipCode->code : null;
                 if ($value === $currentCode) {
                     return;
                 }
-                
+
                 // Otherwise, check if the code is unused
                 if (!$code || $code->used) {
                     $fail('The membership code is invalid or already used.');
@@ -137,7 +137,7 @@ class MembersController extends Controller
             },
         ],
     ];
-    
+
     $validated = $request->validate($rules);
 
     // Handle photo update
@@ -190,10 +190,10 @@ class MembersController extends Controller
 
         $user->update($updateData);
     }
-    
+
     // Handle membership code
     $currentCode = $member->membershipCode ? $member->membershipCode->code : null;
-    
+
     // If the code is different from the current one, update it
     if ($request->membership_code !== $currentCode) {
         // If there's a current code, release it
@@ -201,7 +201,7 @@ class MembersController extends Controller
             \App\Models\MembershipCode::where('code', $currentCode)
                 ->update(['used' => false, 'used_by' => null, 'used_at' => null]);
         }
-        
+
         // Assign the new code
         $code = \App\Models\MembershipCode::where('code', $request->membership_code)->first();
         if ($code && $user) {
@@ -234,6 +234,9 @@ class MembersController extends Controller
 
     public function destroy(Member $member)
     {
+        // Update all sponsored members to have no sponsor
+        Member::where('sponsor_id', $member->id)->update(['sponsor_id' => null]);
+
         if ($member->photo) {
             $photoPath = storage_path('photos/' . $member->photo);
             if (file_exists($photoPath)) {
@@ -243,6 +246,6 @@ class MembersController extends Controller
 
         $member->delete();
 
-        return redirect()->route('members.index')->with('success', 'Member deleted.');
+        return redirect()->route('members.index')->with('success', 'Member deleted and sponsored members updated.');
     }
 }

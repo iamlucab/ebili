@@ -105,7 +105,6 @@
                                        title="Edit Member">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    {{-- Uncomment if delete functionality is needed
                                     <form action="{{ route('members.destroy', $member->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this member?');">
                                         @csrf
                                         @method('DELETE')
@@ -113,7 +112,6 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
-                                    --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -176,7 +174,7 @@
                 text-align: left;
                 margin-bottom: 1rem;
             }
-            
+
             .table-responsive {
                 border-radius: 15px;
             }
