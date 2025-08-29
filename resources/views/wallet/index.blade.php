@@ -130,21 +130,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">x</button>
                 </div>
                 <div class="modal-body">
-                    <p class="small">Available Cashback Balance: 
+                    <p class="small">Available Cashback Balance:
                         <strong>₱<span id="availableCashback">{{ number_format($cashbackBalance, 2) }}</span></strong>
                     </p>
 
                     <div class="form-group mb-3">
                         <label for="cashbackAmount">Amount to Transfer</label>
-                        <input 
-                            type="number" 
-                            class="form-control" 
-                            id="cashbackAmount" 
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="cashbackAmount"
                             name="amount"
-                            min="1" 
+                            min="1"
                             max="{{ $cashbackBalance }}"
                             step="0.01"
-                            value="{{ old('amount') }}" 
+                            value="{{ old('amount') }}"
                             required
                         >
                         @error('amount')
@@ -156,26 +156,26 @@
                     </div>
 
                     <div class="mt-3 small">
-                        <p class="mb-1 text-muted">0% Transaction muna tayo!: 
+                        <p class="mb-1 text-muted">Transfer Summary --</p>
                             <strong>₱<span id="cashbackFee">0.00</span></strong>
                         </p>
-                        <p class="mb-0">Net to Receive: 
+                        <p class="mb-0">Net to Receive:
                             <strong class="text-success">₱<span id="cashbackNet">0.00</span></strong>
                         </p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button 
-                        type="button" 
-                        class="btn btn-secondary" 
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
                         data-bs-dismiss="modal"
                     >
                         Cancel
                     </button>
-                    <button 
-                        type="submit" 
-                        class="btn btn-primary" 
-                        id="confirmCashbackTransferBtn" 
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="confirmCashbackTransferBtn"
                         disabled
                     >
                         Confirm Transfer
