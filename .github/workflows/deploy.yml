@@ -1,6 +1,3 @@
-# This file is part of the Ebili Online System project.
-# GitHub Actions workflow for deploying to GoDaddy via FTP
-# Reviewed: by Lu Cab
 name: Deploy to GoDaddy
 
 on:
@@ -8,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*.*.*' # semantic version tags like v1.0.0
+      - 'v*.*.*'
 
 jobs:
   ftp-deploy:
@@ -36,21 +33,15 @@ jobs:
           local-dir: ./
           server-dir: /
           exclude: |
-            **/node_modules/**
-            **/resources/**
-            **/tests/**
-            **/.git/**
-            **/.github/**
-            **/.fleet/**
-            **/.idea/**
-            **/.vscode/**
-            .env
-            package.json
-            package-lock.json
-            deploy.php
-            public/build
-            public/hot
-            public/storage
-            storage/*.key
-            vendor/**
+            **/node_modules/**        # exclude dev dependencies
+            **/tests/**               # exclude tests
+            **/.git/**                # git internals
+            **/.github/**             # GitHub Actions
+            **/.idea/**               # PHPStorm config
+            **/.vscode/**             # VSCode config
+            *.zip                     # local build artifacts
+            .env                      # keep server env manually
+            deploy.php                # deployment script
+            storage/*.key             # ignore local keys
           security: loose
+          dangerous-clean-slate: false # only sync changed files
