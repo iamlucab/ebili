@@ -4,44 +4,37 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*.*.*'
 
 jobs:
   ftp-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout your code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set deployment version file
+      # 2️⃣ Set a deployment version file (optional)
+      - name: Set deployment version
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "${GITHUB_REF#refs/tags/}" > DEPLOY_VERSION.txt
-          else
-            echo "${GITHUB_REF#refs/heads/}-$(git rev-parse --short HEAD)" > DEPLOY_VERSION.txt
-          fi
+          echo "version-$(git rev-parse --short HEAD)" > DEPLOY_VERSION.txt
 
-      - name: Deploy via FTP
+      # 3️⃣ Deploy via FTP, only changed files
+      - name: FTP Deploy (only changed files)
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          local-dir: ./
-          server-dir: /
+          local-dir: ./        # your local repo root
+          server-dir: /        # root folder on the server
           exclude: |
-            **/node_modules/**        # exclude dev dependencies
-            **/tests/**               # exclude tests
-            **/.git/**                # git internals
-            **/.github/**             # GitHub Actions
-            **/.idea/**               # PHPStorm config
-            **/.vscode/**             # VSCode config
-            *.zip                     # local build artifacts
-            .env                      # keep server env manually
-            deploy.php                # deployment script
-            storage/*.key             # ignore local keys
-          security: loose
-          dangerous-clean-slate: false # only sync changed files
+            **/node_modules/**
+            **/.git/**
+            **/.github/**
+            *.zip
+            .env
+            deploy.php
+          dangerous-clean-slate: false   # 🔑 only sync changed files
+          log-level: info
