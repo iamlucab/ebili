@@ -156,7 +156,7 @@
                     </div>
 
                     <div class="mt-3 small">
-                        <p class="mb-1 text-muted">Transfer Summary --</p>
+                        <p class="mb-1 text-muted">Web Fee</p>
                             <strong>₱<span id="cashbackFee">0.00</span></strong>
                         </p>
                         <p class="mb-0">Net to Receive:
